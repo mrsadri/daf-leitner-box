@@ -1,0 +1,7 @@
+node_modules
+word-resource.zip
+.remember
+.aistudio
+.env*
+!.env.example
+SETUP_FOR_CLAUDE_DESKTOP.md
