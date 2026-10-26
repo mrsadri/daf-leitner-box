@@ -1,0 +1,145 @@
+{
+  "_comment": "Multi-verb cards split into one card per verb. Key = 'Lektion/Nr' of the original row. The first entry keeps the original row (and card id, so existing progress stays with it); later entries become new rows with Nr suffixed b, c, d. Fields not given are copied from the original row (Artikel, Created time, Feld, Lektion, Niveau, Plural, Wortart) or left empty (Beispiel, Österreich).",
+  "01/95": [
+    { "Wort": "hören", "Persisch": "گوش دادن", "Englisch": "to listen", "Formen": "hört · hat gehört", "Perfekt": "hat gehört" },
+    { "Wort": "lesen", "Persisch": "خواندن", "Englisch": "to read", "Formen": "liest · las · hat gelesen", "Perfekt": "hat gelesen" },
+    { "Wort": "schreiben", "Persisch": "نوشتن", "Englisch": "to write", "Formen": "schreibt · schrieb · hat geschrieben", "Perfekt": "hat geschrieben" },
+    { "Wort": "sprechen", "Persisch": "حرف زدن", "Englisch": "to speak", "Formen": "spricht · sprach · hat gesprochen", "Perfekt": "hat gesprochen" }
+  ],
+  "04/30": [
+    { "Wort": "spielen", "Persisch": "بازی کردن", "Englisch": "to play", "Formen": "spielt · hat gespielt", "Perfekt": "hat gespielt" },
+    { "Wort": "mitspielen", "Persisch": "همراه بقیه بازی کردن", "Englisch": "to join in (a game)", "Formen": "spielt mit · hat mitgespielt · trennbar", "Perfekt": "hat mitgespielt", "keepExample": true }
+  ],
+  "05/27": [
+    { "Wort": "einziehen", "Persisch": "اسباب‌کشی کردن به (خونه‌ی جدید)", "Englisch": "to move in", "Formen": "zieht ein · zog ein · ist eingezogen · trennbar · ≠ ausziehen", "Perfekt": "ist eingezogen" },
+    { "Wort": "ausziehen", "Persisch": "خالی کردن (خونه)، از خونه رفتن", "Englisch": "to move out", "Formen": "zieht aus · zog aus · ist ausgezogen · trennbar · ≠ einziehen", "Perfekt": "ist ausgezogen", "keepExample": true }
+  ],
+  "06/47": [
+    { "Wort": "öffnen", "Persisch": "باز کردن", "Englisch": "to open", "Formen": "öffnet · hat geöffnet · ≠ schließen", "Perfekt": "hat geöffnet" },
+    { "Wort": "schließen", "Persisch": "بستن", "Englisch": "to close", "Formen": "schließt · schloss · hat geschlossen · ≠ öffnen", "Perfekt": "hat geschlossen" }
+  ],
+  "07/9": [
+    { "Wort": "aussteigen", "Persisch": "پیاده شدن", "Englisch": "to get off", "Formen": "steigt aus · stieg aus · ist ausgestiegen · trennbar · ≠ einsteigen", "Perfekt": "ist ausgestiegen" },
+    { "Wort": "umsteigen", "Persisch": "عوض کردن (خط/وسیله)", "Englisch": "to change (lines / trains)", "Formen": "steigt um · stieg um · ist umgestiegen · trennbar", "Perfekt": "ist umgestiegen", "keepExample": true }
+  ],
+  "07/83": [
+    { "Wort": "tippen", "Persisch": "تایپ کردن؛ حدس زدن (محاوره)", "Englisch": "to type; to guess (colloquial)", "Formen": "tippt · hat getippt", "Perfekt": "hat getippt" },
+    { "Wort": "eintippen", "Persisch": "وارد کردن (با کیبورد)", "Englisch": "to type in", "Formen": "tippt ein · hat eingetippt · trennbar", "Perfekt": "hat eingetippt" }
+  ],
+  "08/82": [
+    { "Wort": "eröffnen", "Persisch": "افتتاح کردن", "Englisch": "to open (a new place)", "Formen": "eröffnet · hat eröffnet · ≠ schließen", "Perfekt": "hat eröffnet", "keepExample": true },
+    { "Wort": "schließen", "Persisch": "بستن / تعطیل کردن", "Englisch": "to close", "Formen": "schließt · schloss · hat geschlossen · ≠ eröffnen", "Perfekt": "hat geschlossen" }
+  ],
+  "08/86": [
+    { "Wort": "probieren", "Persisch": "مزه کردن، امتحان کردن", "Englisch": "to taste, to try", "Formen": "probiert · hat probiert", "Perfekt": "hat probiert", "keepExample": true },
+    { "Wort": "ausprobieren", "Persisch": "امتحان کردن (چیز جدید)", "Englisch": "to try out", "Formen": "probiert aus · hat ausprobiert · trennbar", "Perfekt": "hat ausprobiert" }
+  ],
+  "08/81": [
+    { "Wort": "ablehnen", "Persisch": "رد کردن", "Englisch": "to refuse, to reject", "Formen": "lehnt ab · hat abgelehnt · trennbar · ≠ zustimmen", "Perfekt": "hat abgelehnt" },
+    { "Wort": "zustimmen", "Persisch": "موافقت کردن", "Englisch": "to agree", "Formen": "stimmt zu · hat zugestimmt · trennbar + Dat · ≠ ablehnen", "Perfekt": "hat zugestimmt", "keepExample": true }
+  ],
+  "09/70": [
+    { "Wort": "absagen", "Persisch": "لغو کردن / نپذیرفتن", "Englisch": "to cancel, to decline", "Formen": "sagt ab · hat abgesagt · trennbar · ≠ zusagen", "Perfekt": "hat abgesagt", "keepExample": true },
+    { "Wort": "zusagen", "Persisch": "قبول کردن (دعوت)", "Englisch": "to accept (an invitation)", "Formen": "sagt zu · hat zugesagt · trennbar · ≠ absagen", "Perfekt": "hat zugesagt" }
+  ],
+  "10/27": [
+    { "Wort": "ausziehen", "Persisch": "تخلیه کردن (خونه)", "Englisch": "to move out", "Formen": "zieht aus · zog aus · ist ausgezogen · trennbar", "Perfekt": "ist ausgezogen" },
+    { "Wort": "einziehen", "Persisch": "وارد خونه‌ی جدید شدن", "Englisch": "to move in", "Formen": "zieht ein · zog ein · ist eingezogen · trennbar", "Perfekt": "ist eingezogen" },
+    { "Wort": "umziehen", "Persisch": "اسباب‌کشی کردن", "Englisch": "to move (house)", "Formen": "zieht um · zog um · ist umgezogen · trennbar", "Perfekt": "ist umgezogen", "keepExample": true }
+  ],
+  "10/89": [
+    { "Wort": "liegen", "Persisch": "(خوابیده) قرار داشتن", "Englisch": "to lie (be lying flat)", "Formen": "Wo? liegt · lag · hat gelegen (A: ist gelegen)", "Perfekt": "hat gelegen | ist gelegen", "keepExample": true, "keepAustria": true },
+    { "Wort": "legen", "Persisch": "(خوابیده) گذاشتن", "Englisch": "to lay, to put down (flat)", "Formen": "Wohin? legt · legte · hat gelegt", "Perfekt": "hat gelegt", "keepExample": true }
+  ],
+  "10/90": [
+    { "Wort": "stehen", "Persisch": "(ایستاده) قرار داشتن", "Englisch": "to stand (be standing)", "Formen": "Wo? steht · stand · hat gestanden (A: ist gestanden)", "Perfekt": "hat gestanden | ist gestanden", "keepExample": true, "keepAustria": true },
+    { "Wort": "stellen", "Persisch": "(ایستاده) گذاشتن", "Englisch": "to put (upright)", "Formen": "Wohin? stellt · stellte · hat gestellt", "Perfekt": "hat gestellt", "keepExample": true }
+  ],
+  "11/22": [
+    { "Wort": "einräumen", "Persisch": "جابه‌جا کردن / چیدن", "Englisch": "to put away", "Formen": "räumt ein · hat eingeräumt · trennbar · ≠ ausräumen", "Perfekt": "hat eingeräumt" },
+    { "Wort": "ausräumen", "Persisch": "خالی کردن", "Englisch": "to clear out, to empty", "Formen": "räumt aus · hat ausgeräumt · trennbar · ≠ einräumen", "Perfekt": "hat ausgeräumt", "keepExample": true }
+  ],
+  "11/73": [
+    { "Wort": "kennen", "Persisch": "شناختن", "Englisch": "to know (be familiar with)", "Formen": "kennt · kannte · hat gekannt", "Perfekt": "hat gekannt" },
+    { "Wort": "kennenlernen", "Persisch": "آشنا شدن", "Englisch": "to get to know, to meet", "Formen": "lernt kennen · hat kennengelernt · trennbar", "Perfekt": "hat kennengelernt", "keepExample": true }
+  ],
+  "11/59": [
+    { "Wort": "anmachen", "Persisch": "روشن کردن", "Englisch": "to switch on", "Formen": "macht an · hat angemacht · trennbar · ≠ ausmachen", "Perfekt": "hat angemacht", "keepAustria": true },
+    { "Wort": "ausmachen", "Persisch": "خاموش کردن", "Englisch": "to switch off", "Formen": "macht aus · hat ausgemacht · trennbar · ≠ anmachen", "Perfekt": "hat ausgemacht", "keepExample": true, "keepAustria": true },
+    { "Wort": "einschalten", "Persisch": "روشن کردن (دستگاه)", "Englisch": "to switch on (a device)", "Formen": "schaltet ein · hat eingeschaltet · trennbar · ≠ ausschalten", "Perfekt": "hat eingeschaltet" },
+    { "Wort": "ausschalten", "Persisch": "خاموش کردن (دستگاه)", "Englisch": "to switch off (a device)", "Formen": "schaltet aus · hat ausgeschaltet · trennbar · ≠ einschalten", "Perfekt": "hat ausgeschaltet" }
+  ],
+  "11/58": [
+    { "Wort": "aufschließen", "Persisch": "قفل باز کردن", "Englisch": "to unlock", "Formen": "schließt auf · schloss auf · hat aufgeschlossen · trennbar · ≠ abschließen", "Perfekt": "hat aufgeschlossen" },
+    { "Wort": "abschließen", "Persisch": "قفل کردن", "Englisch": "to lock", "Formen": "schließt ab · schloss ab · hat abgeschlossen · trennbar · ≠ aufschließen", "Perfekt": "hat abgeschlossen", "keepExample": true }
+  ],
+  "12/24": [
+    { "Wort": "abheben (Geld)", "Persisch": "برداشتن (پول)", "Englisch": "to withdraw (money)", "Formen": "hebt ab · hob ab · hat abgehoben · trennbar · ≠ einzahlen", "Perfekt": "hat abgehoben", "keepExample": true, "keepAustria": true },
+    { "Wort": "einzahlen (Geld)", "Persisch": "واریز کردن (پول)", "Englisch": "to deposit (money)", "Formen": "zahlt ein · hat eingezahlt · trennbar · ≠ abheben", "Perfekt": "hat eingezahlt" }
+  ],
+  "12/99": [
+    { "Wort": "danken + Dat", "Persisch": "تشکر کردن از", "Englisch": "to thank", "Formen": "dankt · hat gedankt", "Perfekt": "hat gedankt" },
+    { "Wort": "sich bedanken bei + Dat", "Persisch": "تشکر کردن از (کسی)", "Englisch": "to thank (someone), to say thank you", "Formen": "bedankt sich · hat sich bedankt", "Perfekt": "hat sich bedankt", "keepExample": true }
+  ],
+  "13/64": [
+    { "Wort": "verordnen", "Persisch": "تجویز کردن", "Englisch": "to prescribe", "Formen": "verordnet · hat verordnet", "Perfekt": "hat verordnet" },
+    { "Wort": "verschreiben", "Persisch": "تجویز کردن (نسخه نوشتن)", "Englisch": "to prescribe (write a prescription)", "Formen": "verschreibt · verschrieb · hat verschrieben", "Perfekt": "hat verschrieben", "keepExample": true }
+  ],
+  "14/12": [
+    { "Wort": "blitzen", "Persisch": "برق زدن (آذرخش)", "Englisch": "to flash (lightning)", "Formen": "es blitzt · es hat geblitzt", "Perfekt": "hat geblitzt" },
+    { "Wort": "donnern", "Persisch": "رعد زدن", "Englisch": "to thunder", "Formen": "es donnert · es hat gedonnert", "Perfekt": "hat gedonnert" }
+  ],
+  "16/87": [
+    { "Wort": "reichen", "Persisch": "کافی بودن", "Englisch": "to be enough", "Formen": "reicht · hat gereicht", "Perfekt": "hat gereicht", "keepExample": true },
+    { "Wort": "ausreichen", "Persisch": "کافی بودن (بسنده بودن)", "Englisch": "to be sufficient", "Formen": "reicht aus · hat ausgereicht · trennbar", "Perfekt": "hat ausgereicht" }
+  ],
+  "17/85": [
+    { "Wort": "erweitern", "Persisch": "گسترش دادن", "Englisch": "to broaden, to extend", "Formen": "erweitert · hat erweitert", "Perfekt": "hat erweitert" },
+    { "Wort": "vertiefen", "Persisch": "عمیق کردن", "Englisch": "to deepen", "Formen": "vertieft · hat vertieft", "Perfekt": "hat vertieft", "keepExample": true }
+  ],
+  "18/96": [
+    { "Wort": "zusammendrücken", "Persisch": "فشردن", "Englisch": "to squeeze together", "Formen": "drückt zusammen · hat zusammengedrückt · trennbar", "Perfekt": "hat zusammengedrückt" },
+    { "Wort": "zusammenfalten", "Persisch": "تا کردن", "Englisch": "to fold up", "Formen": "faltet zusammen · hat zusammengefaltet · trennbar", "Perfekt": "hat zusammengefaltet" }
+  ],
+  "18/81": [
+    { "Wort": "aufbauen", "Persisch": "برپا کردن", "Englisch": "to set up, to put up", "Formen": "baut auf · hat aufgebaut · trennbar · ≠ abbauen", "Perfekt": "hat aufgebaut", "keepExample": true },
+    { "Wort": "abbauen", "Persisch": "جمع کردن (چادر، غرفه)", "Englisch": "to take down, to dismantle", "Formen": "baut ab · hat abgebaut · trennbar · ≠ aufbauen", "Perfekt": "hat abgebaut" }
+  ],
+  "19/90": [
+    { "Wort": "schicken", "Persisch": "فرستادن", "Englisch": "to send", "Formen": "schickt · hat geschickt", "Perfekt": "hat geschickt" },
+    { "Wort": "zusenden", "Persisch": "فرستادن (برای کسی)", "Englisch": "to send (to someone)", "Formen": "sendet zu · hat zugesandt / zugesendet · trennbar", "Perfekt": "hat zugesandt | hat zugesendet" }
+  ],
+  "20/40": [
+    { "Wort": "befragen", "Persisch": "سؤال کردن (از کسی)", "Englisch": "to question", "Formen": "befragt · hat befragt", "Perfekt": "hat befragt" },
+    { "Wort": "vernehmen", "Persisch": "بازجویی کردن", "Englisch": "to interrogate", "Formen": "vernimmt · vernahm · hat vernommen", "Perfekt": "hat vernommen" }
+  ],
+  "20/92": [
+    { "Wort": "schockieren", "Persisch": "شوکه کردن", "Englisch": "to shock", "Formen": "schockiert · hat schockiert", "Perfekt": "hat schockiert" },
+    { "Wort": "überraschen", "Persisch": "غافلگیر کردن", "Englisch": "to surprise", "Formen": "überrascht · hat überrascht", "Perfekt": "hat überrascht" }
+  ],
+  "22/17": [
+    { "Wort": "abschicken", "Persisch": "فرستادن (پست کردن)", "Englisch": "to send off", "Formen": "schickt ab · hat abgeschickt · trennbar", "Perfekt": "hat abgeschickt" },
+    { "Wort": "senden", "Persisch": "فرستادن", "Englisch": "to send", "Formen": "sendet · sandte / sendete · hat gesandt / gesendet", "Perfekt": "hat gesandt | hat gesendet" },
+    { "Wort": "zurücksenden", "Persisch": "پس فرستادن", "Englisch": "to send back", "Formen": "sendet zurück · hat zurückgesandt / zurückgesendet · trennbar", "Perfekt": "hat zurückgesandt | hat zurückgesendet" }
+  ],
+  "25/12": [
+    { "Wort": "siezen", "Persisch": "«شما» خطاب کردن", "Englisch": "to address formally (Sie)", "Formen": "siezt · hat gesiezt · ≠ duzen", "Perfekt": "hat gesiezt" },
+    { "Wort": "duzen", "Persisch": "«تو» خطاب کردن", "Englisch": "to address informally (du)", "Formen": "duzt · hat geduzt · ≠ siezen", "Perfekt": "hat geduzt", "keepExample": true }
+  ],
+  "27/100": [
+    { "Wort": "renovieren", "Persisch": "بازسازی کردن", "Englisch": "to renovate", "Formen": "renoviert · hat renoviert", "Perfekt": "hat renoviert" },
+    { "Wort": "umbauen", "Persisch": "تغییر ساختار دادن", "Englisch": "to convert, to rebuild", "Formen": "baut um · hat umgebaut · trennbar", "Perfekt": "hat umgebaut" }
+  ],
+  "27/92": [
+    { "Wort": "sich entpuppen als + N", "Persisch": "معلوم شدن که … است", "Englisch": "to turn out to be", "Formen": "entpuppt sich · hat sich entpuppt", "Perfekt": "hat sich entpuppt" },
+    { "Wort": "sich erweisen als + N", "Persisch": "از آب درآمدن، ثابت شدن", "Englisch": "to prove to be, to turn out", "Formen": "erweist sich · erwies sich · hat sich erwiesen", "Perfekt": "hat sich erwiesen", "keepExample": true }
+  ],
+  "28/1": [
+    { "Wort": "auswandern", "Persisch": "مهاجرت کردن (به خارج)", "Englisch": "to emigrate", "Formen": "wandert aus · ist ausgewandert · trennbar · auswandern aus + D · ≠ einwandern", "Perfekt": "ist ausgewandert", "keepExample": true },
+    { "Wort": "einwandern", "Persisch": "مهاجرت کردن (به داخل)", "Englisch": "to immigrate", "Formen": "wandert ein · ist eingewandert · trennbar · einwandern in + A / nach + Land · ≠ auswandern", "Perfekt": "ist eingewandert" }
+  ],
+  "28/73": [
+    { "Wort": "weiterarbeiten", "Persisch": "به کار ادامه دادن", "Englisch": "to keep working", "Formen": "arbeitet weiter · hat weitergearbeitet · trennbar", "Perfekt": "hat weitergearbeitet" },
+    { "Wort": "weitergehen", "Persisch": "ادامه پیدا کردن", "Englisch": "to go on, to continue", "Formen": "geht weiter · ging weiter · ist weitergegangen · trennbar", "Perfekt": "ist weitergegangen" }
+  ]
+}

@@ -107,7 +107,16 @@ export function transformCsvToCards(records: Record<string, string>[]): LeitnerC
       lektion,
       niveau: r['Niveau'] || 'A1',
       nr,
-      feld: r['Feld'] || ''
+      feld: r['Feld'] || '',
+      englisch: r['Englisch'] || '',
+      beispielEn: r['Beispiel_en'] || '',
+      formenEn: r['Formen_en'] || '',
+      oesterreichEn: r['Österreich_en'] || '',
+      perfekt: r['Perfekt'] || '',
+      infinitiv: r['Infinitiv'] || '',
+      praesens: r['Präsens'] || '',
+      praeteritum: r['Präteritum'] || '',
+      reflexiv: r['Reflexiv'] || ''
     };
   });
 }

@@ -120,6 +120,17 @@ function safeSet(key: string, value: string) {
   }
 }
 
+/**
+ * Fields of a book card that come from the CSV (as opposed to the user's progress).
+ * Cards keep a copy from when they were added; on load these are refreshed from the current CSV,
+ * so fixes, translations and split multi-verb cards reach existing cards. Progress is never touched.
+ */
+const CATALOG_CONTENT_FIELDS = [
+  'wort', 'persisch', 'artikel', 'beispiel', 'formen', 'plural', 'wortart', 'oesterreich',
+  'lektion', 'niveau', 'nr', 'feld', 'englisch', 'beispielEn', 'formenEn', 'oesterreichEn', 'perfekt',
+  'infinitiv', 'praesens', 'praeteritum', 'reflexiv'
+] as const;
+
 /** Persistence hooks wired up by the cloud sync layer. */
 export interface EngineHooks {
   onCardsUpserted: (cards: LeitnerCard[]) => void;
@@ -135,6 +146,7 @@ export interface EngineHooks {
 class LeitnerEngine {
   private cards: LeitnerCard[] = [];
   private catalog: LeitnerCard[] = [];
+  private catalogById = new Map<string, LeitnerCard>();
   private catalogPromise: Promise<LeitnerCard[]> | null = null;
   private settings: AppSettings = DEFAULT_SETTINGS;
   private userId: string | null = null;
@@ -156,7 +168,8 @@ class LeitnerEngine {
   /** Replace the whole state with the given user's data (does not trigger sync). */
   public hydrate(userId: string, cards: LeitnerCard[], settings: Partial<AppSettings> | null) {
     this.userId = userId;
-    this.cards = cards;
+    // Only in memory and the local cache: nothing is sent to the server until a card is answered
+    this.cards = cards.map(c => this.withCatalogContent(c));
     this.settings = { ...DEFAULT_SETTINGS, ...(settings || {}) };
     this.writeCache();
   }
@@ -220,6 +233,7 @@ class LeitnerEngine {
             (parseInt(a.nr || '0', 10) - parseInt(b.nr || '0', 10))
           );
           this.catalog = words;
+          this.catalogById = new Map(words.map(w => [w.id, w]));
           return words;
         })
         .catch(err => {
@@ -246,6 +260,23 @@ class LeitnerEngine {
 
   public getCatalog(): LeitnerCard[] {
     return this.catalog;
+  }
+
+  /** A copy of the card with its book content taken from the current CSV (progress fields unchanged). */
+  public withCatalogContent(card: LeitnerCard): LeitnerCard {
+    if (card.type !== 'vocab') return card;
+    const word = this.catalogById.get(card.id);
+    if (!word) return card;
+    const content: Partial<LeitnerCard> = {};
+    CATALOG_CONTENT_FIELDS.forEach(field => {
+      (content as Record<string, unknown>)[field] = word[field];
+    });
+    return { ...card, ...content };
+  }
+
+  /** The current CSV entry for a book word (cards keep a copy of the fields from when they were added). */
+  public getCatalogWord(id: string): LeitnerCard | undefined {
+    return this.catalogById.get(id);
   }
 
   public getDueCards(todayStr: string = getTodayString()): LeitnerCard[] {
@@ -455,7 +486,7 @@ class LeitnerEngine {
       }
 
       const removedIds = this.cards.filter(c => !seen.has(c.id)).map(c => c.id);
-      this.cards = valid;
+      this.cards = valid.map(c => this.withCatalogContent(c));
       this.persist(valid, removedIds);
 
       if (data.settings && typeof data.settings === 'object') {

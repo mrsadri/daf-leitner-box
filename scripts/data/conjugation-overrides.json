@@ -1,0 +1,31 @@
+{
+  "_comment": "Conjugation data that the Formen column cannot provide. Key = Lektion/Nr. Fields: Infinitiv, Präsens, Präteritum (3rd person singular), Reflexiv (akk | dat | akk? | empty).",
+  "09/83": {
+    "Präsens": "hat vor",
+    "Präteritum": "hatte vor"
+  },
+  "10/28": {
+    "Präsens": "möbliert"
+  },
+  "11/60": {
+    "Präsens": "macht deutlich"
+  },
+  "22/68": {
+    "Reflexiv": "dat?"
+  },
+  "01/69": {
+    "Präsens": "ist",
+    "Präteritum": "war"
+  },
+  "02/102": {
+    "Präsens": "hat",
+    "Präteritum": "hatte"
+  },
+  "04/91": {
+    "Präsens": "weiß",
+    "Präteritum": "wusste"
+  },
+  "05/55": {
+    "Präteritum": "schnitt aus"
+  }
+}

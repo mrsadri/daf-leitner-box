@@ -5,6 +5,16 @@
     font-family: 'Vazirmatn', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   }
 
+  /* English interface: Latin font first, Vazirmatn only as a fallback for Persian text (e.g. user notes) */
+  html:lang(en) body {
+    font-family: 'Plus Jakarta Sans', 'Vazirmatn', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Persian text inside the English interface (and vice versa) keeps a fitting font */
+  [lang='fa'] {
+    font-family: 'Vazirmatn', system-ui, sans-serif;
+  }
+
   .font-de {
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   }
@@ -13,6 +23,24 @@
     font-family: 'JetBrains Mono', monospace;
     font-variant-numeric: tabular-nums;
   }
+}
+
+/* Inline metadata separated by middle dots ("Lesson 01 · Level A1 · Nomen"). Each dot sits in the gap
+   before its item; the container clips at its edges, so a wrapped line neither ends nor starts with a dot. */
+.dot-list {
+  overflow: hidden;
+  column-gap: 0.75rem;
+}
+.dot-list > span {
+  position: relative;
+}
+.dot-list > span + span::before {
+  content: '·';
+  position: absolute;
+  inset-inline-start: -0.75rem;
+  width: 0.75rem;
+  text-align: center;
+  opacity: 0.6;
 }
 
 /* 3D Flashcard Flip utilities */

@@ -3,9 +3,9 @@
 [![CI](https://github.com/mrsadri/daf-leitner-box/actions/workflows/ci.yml/badge.svg)](https://github.com/mrsadri/daf-leitner-box/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> **English:** An open-source Leitner-box web app for learning the German vocabulary of the *DaF kompakt* course (A1–B1, 3,420 words) with Persian translations, plus personal reflection cards. Google sign-in, cross-device sync and a leaderboard via Supabase. Live: https://daf-leitner-box.vercel.app · Contributions welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
+> **English:** An open-source Leitner-box web app for learning the German vocabulary of the *DaF kompakt* course (A1–B1, 3,420 words) with Persian and English translations and a Persian or English interface, plus personal reflection cards. Google sign-in, cross-device sync and a leaderboard via Supabase. Live: https://daf-leitner-box.vercel.app · Contributions welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
-جعبه لایتنر برای واژگان کتاب **DaF kompakt (A1–B1، ۳۰ درس، ۳۴۲۰ واژه)** به‌همراه کارت‌های تصمیم و انگیزه.
+جعبه لایتنر برای واژگان کتاب **DaF kompakt (A1–B1، ۳۰ درس، ۳۴۲۰ واژه)** به‌همراه کارت‌های تصمیم و انگیزه. رابط کاربری فارسی و انگلیسی دارد و معنی واژه‌ها به هر دو زبان موجود است.
 هر کاربر با حساب گوگل وارد می‌شود، پیشرفتش در حساب خودش ذخیره و بین دستگاه‌ها همگام می‌شود، و در **جدول رقابت** (کلی و هفتگی) با بقیه مقایسه می‌شود.
 
 - فرانت‌اند: React 19 + Vite + Tailwind (اپ استاتیک، روی Vercel)
@@ -73,6 +73,23 @@ npm run dev                  # http://localhost:3000
 ```
 
 بررسی تایپ‌ها: `npm run lint` · ساخت نسخه نهایی: `npm run build`
+
+**حالت دمو (بدون Supabase):** با `VITE_DEMO_MODE=1 npm run dev` (یا گذاشتن `VITE_DEMO_MODE=1` در `.env.development.local`) اپ بدون ورود و بدون اتصال به دیتابیس با داده‌ی نمونه اجرا می‌شود و همه‌چیز فقط در localStorage همان مرورگر می‌ماند. این حالت فقط در `npm run dev` کار می‌کند و در بیلد production وجود ندارد؛ برای توسعه‌ی رابط کاربری کنار دیتابیس واقعی کاربران امن است.
+
+### زبان‌ها و ترجمه
+
+- متن‌های رابط کاربری در [src/i18n/fa.ts](src/i18n/fa.ts) و [src/i18n/en.ts](src/i18n/en.ts) هستند. فایل فارسی شکل دیکشنری را تعیین می‌کند و TypeScript اجازه نمی‌دهد کلیدی در انگلیسی جا بیفتد.
+- متن آلمانی همیشه با کامپوننت `<De>` (چپ‌به‌راست و `lang="de"`) و متن کاربر با `<Auto>` (`dir="auto"`) نمایش داده می‌شود؛ از کلاس‌های منطقی Tailwind (`ms-`، `pe-`، `text-start`، `start-`) به‌جای `ml-`/`right-` استفاده کنید.
+- زبان انتخابی در `profiles.settings.language` ذخیره می‌شود (بدون تغییر schema).
+- ستون‌های `Englisch`، `Beispiel_en`، `Formen_en` و `Österreich_en` در CSV نسخه‌ی انگلیسی معنی، ترجمه‌ی مثال و یادداشت‌ها هستند.
+
+### آزمون Perfekt و الگوی جمع
+
+- ستون `Perfekt` پاسخ‌های قابل قبول هر فعل را دارد (چند پاسخ با ` | ` جدا می‌شوند، مثل `ist gerudert | hat gerudert`). در مرور، کاربر Perfekt را تایپ می‌کند و فقط با پاسخ درست کارت به خانه‌ی بعد می‌رود. منطق بررسی در [src/services/perfekt.ts](src/services/perfekt.ts) است.
+- این ستون و تقسیم کارت‌های چندفعلی با [scripts/build-verb-data.py](scripts/build-verb-data.py) ساخته می‌شوند (داده‌ها در `scripts/data/`؛ اجرای دوباره بی‌خطر است). در تقسیم، کارت موجود شناسه‌اش را نگه می‌دارد تا پیشرفت کاربران از بین نرود.
+- الگوی جمع («der Name, -n») در [src/services/plural.ts](src/services/plural.ts) از روی ستون `Plural` محاسبه می‌شود.
+- **صرف فعل:** پاپ‌آپ Präsens / Präteritum / Perfekt با حروف بی‌قاعده‌ی قرمز. موتور صرف در [src/services/conjugation.ts](src/services/conjugation.ts) است و ستون‌های `Infinitiv`، `Präsens`، `Präteritum` و `Reflexiv` با [scripts/build-conjugation-data.py](scripts/build-conjugation-data.py) ساخته می‌شوند (موارد خاص در `scripts/data/conjugation-overrides.json`). تست داده بررسی می‌کند که جدول هر ۷۴۸ فعل با داده‌ها بخواند.
+- تست‌ها: `npm test` (بدون وابستگی اضافه، با test runner خود Node).
 
 ---
 
