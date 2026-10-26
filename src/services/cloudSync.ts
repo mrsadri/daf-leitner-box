@@ -2,6 +2,7 @@ import type { User } from '@supabase/supabase-js';
 import { requireSupabase } from '../lib/supabase';
 import { AppSettings, LeitnerCard, ReviewEvent, UserProfile } from '../types/leitner';
 import { leitnerEngine, LEGACY_CARDS_KEY, LEGACY_SETTINGS_KEY } from './leitnerEngine';
+import { isDemoMode, buildDemoCards } from '../lib/demo';
 
 /**
  * Cloud persistence for the signed-in user (Supabase is the source of truth).
@@ -264,6 +265,7 @@ class CloudSync {
    * migrate pre-login local progress and seed brand-new accounts.
    */
   public async start(user: User): Promise<{ profile: UserProfile; offline: boolean }> {
+    if (isDemoMode) return this.startDemo(user);
     const db = requireSupabase();
     this.userId = user.id;
     const meta = user.user_metadata || {};
@@ -368,6 +370,19 @@ class CloudSync {
     return { profile, offline };
   }
 
+  /** Demo mode: everything stays in this browser's localStorage; no hooks, so nothing is ever queued for the server. */
+  private async startDemo(user: User): Promise<{ profile: UserProfile; offline: boolean }> {
+    const catalog = await leitnerEngine.loadCatalog();
+    const cached = leitnerEngine.readCache(user.id);
+    leitnerEngine.hydrate(user.id, cached?.cards.length ? cached.cards : buildDemoCards(catalog), cached?.settings || null);
+    leitnerEngine.setHooks(null);
+    const profile: UserProfile = {
+      id: user.id, displayName: 'Demo', avatarUrl: null, email: user.email || null,
+      showOnLeaderboard: true, onboarded: true, isAdmin: true, suspended: false
+    };
+    return { profile, offline: false };
+  }
+
   /** Progress saved before Google sign-in existed lives under un-namespaced keys; move it into the first account that signs in on this browser. */
   private migrateLegacyLocalData() {
     try {
@@ -435,6 +450,7 @@ export interface LeaderboardRow {
 }
 
 export async function fetchLeaderboard(period: 'all' | 'week', limit = 100): Promise<LeaderboardRow[]> {
+  if (isDemoMode) return DEMO_LEADERBOARD;
   const { data, error } = await requireSupabase().rpc('get_leaderboard', { p_period: period, p_limit: limit });
   if (error) throw error;
   return (data || []).map((r: Record<string, unknown>) => ({
@@ -451,6 +467,7 @@ export async function fetchLeaderboard(period: 'all' | 'week', limit = 100): Pro
 
 /** Record that the user is using the app. Resolves to true if the account has been suspended. */
 export async function touchPresence(): Promise<boolean> {
+  if (isDemoMode) return false;
   const { data, error } = await requireSupabase().rpc('touch_presence');
   if (error) throw error;
   return data === true;
@@ -469,6 +486,7 @@ export interface AdminUserRow {
 }
 
 export async function adminListUsers(): Promise<AdminUserRow[]> {
+  if (isDemoMode) return DEMO_ADMIN_USERS;
   const { data, error } = await requireSupabase().rpc('admin_list_users');
   if (error) throw error;
   return (data || []).map((r: Record<string, unknown>) => ({
@@ -487,3 +505,14 @@ export async function adminDeleteUser(userId: string) {
   const { error } = await requireSupabase().rpc('admin_delete_user', { p_user: userId });
   if (error) throw error;
 }
+
+const DEMO_LEADERBOARD: LeaderboardRow[] = [
+  { user_id: 'u1', display_name: 'Sara', avatar_url: null, score: 1840, score_7d: 210, mastered: 120, learning: 380, reviews_7d: 260, streak: 21, rank: 1, is_me: false },
+  { user_id: 'demo-user', display_name: 'Demo', avatar_url: null, score: 960, score_7d: 85, mastered: 40, learning: 150, reviews_7d: 90, streak: 6, rank: 2, is_me: true },
+  { user_id: 'u3', display_name: 'Alexander Müller-Lüdenscheidt', avatar_url: null, score: 410, score_7d: -12, mastered: 9, learning: 60, reviews_7d: 14, streak: 0, rank: 3, is_me: false }
+];
+
+const DEMO_ADMIN_USERS: AdminUserRow[] = [
+  { user_id: 'demo-user', email: 'demo@example.com', display_name: 'Demo', avatar_url: null, first_seen: '2026-10-01T09:00:00Z', last_seen: new Date().toISOString(), suspended_at: null, cards: 150, reviews: 900 },
+  { user_id: 'u3', email: 'a.very.long.email.address@example.com', display_name: 'Alexander Müller-Lüdenscheidt', avatar_url: null, first_seen: '2026-10-10T09:00:00Z', last_seen: '2026-10-20T18:30:00Z', suspended_at: '2026-10-21T08:00:00Z', cards: 60, reviews: 14 }
+];

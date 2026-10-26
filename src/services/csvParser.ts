@@ -107,7 +107,11 @@ export function transformCsvToCards(records: Record<string, string>[]): LeitnerC
       lektion,
       niveau: r['Niveau'] || 'A1',
       nr,
-      feld: r['Feld'] || ''
+      feld: r['Feld'] || '',
+      englisch: r['Englisch'] || '',
+      beispielEn: r['Beispiel_en'] || '',
+      formenEn: r['Formen_en'] || '',
+      oesterreichEn: r['Österreich_en'] || ''
     };
   });
 }

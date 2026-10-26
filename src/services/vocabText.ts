@@ -1,0 +1,46 @@
+import type { LeitnerCard } from '../types/leitner';
+import type { Lang } from '../i18n/format';
+import { leitnerEngine } from './leitnerEngine';
+import { splitExample, hasPersian } from '../components/ui/Text';
+
+export interface VocabText {
+  /** Meaning in the interface language (falls back to Persian when no English is available) */
+  meaning: string;
+  /** German example sentence(s) */
+  exampleDe: string;
+  /** Translation of the example in the interface language ('' when there is none) */
+  exampleTranslation: string;
+  /** Grammar notes; may mix German and the interface language */
+  formen: string;
+  /** Austrian usage note */
+  oesterreich: string;
+}
+
+/**
+ * The learner-facing texts of a vocab card for the given interface language.
+ * Book words read the current CSV entry, so fixes to translations reach existing cards too.
+ */
+export function vocabText(card: LeitnerCard, lang: Lang): VocabText {
+  const src = leitnerEngine.getCatalogWord(card.id) ?? card;
+  const { german, translation } = splitExample(src.beispiel || card.beispiel);
+  if (lang === 'fa') {
+    return {
+      meaning: src.persisch || card.persisch || src.englisch || card.englisch || '',
+      exampleDe: german,
+      exampleTranslation: translation,
+      formen: src.formen || card.formen || '',
+      oesterreich: src.oesterreich || card.oesterreich || ''
+    };
+  }
+  const formen = src.formen || card.formen || '';
+  const oesterreich = src.oesterreich || card.oesterreich || '';
+  return {
+    meaning: src.englisch || card.englisch || src.persisch || card.persisch || '',
+    exampleDe: german,
+    exampleTranslation: src.beispielEn || card.beispielEn || '',
+    formen: src.formenEn || card.formenEn || formen,
+    // Without an English version, hide a Persian note but keep a German-only one
+    oesterreich: src.oesterreichEn || card.oesterreichEn || (hasPersian(oesterreich) ? '' : oesterreich)
+  };
+}
+

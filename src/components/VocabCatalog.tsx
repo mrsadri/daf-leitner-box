@@ -2,7 +2,13 @@ import React, { useState, useMemo } from 'react';
 import { LeitnerCard } from '../types/leitner';
 import { speechService } from '../services/speechService';
 import { soundService } from '../services/soundService';
-import { Search, Filter, Volume2, Plus, Check, BookOpen, Layers, CheckSquare } from 'lucide-react';
+import { getQuizArticle, stripArticleFromWord } from '../services/leitnerEngine';
+import { vocabText } from '../services/vocabText';
+import { Search, Volume2, Plus, Check } from 'lucide-react';
+import { useI18n } from '../i18n/I18nProvider';
+import { De, Auto } from './ui/Text';
+
+const PAGE_LIMIT = 100;
 
 interface VocabCatalogProps {
   catalogWords: LeitnerCard[];
@@ -17,6 +23,7 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
   onAddWordToLeitner,
   onBatchAddWords
 }) => {
+  const { t, lang } = useI18n();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLektion, setSelectedLektion] = useState<string>('all');
   const [selectedNiveau, setSelectedNiveau] = useState<string>('all');
@@ -61,6 +68,7 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
       const matchesSearch = !q || 
         word.wort?.toLowerCase().includes(q) || 
         word.persisch?.toLowerCase().includes(q) ||
+        word.englisch?.toLowerCase().includes(q) ||
         word.beispiel?.toLowerCase().includes(q);
 
       const matchesLektion = selectedLektion === 'all' || word.lektion === selectedLektion;
@@ -116,20 +124,18 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
     }
   };
 
+
+  const field = 'w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none';
+
   return (
     <div className="space-y-6 pb-12">
-      
-      {/* Header & Policy */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-xs">
+
+      {/* Header & filters */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
-              مخزن واژگان DaF kompakt (A1 تا B1)
-            </h1>
-            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
-              دیتابیس کامل شامل بیش از ۳۴۰۰ لغت کتاب (۳۰ درس) همراه با آرتیکل، معانی دقیق فارسی، اشکال گرامری، کاربرد در اتریش و جملات نمونه.
-              طبق قاعده اختصاصی شما، هیچ محدودیت روزانه‌ای برای افزودن واژگان به خانه اول وجود ندارد.
-            </p>
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">{t.catalog.title}</h1>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">{t.catalog.subtitle}</p>
           </div>
 
           {selectedLektion !== 'all' && (
@@ -138,213 +144,180 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
               className="flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-xs shrink-0 transition-colors"
             >
               <Plus className="w-4 h-4" />
-              <span>افزودن کل درس {selectedLektion} به خانه اول</span>
+              <span>{t.catalog.addLesson(selectedLektion)}</span>
             </button>
           )}
         </div>
 
-        {/* Filter Controls Bar */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
-          
-          {/* Search Box */}
           <div className="relative sm:col-span-2">
-            <Search className="w-4 h-4 absolute right-3 top-3 text-slate-400" />
+            <Search className="w-4 h-4 absolute start-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             <input
-              type="text"
-              placeholder="جستجوی واژه آلمانی یا معنی فارسی..."
+              type="search"
+              dir="auto"
+              placeholder={t.catalog.searchPlaceholder}
+              aria-label={t.common.search}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pr-9 pl-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              className={`${field} ps-9`}
             />
           </div>
 
-          {/* Lektion Filter */}
-          <div>
-            <select
-              value={selectedLektion}
-              onChange={(e) => setSelectedLektion(e.target.value)}
-              className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-            >
-              <option value="all">تمام درس‌ها (Lektionen)</option>
-              {lektionen.map(l => (
-                <option key={l} value={l}>درس {l}</option>
-              ))}
-            </select>
-          </div>
+          <select value={selectedLektion} onChange={(e) => setSelectedLektion(e.target.value)} className={field}>
+            <option value="all">{t.catalog.allLessons}</option>
+            {lektionen.map(l => (
+              <option key={l} value={l}>{t.common.lesson(l)}</option>
+            ))}
+          </select>
 
-          {/* Niveau Filter */}
-          <div>
-            <select
-              value={selectedNiveau}
-              onChange={(e) => setSelectedNiveau(e.target.value)}
-              className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-            >
-              <option value="all">تمام سطوح (A1 تا B1)</option>
-              <option value="A1">سطح A1</option>
-              <option value="A2">سطح A2</option>
-              <option value="B1">سطح B1</option>
-            </select>
-          </div>
+          <select value={selectedNiveau} onChange={(e) => setSelectedNiveau(e.target.value)} className={field}>
+            <option value="all">{t.catalog.allLevels}</option>
+            {['A1', 'A2', 'B1'].map(lv => (
+              <option key={lv} value={lv}>{t.common.level(lv)}</option>
+            ))}
+          </select>
 
-          {/* Status Filter */}
-          <div>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as any)}
-              className="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-            >
-              <option value="all">همه وضعیت‌ها</option>
-              <option value="not_in_box">هنوز در لایتنر نیست</option>
-              <option value="in_box">در لایتنر موجود است</option>
-            </select>
-          </div>
-
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)} className={field}>
+            <option value="all">{t.catalog.allStatuses}</option>
+            <option value="not_in_box">{t.catalog.notInBox}</option>
+            <option value="in_box">{t.catalog.inBox}</option>
+          </select>
         </div>
 
-        {/* Batch selection toolbar if items selected */}
         {selectedIds.size > 0 && (
-          <div className="mt-4 p-3 bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 rounded-xl flex items-center justify-between gap-4">
-            <span className="text-xs font-semibold text-indigo-900 dark:text-indigo-200">
-              {selectedIds.size} واژه برای ورود انتخاب شده است.
-            </span>
+          <div className="mt-4 p-3 bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 rounded-xl flex flex-wrap items-center justify-between gap-3">
+            <span className="text-xs font-semibold text-indigo-900 dark:text-indigo-200">{t.catalog.selectedCount(selectedIds.size)}</span>
             <div className="flex gap-2">
               <button
                 onClick={() => setSelectedIds(new Set())}
                 className="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               >
-                لغو انتخاب
+                {t.catalog.clearSelection}
               </button>
               <button
                 onClick={handleAddSelectedToLeitner}
                 className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow-xs"
               >
-                افزودن به خانه اول ({selectedIds.size})
+                {t.catalog.addSelected(selectedIds.size)}
               </button>
             </div>
           </div>
         )}
       </div>
 
-      {/* Results Header */}
-      <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 px-1">
-        <span>نمایش {filteredWords.length} واژه از مجموع {catalogWords.length} واژه</span>
-        <button
-          onClick={handleSelectAllFiltered}
-          className="hover:text-indigo-600 dark:hover:text-indigo-400 font-medium"
-        >
-          {selectedIds.size > 0 ? 'لغو انتخاب همه' : 'انتخاب تمام لغات ناموجود این صفحه'}
+      {/* Results header */}
+      <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600 dark:text-slate-400 px-1">
+        <span>{t.catalog.showing(filteredWords.length, catalogWords.length)}</span>
+        <button onClick={handleSelectAllFiltered} className="hover:text-indigo-600 dark:hover:text-indigo-400 font-medium">
+          {selectedIds.size > 0 ? t.catalog.clearAll : t.catalog.selectAll}
         </button>
       </div>
 
-      {/* Words List Grid */}
+      {filteredWords.length === 0 && (
+        <div className="py-12 text-center text-sm text-slate-500 dark:text-slate-400">{t.catalog.empty}</div>
+      )}
+
+      {/* Words */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-        {filteredWords.slice(0, 100).map((word) => {
+        {filteredWords.slice(0, PAGE_LIMIT).map((word) => {
           const active = activeCardMap.get(word.id) || (word.wort ? activeCardMap.get(word.wort.toLowerCase().trim()) : null);
           const isSelected = selectedIds.has(word.id);
+          const article = getQuizArticle(word);
+          const text = vocabText(word, lang);
 
           return (
             <div
               key={word.id}
               className={`p-4 bg-white dark:bg-slate-900 border rounded-2xl flex flex-col justify-between gap-3 shadow-2xs transition-all ${
-                isSelected 
-                  ? 'border-indigo-500 ring-1 ring-indigo-500' 
+                isSelected
+                  ? 'border-indigo-500 ring-1 ring-indigo-500'
                   : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
               }`}
             >
-              <div>
-                {/* Meta header */}
-                <div className="flex items-center justify-between text-[11px] text-slate-600 dark:text-slate-400 mb-2">
-                  <div className="flex items-center gap-2">
+              <div className="min-w-0">
+                {/* Meta */}
+                <div className="flex items-center justify-between gap-2 text-[11px] text-slate-600 dark:text-slate-400 mb-2">
+                  <label className="dot-list flex flex-wrap items-center gap-x-2 gap-y-0.5 min-w-0">
                     {!active && (
                       <input
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => handleToggleSelect(word.id)}
+                        aria-label={t.catalog.select}
                         className="rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer"
                       />
                     )}
-                    <span>درس {word.lektion}</span>
-                    <span aria-hidden="true">·</span>
-                    <span>سطح {word.niveau}</span>
+                    <span className="whitespace-nowrap">{t.common.lesson(word.lektion || '')}</span>
+                    <span className="whitespace-nowrap">{t.common.level(word.niveau || '')}</span>
                     {word.wortart && (
                       <>
-                        <span aria-hidden="true">·</span>
-                        <span>{word.wortart}</span>
+                        <De>{word.wortart}</De>
                       </>
                     )}
-                  </div>
+                  </label>
 
-                  {active ? (
-                    <span className="text-[11px] font-medium text-emerald-700 dark:text-emerald-400">
-                      {active.box >= 6 ? 'تثبیت‌شده' : `در خانه ${active.box}`}
-                    </span>
-                  ) : (
-                    <span className="text-[11px] text-slate-600 dark:text-slate-400">آماده ورود</span>
-                  )}
+                  <span className={`shrink-0 text-[11px] ${active ? 'font-medium text-emerald-700 dark:text-emerald-400' : ''}`}>
+                    {active ? (active.box >= 6 ? t.catalog.mastered : t.catalog.inBoxN(t.boxes.name(active.box))) : t.catalog.ready}
+                  </span>
                 </div>
 
-                {/* Main Word Line */}
-                <div className="flex items-baseline justify-between gap-3">
-                  <div className="flex items-baseline gap-2 dir-ltr text-left">
-                    {word.artikel && word.artikel !== '–' && (
-                      <span className={`text-xs font-de font-bold ${
-                        word.artikel === 'der' ? 'text-blue-600 dark:text-blue-400' :
-                        word.artikel === 'die' ? 'text-red-600 dark:text-red-400' :
+                {/* Word */}
+                <div className="flex items-start justify-between gap-3">
+                  <De as="div" className="flex flex-wrap items-baseline gap-x-2 min-w-0 break-words hyphens-auto">
+                    {article && (
+                      <span className={`text-xs font-bold ${
+                        article === 'der' ? 'text-blue-600 dark:text-blue-400' :
+                        article === 'die' ? 'text-red-600 dark:text-red-400' :
                         'text-emerald-600 dark:text-emerald-400'
                       }`}>
-                        {word.artikel}
+                        {article}
                       </span>
                     )}
-                    <span className="text-base font-bold text-slate-900 dark:text-white font-de">
-                      {word.wort}
+                    <span className="text-base font-bold text-slate-900 dark:text-white">
+                      {article ? stripArticleFromWord(word.wort) : word.wort}
                     </span>
-                  </div>
+                  </De>
 
                   <button
                     type="button"
                     onClick={() => speechService.speak(word.wort || '')}
                     className="p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-indigo-600 transition-colors shrink-0"
-                    title="تلفظ"
+                    title={t.catalog.pronounce}
+                    aria-label={t.catalog.pronounce}
                   >
                     <Volume2 className="w-4 h-4" />
                   </button>
                 </div>
 
-                {/* Persian Translation */}
-                <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mt-1">
-                  {word.persisch}
-                </p>
+                <Auto as="p" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mt-1 text-start">{text.meaning}</Auto>
 
-                {/* Grammatical hints & Example */}
-                {(word.plural || word.formen || word.oesterreich) && (
+                {(word.plural || text.formen || text.oesterreich) && (
                   <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/60 text-[11px] space-y-1 text-slate-500 dark:text-slate-400">
                     {word.plural && (
-                      <div className="dir-ltr text-left">
+                      <De as="div">
                         <span className="text-slate-400">Plural: </span>
-                        <span className="font-de font-medium text-slate-700 dark:text-slate-300">{word.plural}</span>
-                      </div>
+                        <span className="font-medium text-slate-700 dark:text-slate-300">{word.plural}</span>
+                      </De>
                     )}
-                    {word.formen && (
-                      <div className="dir-ltr text-left">
-                        <span className="text-slate-400">Formen: </span>
-                        <span className="font-de font-medium text-slate-700 dark:text-slate-300">{word.formen}</span>
-                      </div>
+                    {text.formen && (
+                      <Auto as="div" className="text-start">
+                        <span className="text-slate-400 font-de" dir="ltr">Formen:</span>{' '}
+                        <span className="font-medium text-slate-700 dark:text-slate-300">{text.formen}</span>
+                      </Auto>
                     )}
-                    {word.oesterreich && (
-                      <div>
-                        <span className="text-amber-600 dark:text-amber-400">🇦🇹 {word.oesterreich}</span>
-                      </div>
+                    {text.oesterreich && (
+                      <Auto as="div" className="text-start text-amber-600 dark:text-amber-400">🇦🇹 {text.oesterreich}</Auto>
                     )}
                   </div>
                 )}
               </div>
 
-              {/* Action Button */}
+              {/* Action */}
               <div className="pt-2 border-t border-slate-100 dark:border-slate-800/60 flex justify-end">
                 {active ? (
                   <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-medium py-1 px-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40">
                     <Check className="w-3.5 h-3.5" />
-                    <span>در چرخه لایتنر فعال است</span>
+                    <span>{t.catalog.active}</span>
                   </div>
                 ) : (
                   <button
@@ -353,10 +326,10 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
                       soundService.playSuccess();
                       onAddWordToLeitner(word);
                     }}
-                    className="flex items-center gap-1.5 py-1 px-3 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 rounded-lg text-xs font-semibold transition-colors"
+                    className="flex items-center gap-1.5 py-1.5 px-3 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 rounded-lg text-xs font-semibold transition-colors"
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    <span>افزودن به خانه اول</span>
+                    <span>{t.catalog.add}</span>
                   </button>
                 )}
               </div>
@@ -365,10 +338,8 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
         })}
       </div>
 
-      {filteredWords.length > 100 && (
-        <div className="text-center py-4 text-xs text-slate-600 dark:text-slate-400">
-          برای دسترسی سریع‌تر به سایر واژگان از فیلتر درس (Lektion) یا کادر جستجو استفاده فرمایید.
-        </div>
+      {filteredWords.length > PAGE_LIMIT && (
+        <div className="text-center py-4 text-xs text-slate-600 dark:text-slate-400">{t.catalog.moreHint(PAGE_LIMIT)}</div>
       )}
 
     </div>

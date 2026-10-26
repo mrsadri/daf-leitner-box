@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { LeitnerCard, AppSettings, UserProfile } from './types/leitner';
 import { leitnerEngine, getTodayString, isCardDue } from './services/leitnerEngine';
 import { cloudSync, SyncStatus, touchPresence } from './services/cloudSync';
 import { soundService } from './services/soundService';
 import { supabase, isSupabaseConfigured } from './lib/supabase';
+import { isDemoMode, DEMO_USER } from './lib/demo';
 import { Navbar, ActiveTab } from './components/Navbar';
 import { LeitnerDashboard } from './components/LeitnerDashboard';
 import { ReviewSession } from './components/ReviewSession';
@@ -17,6 +18,8 @@ import { Leaderboard } from './components/Leaderboard';
 import { LoginScreen, SetupRequired, SuspendedScreen } from './components/LoginScreen';
 import { AdminPanel } from './components/AdminPanel';
 import { Loader2, WifiOff } from 'lucide-react';
+import { useI18n } from './i18n/I18nProvider';
+import { DEFAULT_LANG } from './i18n/format';
 
 const PRESENCE_INTERVAL_MS = 5 * 60 * 1000;
 
@@ -28,11 +31,13 @@ const FullScreenLoader: React.FC<{ text: string }> = ({ text }) => (
 );
 
 export default function App() {
+  if (isDemoMode) return <LeitnerApp user={DEMO_USER} />;
   if (!isSupabaseConfigured) return <SetupRequired />;
   return <AuthGate />;
 }
 
 function AuthGate() {
+  const { t } = useI18n();
   // undefined = still checking the stored session
   const [session, setSession] = useState<Session | null | undefined>(undefined);
 
@@ -49,13 +54,14 @@ function AuthGate() {
     }
   }, [session]);
 
-  if (session === undefined) return <FullScreenLoader text="در حال بررسی ورود…" />;
+  if (session === undefined) return <FullScreenLoader text={t.app.checkingSignIn} />;
   if (!session) return <LoginScreen />;
   // Keyed by user id so switching accounts starts from a clean state
   return <LeitnerApp key={session.user.id} user={session.user} />;
 }
 
 function LeitnerApp({ user }: { user: User }) {
+  const { t, lang, setLang } = useI18n();
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
   const [cards, setCards] = useState<LeitnerCard[]>([]);
   const [catalog, setCatalog] = useState<LeitnerCard[]>([]);
@@ -161,13 +167,29 @@ function LeitnerApp({ user }: { user: User }) {
     refreshState();
   };
 
+  // Apply the language saved in the account once it's loaded, then save the user's later choices to it.
+  // Accounts that never picked a language store nothing, so existing settings rows stay untouched.
+  const languageApplied = useRef(false);
+  useEffect(() => {
+    if (!profile || profile.suspended) return;
+    if (!languageApplied.current) {
+      languageApplied.current = true;
+      if (settings.language && settings.language !== lang) {
+        setLang(settings.language);
+        return;
+      }
+    }
+    if (lang !== (settings.language ?? DEFAULT_LANG)) handleUpdateSettings({ language: lang });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile, lang]);
+
   const handleSignOut = async () => {
     await cloudSync.stop();
-    await supabase!.auth.signOut();
+    await supabase?.auth.signOut();
   };
 
   if (!profile) {
-    return <FullScreenLoader text="در حال آماده‌سازی دیتابیس DaF kompakt و جعبه‌های لایتنر شما..." />;
+    return <FullScreenLoader text={t.app.preparing} />;
   }
 
   if (profile.suspended) {
@@ -197,7 +219,7 @@ function LeitnerApp({ user }: { user: User }) {
         <div className="bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs">
           <div className="max-w-7xl mx-auto px-4 py-2 flex items-center gap-2">
             <WifiOff className="w-4 h-4 shrink-0" />
-            <span>اتصال به سرور برقرار نشد؛ آخرین نسخه ذخیره‌شده روی همین دستگاه نمایش داده می‌شود و تغییرات پس از اتصال ذخیره می‌شوند.</span>
+            <span>{t.app.offlineBanner}</span>
           </div>
         </div>
       )}
@@ -290,19 +312,16 @@ function LeitnerApp({ user }: { user: User }) {
         onAddCard={handleAddCard}
       />
 
-      <footer className="border-t border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 py-6 text-center text-xs text-slate-600 dark:text-slate-400">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-slate-800 dark:text-slate-200">جعبه لایتنر هوشمند DaF & Mind</span>
-            <span aria-hidden="true">·</span>
-            <span>بر پایه کتاب واژگان DaF kompakt A1–B1</span>
+      <footer className="border-t border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 py-6 text-xs text-slate-600 dark:text-slate-400">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center md:justify-between gap-3 text-center md:text-start">
+          <div className="dot-list flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+            <span className="font-bold text-slate-800 dark:text-slate-200">{t.app.footerName}</span>
+            <span>{t.app.footerBook}</span>
           </div>
-          <div className="flex items-center gap-4 text-slate-600 dark:text-slate-400">
-            <span>فرمول فواصل مرور: ۲ⁿ روز</span>
-            <span aria-hidden="true">·</span>
-            <span>قانون افت ۱ پله</span>
-            <span aria-hidden="true">·</span>
-            <span>ذخیره ابری با حساب گوگل</span>
+          <div className="dot-list flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+            <span>{t.app.footerFormula}</span>
+            <span>{t.app.footerDrop}</span>
+            <span>{t.app.footerCloud}</span>
           </div>
         </div>
       </footer>

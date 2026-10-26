@@ -2,29 +2,25 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ShieldCheck, RefreshCw, AlertTriangle, Search, PauseCircle, PlayCircle, Trash2, Loader2, X } from 'lucide-react';
 import { adminListUsers, adminSetSuspended, adminDeleteUser, AdminUserRow } from '../services/cloudSync';
 import { UserProfile } from '../types/leitner';
+import { useI18n } from '../i18n/I18nProvider';
+import { Auto, Ltr } from './ui/Text';
 
 interface AdminPanelProps {
   profile: UserProfile;
 }
 
-const faNum = (n: number) => n.toLocaleString('fa-IR');
-
-const formatDate = (iso: string | null) =>
-  iso ? new Date(iso).toLocaleString('fa-IR', { dateStyle: 'medium', timeStyle: 'short' }) : '—';
-
-const rtf = new Intl.RelativeTimeFormat('fa', { numeric: 'auto' });
-const relative = (iso: string | null) => {
-  if (!iso) return '';
+/** Pick the coarsest sensible unit for "x minutes/hours/days ago" */
+function relativeParts(iso: string): [number, Intl.RelativeTimeFormatUnit] {
   const minutes = Math.round((new Date(iso).getTime() - Date.now()) / 60000);
-  if (Math.abs(minutes) < 60) return rtf.format(minutes, 'minute');
+  if (Math.abs(minutes) < 60) return [minutes, 'minute'];
   const hours = Math.round(minutes / 60);
-  if (Math.abs(hours) < 24) return rtf.format(hours, 'hour');
+  if (Math.abs(hours) < 24) return [hours, 'hour'];
   const days = Math.round(hours / 24);
-  if (Math.abs(days) < 30) return rtf.format(days, 'day');
+  if (Math.abs(days) < 30) return [days, 'day'];
   const months = Math.round(days / 30);
-  if (Math.abs(months) < 12) return rtf.format(months, 'month');
-  return rtf.format(Math.round(days / 365), 'year');
-};
+  if (Math.abs(months) < 12) return [months, 'month'];
+  return [Math.round(days / 365), 'year'];
+}
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -44,6 +40,7 @@ const DeleteDialog: React.FC<{
   onCancel: () => void;
   onConfirm: () => void;
 }> = ({ row, busy, onCancel, onConfirm }) => {
+  const { t } = useI18n();
   const [typed, setTyped] = useState('');
   const expected = row.email || row.display_name;
   return (
@@ -51,19 +48,18 @@ const DeleteDialog: React.FC<{
       <div className="max-w-md w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-4">
         <div className="flex items-start justify-between gap-3">
           <h2 className="text-base font-bold text-red-700 dark:text-red-400 flex items-center gap-2">
-            <Trash2 className="w-5 h-5" />
-            حذف همیشگی حساب
+            <Trash2 className="w-5 h-5 shrink-0" />
+            {t.admin.deleteTitle}
           </h2>
-          <button onClick={onCancel} disabled={busy} aria-label="بستن" className="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200">
+          <button onClick={onCancel} disabled={busy} aria-label={t.common.close} className="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200">
             <X className="w-5 h-5" />
           </button>
         </div>
         <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
-          حساب <strong>{row.display_name}</strong> همراه با همه کارت‌ها و سابقه مرورش برای همیشه پاک می‌شود و قابل برگشت نیست.
-          اگر این شخص دوباره با گوگل وارد شود، از صفر شروع می‌کند. برای جلوگیری از ورود، به‌جای حذف از «تعلیق موقت» استفاده کنید.
+          {t.admin.deleteBody(row.display_name)}
         </p>
         <label className="block space-y-1.5">
-          <span className="text-xs text-slate-600 dark:text-slate-400">برای تأیید، این را تایپ کنید: <span className="font-mono dir-ltr inline-block">{expected}</span></span>
+          <span className="text-xs text-slate-600 dark:text-slate-400">{t.admin.typeToConfirm} <Ltr className="font-mono inline-block">{expected}</Ltr></span>
           <input
             value={typed}
             onChange={e => setTyped(e.target.value)}
@@ -74,7 +70,7 @@ const DeleteDialog: React.FC<{
         </label>
         <div className="flex gap-2 justify-end">
           <button onClick={onCancel} disabled={busy} className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200">
-            انصراف
+            {t.common.cancel}
           </button>
           <button
             onClick={onConfirm}
@@ -82,7 +78,7 @@ const DeleteDialog: React.FC<{
             className="px-4 py-2 rounded-xl text-xs font-semibold bg-red-600 hover:bg-red-700 text-white disabled:opacity-40 flex items-center gap-2"
           >
             {busy && <Loader2 className="w-4 h-4 animate-spin" />}
-            حذف همیشگی
+            {t.admin.deleteForever}
           </button>
         </div>
       </div>
@@ -91,6 +87,9 @@ const DeleteDialog: React.FC<{
 };
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({ profile }) => {
+  const { t, num, date, relative } = useI18n();
+  const formatDate = (iso: string | null) => (iso ? date(iso, { dateStyle: 'medium', timeStyle: 'short' }) : '—');
+  const ago = (iso: string | null) => (iso ? relative(...relativeParts(iso)) : '');
   const [rows, setRows] = useState<AdminUserRow[]>([]);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [query, setQuery] = useState('');
@@ -130,7 +129,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ profile }) => {
 
   const toggleSuspend = async (row: AdminUserRow) => {
     const suspend = !row.suspended_at;
-    if (suspend && !window.confirm(`حساب «${row.display_name}» موقتاً تعلیق شود؟ اطلاعاتش حفظ می‌شود و هر وقت بخواهید می‌توانید آن را برگردانید.`)) return;
+    if (suspend && !window.confirm(t.admin.confirmSuspend(row.display_name))) return;
     setBusyId(row.user_id);
     setActionError(null);
     try {
@@ -164,16 +163,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ profile }) => {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-12">
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-xs space-y-4">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <ShieldCheck className="w-6 h-6 text-indigo-600" />
-              <span>مدیریت کاربران</span>
+              <ShieldCheck className="w-6 h-6 text-indigo-600 shrink-0" />
+              <span>{t.admin.title}</span>
             </h1>
             <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed max-w-xl">
-              همه کسانی که تا حالا وارد اپ شده‌اند. «اولین حضور» زمان اولین ورود و «آخرین حضور» آخرین باری است که اپ را باز کرده‌اند.
-              تعلیق موقت، ورود را می‌بندد ولی اطلاعات را نگه می‌دارد؛ حذف همیشگی همه‌چیز را پاک می‌کند.
+              {t.admin.explainer}
             </p>
           </div>
           <button
@@ -182,30 +180,31 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ profile }) => {
             className="flex items-center justify-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold transition-colors shrink-0 disabled:opacity-50"
           >
             <RefreshCw className={`w-4 h-4 ${status === 'loading' ? 'animate-spin' : ''}`} />
-            <span>به‌روزرسانی</span>
+            <span>{t.admin.refresh}</span>
           </button>
         </div>
 
         <div className="grid grid-cols-3 gap-3 text-center">
           {[
-            { label: 'کل کاربران', value: stats.total, cls: 'text-slate-900 dark:text-white' },
-            { label: 'فعال در ۷ روز اخیر', value: stats.active7d, cls: 'text-emerald-600 dark:text-emerald-400' },
-            { label: 'تعلیق‌شده', value: stats.suspended, cls: 'text-amber-600 dark:text-amber-400' }
+            { label: t.admin.total, value: stats.total, cls: 'text-slate-900 dark:text-white' },
+            { label: t.admin.active7d, value: stats.active7d, cls: 'text-emerald-600 dark:text-emerald-400' },
+            { label: t.admin.suspended, value: stats.suspended, cls: 'text-amber-600 dark:text-amber-400' }
           ].map(s => (
             <div key={s.label} className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3">
               <span className="text-[11px] text-slate-600 dark:text-slate-400 block">{s.label}</span>
-              <span className={`text-xl font-bold font-mono-num ${s.cls}`}>{faNum(s.value)}</span>
+              <span className={`text-xl font-bold font-mono-num ${s.cls}`}>{num(s.value)}</span>
             </div>
           ))}
         </div>
 
         <label className="relative block">
-          <Search className="w-4 h-4 text-slate-400 absolute right-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-slate-400 absolute start-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             value={query}
             onChange={e => setQuery(e.target.value)}
-            placeholder="جستجو با نام یا ایمیل"
-            className="w-full pr-9 pl-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            dir="auto"
+            placeholder={t.admin.search}
+            className="w-full ps-9 pe-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </label>
       </div>
@@ -213,14 +212,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ profile }) => {
       {status === 'error' && (
         <div className="p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-xl text-xs text-red-700 dark:text-red-300 flex items-center gap-2">
           <AlertTriangle className="w-4 h-4 shrink-0" />
-          <span>دریافت فهرست کاربران ممکن نشد. اگر تازه این بخش اضافه شده، فایل supabase/schema.sql را دوباره در SQL Editor اجرا کنید.</span>
+          <span>{t.admin.loadError}</span>
         </div>
       )}
 
       {actionError && (
         <div className="p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-xl text-xs text-red-700 dark:text-red-300 flex items-center gap-2">
           <AlertTriangle className="w-4 h-4 shrink-0" />
-          <span>عملیات انجام نشد: {actionError}</span>
+          <span>{t.admin.actionError(actionError)}</span>
         </div>
       )}
 
@@ -229,22 +228,22 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ profile }) => {
           <table className="w-full text-sm">
             <thead>
               <tr className="text-xs text-slate-600 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800">
-                <th scope="col" className="py-3 px-4 text-right font-semibold">کاربر</th>
-                <th scope="col" className="py-3 px-4 text-right font-semibold whitespace-nowrap">اولین حضور</th>
-                <th scope="col" className="py-3 px-4 text-right font-semibold whitespace-nowrap">آخرین حضور</th>
-                <th scope="col" className="py-3 px-4 text-left font-semibold whitespace-nowrap hidden md:table-cell">کارت / مرور</th>
-                <th scope="col" className="py-3 px-4 text-left font-semibold">اقدام</th>
+                <th scope="col" className="py-3 px-4 text-start font-semibold">{t.admin.colUser}</th>
+                <th scope="col" className="py-3 px-4 text-start font-semibold whitespace-nowrap">{t.admin.colFirstSeen}</th>
+                <th scope="col" className="py-3 px-4 text-start font-semibold whitespace-nowrap">{t.admin.colLastSeen}</th>
+                <th scope="col" className="py-3 px-4 text-end font-semibold whitespace-nowrap hidden md:table-cell">{t.admin.colCards}</th>
+                <th scope="col" className="py-3 px-4 text-end font-semibold">{t.admin.colAction}</th>
               </tr>
             </thead>
             <tbody>
               {status === 'loading' && rows.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="py-12 text-center text-xs text-slate-600 dark:text-slate-400">در حال دریافت…</td>
+                  <td colSpan={5} className="py-12 text-center text-xs text-slate-600 dark:text-slate-400">{t.admin.loading}</td>
                 </tr>
               )}
               {status === 'ready' && filtered.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="py-12 text-center text-xs text-slate-600 dark:text-slate-400">کاربری پیدا نشد.</td>
+                  <td colSpan={5} className="py-12 text-center text-xs text-slate-600 dark:text-slate-400">{t.admin.empty}</td>
                 </tr>
               )}
               {filtered.map(r => {
@@ -259,36 +258,36 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ profile }) => {
                       <div className="flex items-center gap-3 min-w-0">
                         <Avatar row={r} />
                         <div className="min-w-0">
-                          <span className="font-semibold text-slate-900 dark:text-white block truncate max-w-[14rem]">
-                            {r.display_name}
-                            {isMe && <span className="text-xs text-indigo-600 dark:text-indigo-400 font-medium mr-1.5">(شما)</span>}
+                          <span className="font-semibold text-slate-900 dark:text-white flex items-center gap-1.5 min-w-0 max-w-[14rem]">
+                            <Auto className="truncate">{r.display_name}</Auto>
+                            {isMe && <span className="text-xs text-indigo-600 dark:text-indigo-400 font-medium shrink-0">{t.admin.you}</span>}
                             {r.suspended_at && (
-                              <span className="text-[10px] font-semibold mr-1.5 px-1.5 py-0.5 rounded bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-200">
-                                تعلیق
+                              <span className="text-[10px] font-semibold shrink-0 px-1.5 py-0.5 rounded bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-200">
+                                {t.admin.suspendedBadge}
                               </span>
                             )}
                           </span>
-                          <span className="text-[11px] text-slate-500 dark:text-slate-400 block truncate max-w-[14rem] dir-ltr text-right">{r.email}</span>
+                          <Ltr className="text-[11px] text-slate-500 dark:text-slate-400 block truncate max-w-[14rem] text-start">{r.email}</Ltr>
                         </div>
                       </div>
                     </td>
                     <td className="py-3 px-4 text-xs text-slate-700 dark:text-slate-300 whitespace-nowrap">{formatDate(r.first_seen)}</td>
                     <td className="py-3 px-4 text-xs whitespace-nowrap">
                       <span className="text-slate-700 dark:text-slate-300 block">{formatDate(r.last_seen)}</span>
-                      <span className="text-[11px] text-slate-500 dark:text-slate-400">{relative(r.last_seen)}</span>
+                      <span className="text-[11px] text-slate-500 dark:text-slate-400">{ago(r.last_seen)}</span>
                     </td>
-                    <td className="py-3 px-4 text-left font-mono-num text-xs text-slate-700 dark:text-slate-300 whitespace-nowrap hidden md:table-cell">
-                      {faNum(r.cards)} / {faNum(r.reviews)}
+                    <td className="py-3 px-4 text-end font-mono-num text-xs text-slate-700 dark:text-slate-300 whitespace-nowrap hidden md:table-cell">
+                      {num(r.cards)} / {num(r.reviews)}
                     </td>
                     <td className="py-3 px-4">
                       {isMe ? (
-                        <span className="text-[11px] text-slate-400 block text-left">—</span>
+                        <span className="text-[11px] text-slate-400 block text-end">—</span>
                       ) : (
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => toggleSuspend(r)}
                             disabled={busy}
-                            title={r.suspended_at ? 'برگرداندن حساب' : 'تعلیق موقت'}
+                            title={r.suspended_at ? t.admin.restoreTitle : t.admin.suspend}
                             className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold whitespace-nowrap disabled:opacity-50 ${
                               r.suspended_at
                                 ? 'bg-emerald-100 hover:bg-emerald-200 text-emerald-800 dark:bg-emerald-950 dark:hover:bg-emerald-900 dark:text-emerald-300'
@@ -296,16 +295,16 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ profile }) => {
                             }`}
                           >
                             {busy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : r.suspended_at ? <PlayCircle className="w-3.5 h-3.5" /> : <PauseCircle className="w-3.5 h-3.5" />}
-                            <span className="hidden sm:inline">{r.suspended_at ? 'برگرداندن' : 'تعلیق موقت'}</span>
+                            <span className="hidden sm:inline">{r.suspended_at ? t.admin.restore : t.admin.suspend}</span>
                           </button>
                           <button
                             onClick={() => setToDelete(r)}
                             disabled={busy}
-                            title="حذف همیشگی"
+                            title={t.admin.deleteForever}
                             className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold whitespace-nowrap bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-950 dark:hover:bg-red-900 dark:text-red-300 disabled:opacity-50"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
-                            <span className="hidden sm:inline">حذف همیشگی</span>
+                            <span className="hidden sm:inline">{t.admin.deleteForever}</span>
                           </button>
                         </div>
                       )}

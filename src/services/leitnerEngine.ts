@@ -135,6 +135,7 @@ export interface EngineHooks {
 class LeitnerEngine {
   private cards: LeitnerCard[] = [];
   private catalog: LeitnerCard[] = [];
+  private catalogById = new Map<string, LeitnerCard>();
   private catalogPromise: Promise<LeitnerCard[]> | null = null;
   private settings: AppSettings = DEFAULT_SETTINGS;
   private userId: string | null = null;
@@ -220,6 +221,7 @@ class LeitnerEngine {
             (parseInt(a.nr || '0', 10) - parseInt(b.nr || '0', 10))
           );
           this.catalog = words;
+          this.catalogById = new Map(words.map(w => [w.id, w]));
           return words;
         })
         .catch(err => {
@@ -246,6 +248,11 @@ class LeitnerEngine {
 
   public getCatalog(): LeitnerCard[] {
     return this.catalog;
+  }
+
+  /** The current CSV entry for a book word (cards keep a copy of the fields from when they were added). */
+  public getCatalogWord(id: string): LeitnerCard | undefined {
+    return this.catalogById.get(id);
   }
 
   public getDueCards(todayStr: string = getTodayString()): LeitnerCard[] {
