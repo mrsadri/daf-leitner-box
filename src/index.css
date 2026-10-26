@@ -25,11 +25,21 @@
   }
 }
 
-/* Inline metadata separated by middle dots ("Lesson 01 · Level A1 · Nomen"). The dot belongs to the
-   following item, so a wrapped line never ends with a dangling separator. */
+/* Inline metadata separated by middle dots ("Lesson 01 · Level A1 · Nomen"). Each dot sits in the gap
+   before its item; the container clips at its edges, so a wrapped line neither ends nor starts with a dot. */
+.dot-list {
+  overflow: hidden;
+  column-gap: 0.75rem;
+}
+.dot-list > span {
+  position: relative;
+}
 .dot-list > span + span::before {
   content: '·';
-  margin-inline-end: 0.5rem;
+  position: absolute;
+  inset-inline-start: -0.75rem;
+  width: 0.75rem;
+  text-align: center;
   opacity: 0.6;
 }
 
