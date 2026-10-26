@@ -8,6 +8,7 @@ import { useI18n } from '../i18n/I18nProvider';
 import { Switch } from './ui/Switch';
 import { LanguageSwitch } from './ui/LanguageSwitch';
 import { Auto, Ltr } from './ui/Text';
+import { Credit } from './ui/Credit';
 
 interface SettingsBackupModalProps {
   settings: AppSettings;
@@ -329,6 +330,8 @@ export const SettingsBackupModal: React.FC<SettingsBackupModalProps> = ({
           </div>
         )}
       </div>
+
+      <Credit className="pt-2 px-4" />
 
     </div>
   );

@@ -20,13 +20,15 @@ import { AdminPanel } from './components/AdminPanel';
 import { Loader2, WifiOff } from 'lucide-react';
 import { useI18n } from './i18n/I18nProvider';
 import { DEFAULT_LANG } from './i18n/format';
+import { Credit } from './components/ui/Credit';
 
 const PRESENCE_INTERVAL_MS = 5 * 60 * 1000;
 
 const FullScreenLoader: React.FC<{ text: string }> = ({ text }) => (
-  <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center gap-4 text-slate-600 dark:text-slate-400">
+  <div className="relative min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center gap-4 text-slate-600 dark:text-slate-400">
     <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
-    <span className="text-sm font-medium">{text}</span>
+    <span className="text-sm font-medium px-4 text-center">{text}</span>
+    <Credit className="absolute bottom-6 inset-x-0 px-6 max-w-md mx-auto" />
   </div>
 );
 
