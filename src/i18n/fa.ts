@@ -94,6 +94,15 @@ export const fa = {
     settings: 'پشتیبان و تنظیمات',
     admin: 'کاربران',
     newCard: 'ثبت کارت جدید',
+    desktop: {
+      dashboard: 'داشبورد',
+      review: 'مرور امروز',
+      catalog: 'واژگان',
+      reflections: 'بینش‌ها',
+      leaderboard: 'رقابت',
+      settings: 'تنظیمات',
+      admin: 'کاربران'
+    },
     short: {
       dashboard: 'خانه‌ها',
       review: 'مرور',
@@ -335,6 +344,12 @@ export const fa = {
     nounsDefault: 'حالت ویژه اسامی به‌صورت پیش‌فرض',
     nounsDefaultBody: 'در جلسه‌های مرور فقط اسامی و آرتیکل‌ها بیایند و کارت‌های دیگر در خانه فعلی خود بمانند',
     speechRate: 'سرعت تلفظ',
+    voice: 'صدای آلمانی',
+    voiceBody: 'صدایی که واژه‌ها با آن خوانده می‌شوند. هر دستگاه صداهای خودش را دارد؛ این انتخاب فقط برای همین دستگاه ذخیره می‌شود.',
+    voiceAuto: 'خودکار (بهترین صدای آلمانی)',
+    voiceTest: 'شنیدن نمونه',
+    voiceNone: 'روی این دستگاه صدای آلمانی پیدا نشد، برای همین تلفظ ممکن است با لهجه‌ی انگلیسی پخش شود. یک صدای آلمانی نصب کنید: در ویندوز از Settings › Time & language › Speech و در macOS از System Settings › Accessibility › Spoken Content. بعد صفحه را دوباره باز کنید.',
+    voiceUnsupported: 'این مرورگر از پخش صدا پشتیبانی نمی‌کند.',
     rateSlow: 'آهسته',
     rateNormal: 'عادی',
     rateFast: 'سریع',

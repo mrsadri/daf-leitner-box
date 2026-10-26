@@ -15,13 +15,24 @@
     font-family: 'Vazirmatn', system-ui, sans-serif;
   }
 
+  /* Form controls and placeholders follow the page font */
+  input, select, textarea, button {
+    font-family: inherit;
+  }
+
   .font-de {
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   }
 
   .font-mono-num {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'JetBrains Mono', 'Vazirmatn', ui-monospace, monospace;
     font-variant-numeric: tabular-nums;
+  }
+
+  /* Persian digits (۱۲۳) aren't in JetBrains Mono: in the Persian interface numbers use Vazirmatn too */
+  html:lang(fa) .font-mono-num,
+  html:lang(fa) kbd {
+    font-family: 'Vazirmatn', 'JetBrains Mono', ui-monospace, monospace;
   }
 }
 

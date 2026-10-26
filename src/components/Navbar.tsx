@@ -3,7 +3,6 @@ import { Layers, PlayCircle, BookOpen, Sparkles, Settings2, Plus, Trophy, Shield
 import { UserProfile } from '../types/leitner';
 import type { SyncStatus } from '../services/cloudSync';
 import { useI18n } from '../i18n/I18nProvider';
-import { LanguageSwitch } from './ui/LanguageSwitch';
 
 export type ActiveTab = 'dashboard' | 'review' | 'catalog' | 'reflections' | 'leaderboard' | 'settings' | 'admin';
 
@@ -47,12 +46,12 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header className="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3 lg:gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3 xl:gap-6">
 
         {/* Brand */}
         <button
           onClick={() => onTabChange('dashboard')}
-          className="flex items-center gap-2 min-w-0 text-start group focus:outline-none"
+          className="flex items-center gap-2 min-w-0 xl:shrink-0 text-start group focus:outline-none"
         >
           <div className="w-9 h-9 shrink-0 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-sm group-hover:bg-indigo-700 transition-colors">
             L
@@ -62,14 +61,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="sm:hidden">{t.app.shortName}</span>
               <span className="hidden sm:inline">{t.app.name}</span>
             </span>
-            <span className="text-[11px] text-slate-600 dark:text-slate-400 whitespace-nowrap hidden sm:block">
+            <span className="text-[11px] text-slate-600 dark:text-slate-400 whitespace-nowrap hidden sm:block xl:hidden 2xl:block">
               {t.app.tagline}
             </span>
           </div>
         </button>
 
         {/* Desktop navigation */}
-        <nav className="hidden lg:flex items-center gap-5 xl:gap-6 text-sm font-medium text-slate-600 dark:text-slate-300">
+        <nav className="hidden xl:flex flex-1 justify-center items-center gap-5 2xl:gap-7 text-sm font-medium text-slate-600 dark:text-slate-300">
           {tabs.map(({ id, icon: Icon }) => (
             <button
               key={id}
@@ -82,7 +81,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               }`}
             >
               <Icon className="w-4 h-4" />
-              <span>{t.nav[id]}</span>
+              <span>{t.nav.desktop[id]}</span>
               {id === 'review' && dueTodayCount > 0 && (
                 <span className="px-1.5 text-[11px] font-mono-num font-bold rounded-md bg-amber-500 text-white">
                   {num(dueTodayCount)}
@@ -94,7 +93,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Actions */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          <LanguageSwitch compact />
           <button
             onClick={onOpenNewCardModal}
             aria-label={t.nav.newCard}
@@ -124,7 +122,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* Mobile navigation */}
       <nav
-        className="lg:hidden grid border-t border-slate-200 dark:border-slate-800 bg-slate-50/95 dark:bg-slate-900/95 px-1 py-1.5 text-[11px] sm:text-xs"
+        className="xl:hidden grid border-t border-slate-200 dark:border-slate-800 bg-slate-50/95 dark:bg-slate-900/95 px-1 py-1.5 text-[11px] sm:text-xs"
         style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
       >
         {tabs.map(({ id, icon: Icon }) => (
