@@ -83,6 +83,13 @@ npm run dev                  # http://localhost:3000
 - زبان انتخابی در `profiles.settings.language` ذخیره می‌شود (بدون تغییر schema).
 - ستون‌های `Englisch`، `Beispiel_en`، `Formen_en` و `Österreich_en` در CSV نسخه‌ی انگلیسی معنی، ترجمه‌ی مثال و یادداشت‌ها هستند.
 
+### آزمون Perfekt و الگوی جمع
+
+- ستون `Perfekt` پاسخ‌های قابل قبول هر فعل را دارد (چند پاسخ با ` | ` جدا می‌شوند، مثل `ist gerudert | hat gerudert`). در مرور، کاربر Perfekt را تایپ می‌کند و فقط با پاسخ درست کارت به خانه‌ی بعد می‌رود. منطق بررسی در [src/services/perfekt.ts](src/services/perfekt.ts) است.
+- این ستون و تقسیم کارت‌های چندفعلی با [scripts/build-verb-data.py](scripts/build-verb-data.py) ساخته می‌شوند (داده‌ها در `scripts/data/`؛ اجرای دوباره بی‌خطر است). در تقسیم، کارت موجود شناسه‌اش را نگه می‌دارد تا پیشرفت کاربران از بین نرود.
+- الگوی جمع («der Name, -n») در [src/services/plural.ts](src/services/plural.ts) از روی ستون `Plural` محاسبه می‌شود.
+- تست‌ها: `npm test` (بدون وابستگی اضافه، با test runner خود Node).
+
 ---
 
 ## ساختار داده

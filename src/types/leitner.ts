@@ -35,6 +35,8 @@ export interface LeitnerCard {
   beispielEn?: string;
   formenEn?: string;
   oesterreichEn?: string;
+  // Accepted Perfekt answers for verbs, separated by " | " ("ist gerudert | hat gerudert")
+  perfekt?: string;
 
   // Reflection / Decision fields
   title?: string;

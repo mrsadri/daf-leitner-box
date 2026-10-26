@@ -3,7 +3,10 @@ import { LeitnerCard } from '../types/leitner';
 import { leitnerEngine, stripArticleFromWord, getQuizArticle, calculateNextReviewDate } from '../services/leitnerEngine';
 import { soundService } from '../services/soundService';
 import { speechService } from '../services/speechService';
-import { vocabText } from '../services/vocabText';
+import { vocabText, perfektAnswers, pluralParts } from '../services/vocabText';
+import { maskParticiples, PerfektResult } from '../services/perfekt';
+import { PerfektQuiz } from './PerfektQuiz';
+import { PluralInfo } from './PluralInfo';
 import { Volume2, RotateCw, ArrowLeft, BookOpen, PlusCircle, CheckCircle2, Sparkles, SkipForward } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
 import { De, Auto } from './ui/Text';
@@ -26,6 +29,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
 
   const [hadWordsAtStart, setHadWordsAtStart] = useState<boolean>(false);
+  const [perfektResult, setPerfektResult] = useState<PerfektResult | null>(null);
 
   useEffect(() => {
     const list = leitnerEngine.getUnlearnedWords();
@@ -56,6 +60,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
     }
     setIsFlipped(false);
     setSelectedArticleGuess(null);
+    setPerfektResult(null);
   }, [currentIndex, currentWord?.id]);
 
   const handleFlip = () => {
@@ -160,6 +165,10 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
   }
 
   const text = vocabText(currentWord, lang);
+  const plural = isNoun ? pluralParts(currentWord) : [];
+  const perfektAccepted = perfektAnswers(currentWord);
+  // Until the practice answer is in, don't give the Perfekt away on the back of the card
+  const hide = (s: string) => (perfektAccepted.length && !perfektResult ? maskParticiples(s, perfektAccepted) : s);
 
   return (
     <div className="max-w-3xl mx-auto space-y-5 sm:space-y-6 pb-12">
@@ -334,24 +343,24 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                {currentWord.plural && (
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+                {plural.length > 0 && (
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 sm:col-span-2">
                     <span className="text-slate-500 dark:text-slate-400 block mb-1">{t.review.plural}</span>
-                    <De as="div" className="font-bold text-slate-900 dark:text-white">{currentWord.plural}</De>
+                    <PluralInfo parts={plural} />
                   </div>
                 )}
 
                 {text.formen && (
                   <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 sm:col-span-2">
                     <span className="text-slate-500 dark:text-slate-400 block mb-1">{t.review.formen}</span>
-                    <Auto as="div" className="text-slate-800 dark:text-slate-200 leading-relaxed text-start">{text.formen}</Auto>
+                    <Auto as="div" className="text-slate-800 dark:text-slate-200 leading-relaxed text-start">{hide(text.formen)}</Auto>
                   </div>
                 )}
 
                 {text.oesterreich && (
                   <div className="p-3 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-800/40 sm:col-span-2">
                     <span className="font-semibold text-amber-800 dark:text-amber-300 block mb-1">🇦🇹 {t.review.austria}</span>
-                    <Auto as="div" className="text-amber-900 dark:text-amber-200 leading-relaxed text-start">{text.oesterreich}</Auto>
+                    <Auto as="div" className="text-amber-900 dark:text-amber-200 leading-relaxed text-start">{hide(text.oesterreich)}</Auto>
                   </div>
                 )}
               </div>
@@ -374,7 +383,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
                       <Volume2 className="w-4 h-4" />
                     </button>
                   </div>
-                  <De as="p" className="text-sm text-slate-900 dark:text-white leading-relaxed">{text.exampleDe}</De>
+                  <De as="p" className="text-sm text-slate-900 dark:text-white leading-relaxed">{hide(text.exampleDe)}</De>
                   {text.exampleTranslation && (
                     <Auto as="p" className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed text-start">{text.exampleTranslation}</Auto>
                   )}
@@ -389,6 +398,22 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
             <span>{t.newWords.kbdAdd} <kbd className={kbd}>Enter</kbd></span>
           </div>
         </div>
+
+        {perfektAccepted.length > 0 && (
+          <div className="mt-4">
+            <PerfektQuiz
+              key={currentWord.id}
+              accepted={perfektAccepted}
+              practice
+              onGraded={r => {
+                setPerfektResult(r);
+                if (r.correct) soundService.playSuccess();
+                else soundService.playWrong();
+                if (leitnerEngine.getSettings().autoSpeak) speechService.speak(r.expected, leitnerEngine.getSettings().speechRate);
+              }}
+            />
+          </div>
+        )}
 
         {/* Actions */}
         <div className="mt-4 flex flex-col-reverse sm:flex-row gap-3">

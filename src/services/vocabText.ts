@@ -2,6 +2,8 @@ import type { LeitnerCard } from '../types/leitner';
 import type { Lang } from '../i18n/format';
 import { leitnerEngine } from './leitnerEngine';
 import { splitExample, hasPersian } from '../components/ui/Text';
+import { parseAccepted, perfektFromFormen } from './perfekt';
+import { describePlural, PluralPart } from './plural';
 
 export interface VocabText {
   /** Meaning in the interface language (falls back to Persian when no English is available) */
@@ -44,3 +46,24 @@ export function vocabText(card: LeitnerCard, lang: Lang): VocabText {
   };
 }
 
+
+/**
+ * Accepted Perfekt answers for a verb card, or [] when the card gets no Perfekt quiz
+ * (not a verb, a book verb without Perfekt data, or a custom card whose Formen can't be read).
+ */
+export function perfektAnswers(card: LeitnerCard): string[] {
+  if (card.type !== 'vocab') return [];
+  const src = leitnerEngine.getCatalogWord(card.id) ?? card;
+  if (src.wortart !== 'Verb') return [];
+  // Only well-formed answers ("hat …" / "ist …"); a custom card with just a participle gets no quiz
+  if (src.perfekt) return parseAccepted(src.perfekt).filter(a => /^(hat|ist)\s+\S/i.test(a));
+  // Book verbs without a Perfekt (e.g. "geboren sein") deliberately have no quiz
+  if (leitnerEngine.getCatalogWord(card.id)) return [];
+  return perfektFromFormen(card.formen);
+}
+
+/** Plural form(s), pattern and labels of a noun card. */
+export function pluralParts(card: LeitnerCard): PluralPart[] {
+  const src = leitnerEngine.getCatalogWord(card.id) ?? card;
+  return describePlural(src.wort || card.wort, src.plural || card.plural);
+}

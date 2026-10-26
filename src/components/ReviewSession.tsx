@@ -1,9 +1,12 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { LeitnerCard, BOX_CONFIGS, MASTERED_BOX } from '../types/leitner';
 import { leitnerEngine, isNounCard, stripArticleFromWord, getQuizArticle } from '../services/leitnerEngine';
 import { soundService } from '../services/soundService';
 import { speechService } from '../services/speechService';
-import { vocabText } from '../services/vocabText';
+import { vocabText, perfektAnswers, pluralParts } from '../services/vocabText';
+import { maskParticiples, PerfektResult } from '../services/perfekt';
+import { PerfektQuiz } from './PerfektQuiz';
+import { PluralInfo } from './PluralInfo';
 import { Volume2, RotateCw, Check, X, Sparkles, ArrowLeft, Trophy, BookOpen, Quote, Edit3 } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
 import { De, Auto } from './ui/Text';
@@ -59,6 +62,9 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
   });
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
   const [editingContent, setEditingContent] = useState<string | null>(null);
+  const [perfektResult, setPerfektResult] = useState<PerfektResult | null>(null);
+  const knewRef = useRef<HTMLButtonElement>(null);
+  const forgotRef = useRef<HTMLButtonElement>(null);
 
   const handleToggleNounsOnly = (checked: boolean) => {
     setNounsOnly(checked);
@@ -73,6 +79,10 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
   const isComplete = !currentCard && answeredCount > 0;
   const quizArticle = currentCard ? getQuizArticle(currentCard) : null;
   const articleGuessWrong = !!selectedArticleGuess && !!quizArticle && selectedArticleGuess !== quizArticle;
+  // Verbs: the typed Perfekt decides; "Knew it" stays locked until it was answered correctly
+  const perfektAccepted = useMemo(() => (currentCard ? perfektAnswers(currentCard) : []), [currentCard]);
+  const hasPerfektQuiz = perfektAccepted.length > 0;
+  const perfektLocked = hasPerfektQuiz && !perfektResult?.correct;
 
   const handleSpeak = useCallback(async (text: string) => {
     if (!text || isSpeaking) return;
@@ -86,6 +96,7 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
     setIsFlipped(false);
     setSelectedArticleGuess(null);
     setEditingContent(null);
+    setPerfektResult(null);
     if (currentCard && currentCard.type === 'vocab' && currentCard.wort && leitnerEngine.getSettings().autoSpeak) {
       const speakWord = isNounCard(currentCard) ? stripArticleFromWord(currentCard.wort) : currentCard.wort;
       handleSpeak(speakWord);
@@ -109,8 +120,8 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
 
   const handleVocabAnswer = (isCorrect: boolean) => {
     if (!currentCard) return;
-    // A wrong article guess means the card wasn't really known
-    if (isCorrect && articleGuessWrong) return;
+    // A wrong article guess or a missing / wrong Perfekt means the card wasn't really known
+    if (isCorrect && (articleGuessWrong || perfektLocked)) return;
 
     if (isCorrect) {
       soundService.playSuccess();
@@ -156,6 +167,15 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
     leitnerEngine.updateCard(currentCard.id, { content: editingContent });
     setEditingContent(null);
     onCardUpdated();
+  };
+
+  const handlePerfektGraded = (result: PerfektResult) => {
+    setPerfektResult(result);
+    if (result.correct) soundService.playSuccess();
+    else soundService.playWrong();
+    if (leitnerEngine.getSettings().autoSpeak) speechService.speak(result.expected, leitnerEngine.getSettings().speechRate);
+    // Enter now records the result
+    requestAnimationFrame(() => (result.correct ? knewRef : forgotRef).current?.focus());
   };
 
   const handleArticleSelect = (art: 'der' | 'die' | 'das') => {
@@ -305,6 +325,9 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
   const isNoun = currentCard.type === 'vocab' && isNounCard(currentCard);
   const frontWord = isNoun ? stripArticleFromWord(currentCard.wort) : currentCard.wort;
   const text = currentCard.type === 'vocab' ? vocabText(currentCard, lang) : null;
+  const plural = isNoun ? pluralParts(currentCard) : [];
+  // Until the Perfekt is answered, don't give it away on the back of the card
+  const hide = (s: string) => (hasPerfektQuiz && !perfektResult ? maskParticiples(s, perfektAccepted) : s);
 
   return (
     <div className="max-w-3xl mx-auto space-y-5 sm:space-y-6 pb-12">
@@ -509,7 +532,7 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
                         </div>
                       )}
                     </div>
-                  ) : (
+                  ) : hasPerfektQuiz ? null : (
                     <div className="text-xs text-slate-600 dark:text-slate-400">{t.review.flipHint}</div>
                   )}
                 </>
@@ -552,24 +575,24 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                    {currentCard.plural && (
-                      <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+                    {plural.length > 0 && (
+                      <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 sm:col-span-2">
                         <span className="text-slate-600 dark:text-slate-400 block mb-1">{t.review.plural}</span>
-                        <De as="div" className="font-bold text-slate-900 dark:text-white">{currentCard.plural}</De>
+                        <PluralInfo parts={plural} />
                       </div>
                     )}
 
                     {text.formen && (
                       <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 sm:col-span-2">
                         <span className="text-slate-600 dark:text-slate-400 block mb-1">{t.review.formen}</span>
-                        <Auto as="div" className="font-medium text-slate-800 dark:text-slate-200 leading-relaxed text-start">{text.formen}</Auto>
+                        <Auto as="div" className="font-medium text-slate-800 dark:text-slate-200 leading-relaxed text-start">{hide(text.formen)}</Auto>
                       </div>
                     )}
 
                     {text.oesterreich && (
                       <div className="p-3 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-800/40 sm:col-span-2">
                         <span className="font-semibold text-amber-800 dark:text-amber-300 block mb-1">🇦🇹 {t.review.austria}</span>
-                        <Auto as="div" className="text-amber-900 dark:text-amber-200 leading-relaxed text-start">{text.oesterreich}</Auto>
+                        <Auto as="div" className="text-amber-900 dark:text-amber-200 leading-relaxed text-start">{hide(text.oesterreich)}</Auto>
                       </div>
                     )}
                   </div>
@@ -592,7 +615,7 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
                           <Volume2 className="w-4 h-4" />
                         </button>
                       </div>
-                      <De as="p" className="text-sm text-slate-900 dark:text-white leading-relaxed">{text.exampleDe}</De>
+                      <De as="p" className="text-sm text-slate-900 dark:text-white leading-relaxed">{hide(text.exampleDe)}</De>
                       {text.exampleTranslation && (
                         <Auto as="p" className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed text-start">{text.exampleTranslation}</Auto>
                       )}
@@ -652,14 +675,22 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
           </div>
         </div>
 
+        {/* Perfekt quiz (verbs), kept outside the card so it stays visible when the card is flipped */}
+        {hasPerfektQuiz && (
+          <div className="mt-4">
+            <PerfektQuiz key={currentCard.id} accepted={perfektAccepted} onGraded={handlePerfektGraded} />
+          </div>
+        )}
+
         {/* Answer buttons */}
         <div className="mt-4">
           {currentCard.type === 'vocab' ? (
             <div className="grid grid-cols-2 gap-3">
               <button
+                ref={forgotRef}
                 type="button"
                 onClick={() => handleVocabAnswer(false)}
-                className="flex items-center justify-center gap-2 py-3.5 px-3 bg-red-50 hover:bg-red-100 dark:bg-red-950/40 dark:hover:bg-red-950/60 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900/50 rounded-2xl font-bold text-sm shadow-xs active:scale-98 transition-all"
+                className="flex items-center justify-center gap-2 py-3.5 px-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 bg-red-50 hover:bg-red-100 dark:bg-red-950/40 dark:hover:bg-red-950/60 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900/50 rounded-2xl font-bold text-sm shadow-xs active:scale-98 transition-all"
               >
                 <X className="w-5 h-5 text-red-600 shrink-0" />
                 <span className="flex flex-col items-start leading-tight">
@@ -670,11 +701,12 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
               </button>
 
               <button
+                ref={knewRef}
                 type="button"
                 onClick={() => handleVocabAnswer(true)}
-                disabled={articleGuessWrong}
-                title={articleGuessWrong ? t.review.wrongArticleTitle : undefined}
-                className="flex items-center justify-center gap-2 py-3.5 px-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-2xl font-bold text-sm shadow-sm active:scale-98 transition-all"
+                disabled={articleGuessWrong || perfektLocked}
+                title={articleGuessWrong ? t.review.wrongArticleTitle : perfektLocked ? t.perfekt.locked : undefined}
+                className="flex items-center justify-center gap-2 py-3.5 px-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-2xl font-bold text-sm shadow-sm active:scale-98 transition-all"
               >
                 <Check className="w-5 h-5 shrink-0" />
                 <span className="flex flex-col items-start leading-tight">

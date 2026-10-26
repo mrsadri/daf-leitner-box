@@ -15,6 +15,7 @@ Thanks for helping! Contributions in **English or Persian (فارسی)** are wel
 3. Before opening a PR:
    ```bash
    npm run lint    # TypeScript check
+   npm test        # unit + data tests
    npm run build
    ```
 
@@ -26,7 +27,7 @@ Thanks for helping! Contributions in **English or Persian (فارسی)** are wel
 - For UI work without a database, run `VITE_DEMO_MODE=1 npm run dev` (dev-only demo mode with sample data).
 - Changes to the Leitner rules (box intervals, demotion on wrong answers, scoring) change how people learn — please open an issue to discuss first.
 - Database changes go in [supabase/schema.sql](supabase/schema.sql) and must stay **idempotent** (safe to run again) and keep RLS on every table.
-- Vocabulary fixes (typos, translations) in `public/data/wortschatz-daf-kompakt.csv` are very welcome; the `Englisch`, `Beispiel_en`, `Formen_en` and `Österreich_en` columns hold the English versions. Keep the column order and don't change `Lektion`/`Nr` of existing words, because card IDs depend on them.
+- Vocabulary fixes (typos, translations) in `public/data/wortschatz-daf-kompakt.csv` are very welcome; the `Englisch`, `Beispiel_en`, `Formen_en` and `Österreich_en` columns hold the English versions. Each verb card has exactly one verb and a `Perfekt` column (accepted answers separated by ` | `); `npm test` checks this. Keep the column order and don't change `Lektion`/`Nr` of existing words, because card IDs depend on them.
 
 ## Reporting bugs / ideas
 

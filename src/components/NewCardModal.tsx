@@ -33,6 +33,7 @@ export const NewCardModal: React.FC<NewCardModalProps> = ({
   const [formen, setFormen] = useState('');
   const [beispiel, setBeispiel] = useState('');
   const [wortart, setWortart] = useState('Nomen');
+  const [perfekt, setPerfekt] = useState('');
 
   // Reflection fields
   const [title, setTitle] = useState('');
@@ -54,6 +55,7 @@ export const NewCardModal: React.FC<NewCardModalProps> = ({
         wort: wort.trim(),
         persisch,
         ...(englisch ? { englisch } : {}),
+        ...(wortart === 'Verb' && perfekt.trim() ? { perfekt: perfekt.trim() } : {}),
         artikel,
         plural: plural.trim(),
         formen: formen.trim(),
@@ -207,6 +209,27 @@ export const NewCardModal: React.FC<NewCardModalProps> = ({
                   </select>
                 </div>
               </div>
+
+              {wortart === 'Verb' && (
+                <div className="space-y-1">
+                  <label htmlFor="nc-perfekt" className={label}>{t.newCard.perfekt}</label>
+                  <input
+                    id="nc-perfekt"
+                    type="text"
+                    dir="ltr"
+                    lang="de"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="none"
+                    spellCheck={false}
+                    placeholder="hat gelernt"
+                    value={perfekt}
+                    onChange={(e) => setPerfekt(e.target.value)}
+                    className={`${input} font-de`}
+                  />
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">{t.newCard.perfektHint}</p>
+                </div>
+              )}
 
               <div className="space-y-1">
                 <label htmlFor="nc-formen" className={label}>{t.newCard.formen}</label>

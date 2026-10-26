@@ -271,6 +271,8 @@ export const fa = {
     meaningPrimaryPlaceholder: 'مثال: قرار ملاقات، یاد گرفتن…',
     meaningSecondary: 'معنی انگلیسی (اختیاری)',
     meaningSecondaryPlaceholder: 'e.g. appointment, to learn…',
+    perfekt: 'Perfekt (اختیاری؛ برای آزمون تایپی)',
+    perfektHint: 'مثل «hat gelernt». چند شکل درست رو با | جدا کن.',
     plural: 'جمع (Plural)',
     wortart: 'نوع واژه (Wortart)',
     wortarten: { Nomen: 'اسم', Verb: 'فعل', Adjektiv: 'صفت', Adverb: 'قید', 'Präposition': 'حرف اضافه', Ausdruck: 'اصطلاح' },
@@ -377,6 +379,32 @@ export const fa = {
     deleteTitle: 'حذف همیشگی حساب',
     deleteBody: (name: string) => `حساب «${name}» همراه با همه کارت‌ها و سابقه مرورش برای همیشه پاک می‌شود و قابل برگشت نیست. اگر این شخص دوباره با گوگل وارد شود، از صفر شروع می‌کند. برای جلوگیری از ورود، به‌جای حذف از «تعلیق موقت» استفاده کنید.`,
     typeToConfirm: 'برای تأیید، این را تایپ کنید:'
+  },
+
+  perfekt: {
+    label: 'Perfekt این فعل رو بنویس',
+    hint: 'با haben یا sein، مثل «ist gekommen»',
+    placeholder: 'z. B. hat gemacht',
+    check: 'بررسی',
+    practice: 'تمرین؛ اثری روی خانه‌ی کارت نداره',
+    correct: 'درسته!',
+    almost: 'درسته؛ فقط به املاش دقت کن:',
+    wrongAux: 'فعل کمکی اشتباهه. شکل درست:',
+    wrong: 'درست نیست. شکل درست:',
+    missingAux: 'فعل کمکی (haben یا sein) رو هم بنویس و دوباره بررسی کن.',
+    missingSich: 'یادت باشه: این فعل با sich میاد.',
+    alsoCorrect: 'این هم درسته:',
+    locked: 'اول Perfekt رو بنویس و بررسی کن',
+    insert: (c: string) => `درج ${c}`
+  },
+
+  plural: {
+    singularOnly: 'فقط مفرد',
+    singularOnlyHere: 'در این معنی فقط مفرد',
+    pluralOnly: 'فقط جمع',
+    mostlySingular: 'معمولاً مفرد',
+    pluralRare: 'جمع کم‌کاربرد',
+    patternTitle: (p: string) => `الگوی جمع: ${p}`
   },
 
   dashboard: {

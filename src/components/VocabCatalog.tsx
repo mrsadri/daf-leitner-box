@@ -3,7 +3,8 @@ import { LeitnerCard } from '../types/leitner';
 import { speechService } from '../services/speechService';
 import { soundService } from '../services/soundService';
 import { getQuizArticle, stripArticleFromWord } from '../services/leitnerEngine';
-import { vocabText } from '../services/vocabText';
+import { vocabText, pluralParts } from '../services/vocabText';
+import { PluralInfo } from './PluralInfo';
 import { Search, Volume2, Plus, Check } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
 import { De, Auto } from './ui/Text';
@@ -224,6 +225,7 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
           const isSelected = selectedIds.has(word.id);
           const article = getQuizArticle(word);
           const text = vocabText(word, lang);
+          const plural = article ? pluralParts(word) : [];
 
           return (
             <div
@@ -291,13 +293,13 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
 
                 <Auto as="p" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mt-1 text-start">{text.meaning}</Auto>
 
-                {(word.plural || text.formen || text.oesterreich) && (
+                {(plural.length > 0 || text.formen || text.oesterreich) && (
                   <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/60 text-[11px] space-y-1 text-slate-500 dark:text-slate-400">
-                    {word.plural && (
-                      <De as="div">
-                        <span className="text-slate-400">Plural: </span>
-                        <span className="font-medium text-slate-700 dark:text-slate-300">{word.plural}</span>
-                      </De>
+                    {plural.length > 0 && (
+                      <div className="flex items-baseline gap-1.5">
+                        <De className="text-slate-400 shrink-0">Plural:</De>
+                        <PluralInfo parts={plural} compact />
+                      </div>
                     )}
                     {text.formen && (
                       <Auto as="div" className="text-start">

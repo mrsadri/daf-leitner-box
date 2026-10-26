@@ -111,7 +111,8 @@ export function transformCsvToCards(records: Record<string, string>[]): LeitnerC
       englisch: r['Englisch'] || '',
       beispielEn: r['Beispiel_en'] || '',
       formenEn: r['Formen_en'] || '',
-      oesterreichEn: r['Österreich_en'] || ''
+      oesterreichEn: r['Österreich_en'] || '',
+      perfekt: r['Perfekt'] || ''
     };
   });
 }

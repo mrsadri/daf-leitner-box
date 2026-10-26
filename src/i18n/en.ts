@@ -267,6 +267,8 @@ export const en: Messages = {
     meaningPrimaryPlaceholder: 'e.g. appointment, to learn…',
     meaningSecondary: 'Persian meaning (optional)',
     meaningSecondaryPlaceholder: 'مثال: قرار ملاقات',
+    perfekt: 'Perfekt (optional, for the typing quiz)',
+    perfektHint: 'Like “hat gelernt”. Separate several correct forms with |.',
     plural: 'Plural',
     wortart: 'Part of speech (Wortart)',
     wortarten: { Nomen: 'noun', Verb: 'verb', Adjektiv: 'adjective', Adverb: 'adverb', 'Präposition': 'preposition', Ausdruck: 'expression' },
@@ -373,6 +375,32 @@ export const en: Messages = {
     deleteTitle: 'Delete account permanently',
     deleteBody: (name: string) => `“${name}” and all their cards and review history will be deleted permanently. This can't be undone. If they sign in with Google again, they start from scratch. To block sign-in instead, use “Suspend”.`,
     typeToConfirm: 'To confirm, type:'
+  },
+
+  perfekt: {
+    label: 'Type the Perfekt of this verb',
+    hint: 'with haben or sein, like “ist gekommen”',
+    placeholder: 'z. B. hat gemacht',
+    check: 'Check',
+    practice: "Practice; doesn't affect the card's box",
+    correct: 'Correct!',
+    almost: 'Correct; just check the spelling:',
+    wrongAux: 'Wrong auxiliary. The correct form:',
+    wrong: 'Not quite. The correct form:',
+    missingAux: 'Add the auxiliary (haben or sein) and check again.',
+    missingSich: 'Remember: this verb takes “sich”.',
+    alsoCorrect: 'Also correct:',
+    locked: 'Type and check the Perfekt first',
+    insert: (c: string) => `Insert ${c}`
+  },
+
+  plural: {
+    singularOnly: 'singular only',
+    singularOnlyHere: 'singular only (in this sense)',
+    pluralOnly: 'plural only',
+    mostlySingular: 'usually singular',
+    pluralRare: 'plural rarely used',
+    patternTitle: (p: string) => `Plural pattern: ${p}`
   },
 
   dashboard: {
