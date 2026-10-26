@@ -22,10 +22,11 @@ Thanks for helping! Contributions in **English or Persian (فارسی)** are wel
 
 - Keep PRs small and focused; describe *why* in the PR description.
 - Match the existing code style (React function components, TypeScript, Tailwind).
-- UI text is Persian (RTL); German words stay German.
+- The UI is bilingual (Persian RTL / English LTR). Add every new string to both [src/i18n/fa.ts](src/i18n/fa.ts) and [src/i18n/en.ts](src/i18n/en.ts) (TypeScript fails if a key is missing). Wrap German text in `<De>`, user-written text in `<Auto>`, and use logical Tailwind classes (`ms-`, `pe-`, `text-start`, `start-`) instead of `ml-`, `pr-`, `text-left`, `right-`.
+- For UI work without a database, run `VITE_DEMO_MODE=1 npm run dev` (dev-only demo mode with sample data).
 - Changes to the Leitner rules (box intervals, demotion on wrong answers, scoring) change how people learn — please open an issue to discuss first.
 - Database changes go in [supabase/schema.sql](supabase/schema.sql) and must stay **idempotent** (safe to run again) and keep RLS on every table.
-- Vocabulary fixes (typos, translations) in `public/data/wortschatz-daf-kompakt.csv` are very welcome. Keep the column order and don't change `Lektion`/`Nr` of existing words, because card IDs depend on them.
+- Vocabulary fixes (typos, translations) in `public/data/wortschatz-daf-kompakt.csv` are very welcome; the `Englisch`, `Beispiel_en`, `Formen_en` and `Österreich_en` columns hold the English versions. Keep the column order and don't change `Lektion`/`Nr` of existing words, because card IDs depend on them.
 
 ## Reporting bugs / ideas
 
