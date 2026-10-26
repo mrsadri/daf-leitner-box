@@ -1,8 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { AppSettings, LeitnerCard, UserProfile } from '../types/leitner';
 import { leitnerEngine } from '../services/leitnerEngine';
 import { cloudSync } from '../services/cloudSync';
 import { soundService } from '../services/soundService';
+import { speechService } from '../services/speechService';
 import { Download, Upload, Volume2, ShieldCheck, Check, AlertTriangle, UserRound, LogOut, Trophy, Languages } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
 import { Switch } from './ui/Switch';
@@ -49,6 +50,14 @@ export const SettingsBackupModal: React.FC<SettingsBackupModalProps> = ({
       setProfileStatus('error');
     }
   };
+
+  // German voices of this device (the list can arrive after the page has loaded)
+  const [voices, setVoices] = useState(() => speechService.availableVoices());
+  const [preferredVoice, setPreferredVoice] = useState(() => speechService.preferredVoice());
+  useEffect(() => speechService.onChange(() => {
+    setVoices(speechService.availableVoices());
+    setPreferredVoice(speechService.preferredVoice());
+  }), []);
 
   const trimmedName = displayName.trim();
   const nameIsValid = trimmedName.length >= 1 && trimmedName.length <= 40;
@@ -236,6 +245,42 @@ export const SettingsBackupModal: React.FC<SettingsBackupModalProps> = ({
               <Switch id={opt.id} checked={opt.checked} onChange={opt.onChange} />
             </div>
           ))}
+
+          <div className="space-y-2 py-4 border-b border-slate-100 dark:border-slate-800">
+            <label htmlFor="germanVoice" className="font-semibold text-slate-800 dark:text-slate-200 block">{t.settings.voice}</label>
+            <p className="text-slate-600 dark:text-slate-400 leading-relaxed">{t.settings.voiceBody}</p>
+            {!speechService.isSupported() ? (
+              <p className="text-amber-700 dark:text-amber-300">{t.settings.voiceUnsupported}</p>
+            ) : voices.length === 0 ? (
+              <p className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 leading-relaxed">
+                {t.settings.voiceNone}
+              </p>
+            ) : (
+              <div className="flex gap-2">
+                <select
+                  id="germanVoice"
+                  value={preferredVoice && voices.some(v => (v.voiceURI || v.name) === preferredVoice) ? preferredVoice : ''}
+                  onChange={(e) => speechService.setPreferredVoice(e.target.value || null)}
+                  className="flex-1 min-w-0 px-3 py-2 text-sm bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                >
+                  <option value="">{t.settings.voiceAuto}</option>
+                  {voices.map(v => (
+                    <option key={v.voiceURI || v.name} value={v.voiceURI || v.name} dir="ltr">
+                      {v.name} ({v.lang})
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => speechService.speak('Guten Tag! Wie geht es Ihnen?', settings.speechRate)}
+                  className="flex items-center gap-1.5 px-3 py-2 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 rounded-xl text-xs font-semibold shrink-0"
+                >
+                  <Volume2 className="w-4 h-4" />
+                  {t.settings.voiceTest}
+                </button>
+              </div>
+            )}
+          </div>
 
           <div className="space-y-2 pt-4">
             <div className="flex justify-between items-center font-semibold text-slate-800 dark:text-slate-200">

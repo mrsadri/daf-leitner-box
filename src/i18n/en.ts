@@ -90,6 +90,15 @@ export const en: Messages = {
     settings: 'Backup & settings',
     admin: 'Users',
     newCard: 'New card',
+    desktop: {
+      dashboard: 'Dashboard',
+      review: 'Review',
+      catalog: 'Words',
+      reflections: 'Insights',
+      leaderboard: 'Leaderboard',
+      settings: 'Settings',
+      admin: 'Users'
+    },
     short: {
       dashboard: 'Boxes',
       review: 'Review',
@@ -331,6 +340,12 @@ export const en: Messages = {
     nounsDefault: 'Noun mode by default',
     nounsDefaultBody: 'Review sessions show only nouns and articles; other cards stay in their current box',
     speechRate: 'Speech rate',
+    voice: 'German voice',
+    voiceBody: 'The voice that reads the words. Every device has its own voices, so this choice is saved for this device only.',
+    voiceAuto: 'Automatic (best German voice)',
+    voiceTest: 'Listen',
+    voiceNone: 'No German voice was found on this device, so words may be read with an English accent. Install a German voice: on Windows under Settings › Time & language › Speech, on macOS under System Settings › Accessibility › Spoken Content. Then reload the page.',
+    voiceUnsupported: "This browser can't play speech.",
     rateSlow: 'Slow',
     rateNormal: 'Normal',
     rateFast: 'Fast',
