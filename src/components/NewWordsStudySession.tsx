@@ -3,7 +3,8 @@ import { LeitnerCard } from '../types/leitner';
 import { leitnerEngine, stripArticleFromWord, getQuizArticle, calculateNextReviewDate } from '../services/leitnerEngine';
 import { soundService } from '../services/soundService';
 import { speechService } from '../services/speechService';
-import { vocabText, perfektAnswers, pluralParts } from '../services/vocabText';
+import { vocabText, perfektAnswers, pluralParts, conjugationOf } from '../services/vocabText';
+import { ConjugationButton } from './ConjugationDialog';
 import { maskParticiples, PerfektResult } from '../services/perfekt';
 import { PerfektQuiz } from './PerfektQuiz';
 import { PluralInfo } from './PluralInfo';
@@ -167,6 +168,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
   const text = vocabText(currentWord, lang);
   const plural = isNoun ? pluralParts(currentWord) : [];
   const perfektAccepted = perfektAnswers(currentWord);
+  const conjugation = conjugationOf(currentWord);
   // Until the practice answer is in, don't give the Perfekt away on the back of the card
   const hide = (s: string) => (perfektAccepted.length && !perfektResult ? maskParticiples(s, perfektAccepted) : s);
 
@@ -334,6 +336,12 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
                   </button>
                 </div>
 
+                {conjugation && (
+                  <div className="pt-1">
+                    <ConjugationButton verb={currentWord.wort || ''} conjugation={conjugation} disabled={perfektAccepted.length > 0 && !perfektResult} />
+                  </div>
+                )}
+
                 <div className="pt-2">
                   <span className="text-xs text-slate-500 dark:text-slate-400 block">{t.review.meaningLabel}</span>
                   <Auto as="p" className="block text-2xl font-extrabold text-indigo-600 dark:text-indigo-400 leading-snug text-start">
@@ -412,6 +420,11 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
                 if (leitnerEngine.getSettings().autoSpeak) speechService.speak(r.expected, leitnerEngine.getSettings().speechRate);
               }}
             />
+            {perfektResult && conjugation && (
+              <div className="mt-2 flex justify-end">
+                <ConjugationButton verb={currentWord.wort || ''} conjugation={conjugation} />
+              </div>
+            )}
           </div>
         )}
 

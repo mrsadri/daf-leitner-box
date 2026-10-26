@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { checkPerfekt, parseAccepted } from '../src/services/perfekt.ts';
 import { describePlural } from '../src/services/plural.ts';
+import { conjugate } from '../src/services/conjugation.ts';
 
 /** Minimal RFC 4180 reader (the app's parser imports browser-only modules). */
 function readCsv(path: string): Record<string, string>[] {
@@ -74,4 +75,25 @@ test('plural description for every noun', () => {
     }
   }
   console.log(`nouns: ${nouns.length} · patterned parts: ${patterned} · labels: ${labelled} · irregular (form only): ${formOnly} · no plural info: ${empty}`);
+});
+
+test('conjugation of every verb agrees with the word list', () => {
+  const problems: string[] = [];
+  for (const v of verbs) {
+    if (!v.Perfekt) continue;
+    const c = conjugate({ infinitiv: v.Infinitiv, praesens: v['Präsens'], praeteritum: v['Präteritum'], perfekt: v.Perfekt, reflexiv: v.Reflexiv });
+    if (!c) { problems.push(`${v.Wort}: no conjugation`); continue; }
+    const noRefl = (t: string) => t.replace(/\(?\b(mich|dich|sich|uns|euch|mir|dir)\b\)?\s*/g, '').trim();
+    const er = noRefl(c.praesens[2].text);
+    if (er !== v['Präsens']) problems.push(`${v.Wort}: Präsens ${er} ≠ ${v['Präsens']}`);
+    if (v['Präteritum'] && noRefl(c.praeteritum[2].text) !== v['Präteritum']) {
+      problems.push(`${v.Wort}: Präteritum ${c.praeteritum[2].text} ≠ ${v['Präteritum']}`);
+    }
+    // Without an explicit Präteritum the verb must really be regular (otherwise the table would invent "fahrte")
+    if (!v['Präteritum'] && c.perfekt.some(f => f.segments.some(s => s.irregular))) {
+      problems.push(`${v.Wort}: irregular participle but no Präteritum (${v.Perfekt})`);
+    }
+    if (c.praesens.some(f => /\s{2}|^\s|\s$/.test(f.text))) problems.push(`${v.Wort}: spacing`);
+  }
+  assert.deepEqual(problems, []);
 });

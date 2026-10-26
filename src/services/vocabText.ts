@@ -4,6 +4,7 @@ import { leitnerEngine } from './leitnerEngine';
 import { splitExample, hasPersian } from '../components/ui/Text';
 import { parseAccepted, perfektFromFormen } from './perfekt';
 import { describePlural, PluralPart } from './plural';
+import { conjugate, Conjugation } from './conjugation';
 
 export interface VocabText {
   /** Meaning in the interface language (falls back to Persian when no English is available) */
@@ -66,4 +67,18 @@ export function perfektAnswers(card: LeitnerCard): string[] {
 export function pluralParts(card: LeitnerCard): PluralPart[] {
   const src = leitnerEngine.getCatalogWord(card.id) ?? card;
   return describePlural(src.wort || card.wort, src.plural || card.plural);
+}
+
+/** Conjugation table of a book verb, or null (not a verb, no data, or a custom card). */
+export function conjugationOf(card: LeitnerCard): Conjugation | null {
+  if (card.type !== 'vocab') return null;
+  const src = leitnerEngine.getCatalogWord(card.id) ?? card;
+  if (src.wortart !== 'Verb' || !src.perfekt || !src.praesens || !src.infinitiv) return null;
+  return conjugate({
+    infinitiv: src.infinitiv,
+    praesens: src.praesens,
+    praeteritum: src.praeteritum,
+    perfekt: src.perfekt,
+    reflexiv: src.reflexiv
+  });
 }

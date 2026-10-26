@@ -1,9 +1,10 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { LeitnerCard } from '../types/leitner';
 import { speechService } from '../services/speechService';
 import { soundService } from '../services/soundService';
 import { getQuizArticle, stripArticleFromWord } from '../services/leitnerEngine';
-import { vocabText, pluralParts } from '../services/vocabText';
+import { vocabText, pluralParts, conjugationOf } from '../services/vocabText';
+import { ConjugationButton } from './ConjugationDialog';
 import { PluralInfo } from './PluralInfo';
 import { Search, Volume2, Plus, Check } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
@@ -53,13 +54,13 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
     return Array.from(set).sort();
   }, [catalogWords]);
 
-  // Unique wortarts
+  // Word types with their counts, most frequent first ("Nomen", "Verb", …)
   const wortarten = useMemo(() => {
-    const set = new Set<string>();
+    const counts = new Map<string, number>();
     catalogWords.forEach(w => {
-      if (w.wortart) set.add(w.wortart);
+      if (w.wortart) counts.set(w.wortart, (counts.get(w.wortart) || 0) + 1);
     });
-    return Array.from(set).sort();
+    return [...counts.entries()].sort((a, b) => b[1] - a[1]);
   }, [catalogWords]);
 
   // Filtered list
@@ -84,6 +85,11 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
       return matchesSearch && matchesLektion && matchesNiveau && matchesWortart && matchesStatus;
     });
   }, [catalogWords, searchQuery, selectedLektion, selectedNiveau, selectedWortart, statusFilter, activeCardMap]);
+
+  // A selection made under other filters may include words that are no longer visible
+  useEffect(() => {
+    setSelectedIds(new Set());
+  }, [searchQuery, selectedLektion, selectedNiveau, selectedWortart, statusFilter]);
 
   const handleSelectAllFiltered = () => {
     const notInBoxFiltered = filteredWords.filter(
@@ -150,7 +156,7 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
           )}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
           <div className="relative sm:col-span-2">
             <Search className="w-4 h-4 absolute start-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             <input
@@ -175,6 +181,13 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
             <option value="all">{t.catalog.allLevels}</option>
             {['A1', 'A2', 'B1'].map(lv => (
               <option key={lv} value={lv}>{t.common.level(lv)}</option>
+            ))}
+          </select>
+
+          <select value={selectedWortart} onChange={(e) => setSelectedWortart(e.target.value)} className={field} aria-label={t.wortart.all}>
+            <option value="all">{t.wortart.all}</option>
+            {wortarten.map(([w, count]) => (
+              <option key={w} value={w}>{t.wortart.option(w, t.wortart.names[w], count)}</option>
             ))}
           </select>
 
@@ -226,6 +239,7 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
           const article = getQuizArticle(word);
           const text = vocabText(word, lang);
           const plural = article ? pluralParts(word) : [];
+          const conjugation = conjugationOf(word);
 
           return (
             <div
@@ -315,7 +329,9 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
               </div>
 
               {/* Action */}
-              <div className="pt-2 border-t border-slate-100 dark:border-slate-800/60 flex justify-end">
+              <div className="pt-2 border-t border-slate-100 dark:border-slate-800/60 flex flex-wrap items-center justify-between gap-2">
+                <ConjugationButton verb={word.wort || ''} conjugation={conjugation} />
+                <span className="flex-1" />
                 {active ? (
                   <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-medium py-1 px-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40">
                     <Check className="w-3.5 h-3.5" />

@@ -403,6 +403,28 @@ export const en: Messages = {
     patternTitle: (p: string) => `Plural pattern: ${p}`
   },
 
+  conjugation: {
+    button: 'Conjugation',
+    title: 'Conjugation',
+    locked: 'Available after you answer the Perfekt',
+    legend: 'Red letters: irregular change compared with the regular pattern',
+    kind: { regular: 'regular', irregular: 'irregular', mixed: 'mixed' },
+    kindHint: {
+      regular: 'All forms follow the regular pattern.',
+      irregular: 'The stem changes in some forms (strong verb).',
+      mixed: 'Regular endings, but the stem changes.'
+    }
+  },
+
+  wortart: {
+    all: 'All word types',
+    names: {
+      Nomen: 'noun', Verb: 'verb', Adjektiv: 'adjective', Adverb: 'adverb', Ausdruck: 'expression', 'Präposition': 'preposition',
+      Pronomen: 'pronoun', Fragewort: 'question word', Konjunktion: 'conjunction', Andere: 'other'
+    } as Record<string, string>,
+    option: (name: string, label: string | undefined, count: number) => `${name}${label ? ` (${label})` : ''} · ${n(count)}`
+  },
+
   dashboard: {
     badgeAlgorithm: 'Leitner algorithm with 2ⁿ-day intervals',
     badgeDrop: 'Wrong answer: back one box',

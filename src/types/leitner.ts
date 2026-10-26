@@ -37,6 +37,11 @@ export interface LeitnerCard {
   oesterreichEn?: string;
   // Accepted Perfekt answers for verbs, separated by " | " ("ist gerudert | hat gerudert")
   perfekt?: string;
+  // Conjugation data for verbs (3rd person singular forms; see src/services/conjugation.ts)
+  infinitiv?: string;
+  praesens?: string;
+  praeteritum?: string;
+  reflexiv?: string;
 
   // Reflection / Decision fields
   title?: string;

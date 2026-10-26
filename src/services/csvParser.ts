@@ -112,7 +112,11 @@ export function transformCsvToCards(records: Record<string, string>[]): LeitnerC
       beispielEn: r['Beispiel_en'] || '',
       formenEn: r['Formen_en'] || '',
       oesterreichEn: r['Österreich_en'] || '',
-      perfekt: r['Perfekt'] || ''
+      perfekt: r['Perfekt'] || '',
+      infinitiv: r['Infinitiv'] || '',
+      praesens: r['Präsens'] || '',
+      praeteritum: r['Präteritum'] || '',
+      reflexiv: r['Reflexiv'] || ''
     };
   });
 }

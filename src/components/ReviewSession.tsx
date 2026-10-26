@@ -3,7 +3,8 @@ import { LeitnerCard, BOX_CONFIGS, MASTERED_BOX } from '../types/leitner';
 import { leitnerEngine, isNounCard, stripArticleFromWord, getQuizArticle } from '../services/leitnerEngine';
 import { soundService } from '../services/soundService';
 import { speechService } from '../services/speechService';
-import { vocabText, perfektAnswers, pluralParts } from '../services/vocabText';
+import { vocabText, perfektAnswers, pluralParts, conjugationOf } from '../services/vocabText';
+import { ConjugationButton } from './ConjugationDialog';
 import { maskParticiples, PerfektResult } from '../services/perfekt';
 import { PerfektQuiz } from './PerfektQuiz';
 import { PluralInfo } from './PluralInfo';
@@ -326,6 +327,8 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
   const frontWord = isNoun ? stripArticleFromWord(currentCard.wort) : currentCard.wort;
   const text = currentCard.type === 'vocab' ? vocabText(currentCard, lang) : null;
   const plural = isNoun ? pluralParts(currentCard) : [];
+  const conjugation = conjugationOf(currentCard);
+  const conjugationLocked = hasPerfektQuiz && !perfektResult;
   // Until the Perfekt is answered, don't give it away on the back of the card
   const hide = (s: string) => (hasPerfektQuiz && !perfektResult ? maskParticiples(s, perfektAccepted) : s);
 
@@ -572,6 +575,11 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
                         {quizArticle ? stripArticleFromWord(currentCard.wort) : currentCard.wort}
                       </span>
                     </De>
+                    {conjugation && (
+                      <div className="pt-2">
+                        <ConjugationButton verb={currentCard.wort || ''} conjugation={conjugation} disabled={conjugationLocked} />
+                      </div>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
@@ -679,6 +687,11 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
         {hasPerfektQuiz && (
           <div className="mt-4">
             <PerfektQuiz key={currentCard.id} accepted={perfektAccepted} onGraded={handlePerfektGraded} />
+            {perfektResult && conjugation && (
+              <div className="mt-2 flex justify-end">
+                <ConjugationButton verb={currentCard.wort || ''} conjugation={conjugation} />
+              </div>
+            )}
           </div>
         )}
 

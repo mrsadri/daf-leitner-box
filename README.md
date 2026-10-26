@@ -88,6 +88,7 @@ npm run dev                  # http://localhost:3000
 - ستون `Perfekt` پاسخ‌های قابل قبول هر فعل را دارد (چند پاسخ با ` | ` جدا می‌شوند، مثل `ist gerudert | hat gerudert`). در مرور، کاربر Perfekt را تایپ می‌کند و فقط با پاسخ درست کارت به خانه‌ی بعد می‌رود. منطق بررسی در [src/services/perfekt.ts](src/services/perfekt.ts) است.
 - این ستون و تقسیم کارت‌های چندفعلی با [scripts/build-verb-data.py](scripts/build-verb-data.py) ساخته می‌شوند (داده‌ها در `scripts/data/`؛ اجرای دوباره بی‌خطر است). در تقسیم، کارت موجود شناسه‌اش را نگه می‌دارد تا پیشرفت کاربران از بین نرود.
 - الگوی جمع («der Name, -n») در [src/services/plural.ts](src/services/plural.ts) از روی ستون `Plural` محاسبه می‌شود.
+- **صرف فعل:** پاپ‌آپ Präsens / Präteritum / Perfekt با حروف بی‌قاعده‌ی قرمز. موتور صرف در [src/services/conjugation.ts](src/services/conjugation.ts) است و ستون‌های `Infinitiv`، `Präsens`، `Präteritum` و `Reflexiv` با [scripts/build-conjugation-data.py](scripts/build-conjugation-data.py) ساخته می‌شوند (موارد خاص در `scripts/data/conjugation-overrides.json`). تست داده بررسی می‌کند که جدول هر ۷۴۸ فعل با داده‌ها بخواند.
 - تست‌ها: `npm test` (بدون وابستگی اضافه، با test runner خود Node).
 
 ---

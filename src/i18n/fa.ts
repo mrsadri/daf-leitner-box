@@ -407,6 +407,28 @@ export const fa = {
     patternTitle: (p: string) => `الگوی جمع: ${p}`
   },
 
+  conjugation: {
+    button: 'صرف فعل',
+    title: 'صرف فعل',
+    locked: 'بعد از جواب دادن به Perfekt در دسترس است',
+    legend: 'حروف قرمز: تغییر بی‌قاعده نسبت به صرف باقاعده',
+    kind: { regular: 'باقاعده', irregular: 'بی‌قاعده', mixed: 'مختلط' },
+    kindHint: {
+      regular: 'همه‌ی شکل‌ها طبق قاعده ساخته می‌شوند.',
+      irregular: 'ستاک فعل در بعضی شکل‌ها تغییر می‌کند (فعل قوی).',
+      mixed: 'پایانه‌ها باقاعده‌اند ولی ستاک تغییر می‌کند.'
+    }
+  },
+
+  wortart: {
+    all: 'همه‌ی انواع واژه',
+    names: {
+      Nomen: 'اسم', Verb: 'فعل', Adjektiv: 'صفت', Adverb: 'قید', Ausdruck: 'اصطلاح', 'Präposition': 'حرف اضافه',
+      Pronomen: 'ضمیر', Fragewort: 'کلمه‌ی پرسشی', Konjunktion: 'حرف ربط', Andere: 'سایر'
+    } as Record<string, string>,
+    option: (name: string, label: string | undefined, count: number) => `${name}${label ? ` (${label})` : ''} · ${n(count)}`
+  },
+
   dashboard: {
     badgeAlgorithm: 'الگوریتم لایتنر با فواصل ۲ⁿ روز',
     badgeDrop: 'قانون افت ۱ پله‌ای',

@@ -127,7 +127,8 @@ function safeSet(key: string, value: string) {
  */
 const CATALOG_CONTENT_FIELDS = [
   'wort', 'persisch', 'artikel', 'beispiel', 'formen', 'plural', 'wortart', 'oesterreich',
-  'lektion', 'niveau', 'nr', 'feld', 'englisch', 'beispielEn', 'formenEn', 'oesterreichEn', 'perfekt'
+  'lektion', 'niveau', 'nr', 'feld', 'englisch', 'beispielEn', 'formenEn', 'oesterreichEn', 'perfekt',
+  'infinitiv', 'praesens', 'praeteritum', 'reflexiv'
 ] as const;
 
 /** Persistence hooks wired up by the cloud sync layer. */
