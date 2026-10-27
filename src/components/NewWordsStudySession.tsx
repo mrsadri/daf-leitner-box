@@ -11,7 +11,7 @@ import { PluralInfo } from './PluralInfo';
 import { Volume2, RotateCw, ArrowLeft, BookOpen, PlusCircle, CheckCircle2, Sparkles, SkipForward, X } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
 import { De, Auto } from './ui/Text';
-import { MOBILE_STICKY_ACTIONS } from './ui/sticky';
+import { MOBILE_ACTION_BAR, useMobileActionBar } from './ui/mobileActionBar';
 
 const BANNER_HIDDEN_KEY = 'daf_new_words_banner_hidden';
 const readBannerHidden = () => {
@@ -40,6 +40,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
   // Read once per session, so the layout never switches in the middle of a card
   const [flipMode] = useState<boolean>(() => !!leitnerEngine.getSettings().newWordsFlipCard);
   const sessionTopRef = useRef<HTMLDivElement>(null);
+  const actionBarRef = useMobileActionBar<HTMLDivElement>();
   const [bannerHidden, setBannerHidden] = useState<boolean>(readBannerHidden);
   const shownIndexRef = useRef<number>(0);
 
@@ -496,8 +497,8 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
         )}
 
         {/* Actions */}
-        {/* Cards can be long on phones: keep the buttons in reach at the bottom of the screen */}
-        <div className={`mt-4 flex flex-row gap-3 ${MOBILE_STICKY_ACTIONS}`}>
+        {/* Phones: buttons fixed at the bottom of the screen */}
+        <div ref={actionBarRef} className={`mt-4 flex flex-row gap-3 ${MOBILE_ACTION_BAR}`}>
           <button
             type="button"
             onClick={goToNextWord}

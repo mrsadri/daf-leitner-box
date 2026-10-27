@@ -10,6 +10,13 @@
   }
 
   /* English interface: Latin font first, Vazirmatn only as a fallback for Persian text (e.g. user notes) */
+  /* Phones: room under the page for a fixed action bar (see components/ui/mobileActionBar.ts) */
+  @media (max-width: 39.99rem) {
+    body.has-action-bar {
+      padding-bottom: var(--action-bar-h, 6rem);
+    }
+  }
+
   html:lang(en) body {
     font-family: 'Plus Jakarta Sans', 'Vazirmatn', system-ui, -apple-system, sans-serif;
   }

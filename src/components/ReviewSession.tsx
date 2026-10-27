@@ -7,7 +7,7 @@ import { vocabText, perfektAnswers, pluralParts, conjugationOf } from '../servic
 import { ConjugationButton } from './ConjugationDialog';
 import { maskParticiples, PerfektResult } from '../services/perfekt';
 import { PerfektQuiz } from './PerfektQuiz';
-import { MOBILE_STICKY_ACTIONS } from './ui/sticky';
+import { MOBILE_ACTION_BAR, useMobileActionBar } from './ui/mobileActionBar';
 import { PluralInfo } from './PluralInfo';
 import { Volume2, RotateCw, Check, X, Sparkles, ArrowLeft, Trophy, BookOpen, Quote, Edit3 } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
@@ -68,6 +68,7 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
   const knewRef = useRef<HTMLButtonElement>(null);
   const forgotRef = useRef<HTMLButtonElement>(null);
   const cardAreaRef = useRef<HTMLDivElement>(null);
+  const actionBarRef = useMobileActionBar<HTMLDivElement>();
   const shownCardIdRef = useRef<string | undefined>(undefined);
 
   const handleToggleNounsOnly = (checked: boolean) => {
@@ -704,8 +705,8 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
           </div>
         )}
 
-        {/* Answer buttons (sticky at the bottom on phones) */}
-        <div className={`mt-4 ${MOBILE_STICKY_ACTIONS}`}>
+        {/* Answer buttons (phones: fixed at the bottom of the screen) */}
+        <div ref={actionBarRef} className={`mt-4 ${MOBILE_ACTION_BAR}`}>
           {currentCard.type === 'vocab' ? (
             <div className="grid grid-cols-2 gap-3">
               <button
