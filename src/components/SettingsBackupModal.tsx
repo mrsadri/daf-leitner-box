@@ -244,7 +244,8 @@ export const SettingsBackupModal: React.FC<SettingsBackupModalProps> = ({
               onChange: (v: boolean) => { onUpdateSettings({ soundEnabled: v }); soundService.enabled = v; }
             },
             { id: 'autoSpeak', title: t.settings.autoSpeak, body: t.settings.autoSpeakBody, checked: settings.autoSpeak, onChange: (v: boolean) => onUpdateSettings({ autoSpeak: v }) },
-            { id: 'nounsOnlyMode', title: t.settings.nounsDefault, body: t.settings.nounsDefaultBody, checked: settings.nounsOnlyMode, onChange: (v: boolean) => onUpdateSettings({ nounsOnlyMode: v }) }
+            { id: 'nounsOnlyMode', title: t.settings.nounsDefault, body: t.settings.nounsDefaultBody, checked: settings.nounsOnlyMode, onChange: (v: boolean) => onUpdateSettings({ nounsOnlyMode: v }) },
+            { id: 'newWordsFlipCard', title: t.settings.flipCard, body: t.settings.flipCardBody, checked: !!settings.newWordsFlipCard, onChange: (v: boolean) => onUpdateSettings({ newWordsFlipCard: v }) }
           ]).map(opt => (
             <div key={opt.id} className={row}>
               <label htmlFor={opt.id} className="min-w-0 cursor-pointer">
