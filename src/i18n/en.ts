@@ -208,6 +208,7 @@ export const en: Messages = {
     flipHint: 'Tap the card to see the meaning and details.',
     fullWord: 'Full word with article:',
     kbdAdd: 'Add to Box 0:',
+    hideBanner: 'Hide this tip',
     kbdSpeak: 'Pronounce:',
     bannerOneSided: 'Words from the book appear in lesson order. Everything about the word is on the card; once you have read it, tap “Got it” to put it in Box 0. It comes back for review tomorrow.',
     skip: 'Skip',
