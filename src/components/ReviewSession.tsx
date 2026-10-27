@@ -7,6 +7,7 @@ import { vocabText, perfektAnswers, pluralParts, conjugationOf } from '../servic
 import { ConjugationButton } from './ConjugationDialog';
 import { maskParticiples, PerfektResult } from '../services/perfekt';
 import { PerfektQuiz } from './PerfektQuiz';
+import { MOBILE_STICKY_ACTIONS } from './ui/sticky';
 import { PluralInfo } from './PluralInfo';
 import { Volume2, RotateCw, Check, X, Sparkles, ArrowLeft, Trophy, BookOpen, Quote, Edit3 } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
@@ -66,6 +67,8 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
   const [perfektResult, setPerfektResult] = useState<PerfektResult | null>(null);
   const knewRef = useRef<HTMLButtonElement>(null);
   const forgotRef = useRef<HTMLButtonElement>(null);
+  const cardAreaRef = useRef<HTMLDivElement>(null);
+  const shownCardIdRef = useRef<string | undefined>(undefined);
 
   const handleToggleNounsOnly = (checked: boolean) => {
     setNounsOnly(checked);
@@ -98,6 +101,12 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
     setSelectedArticleGuess(null);
     setEditingContent(null);
     setPerfektResult(null);
+    // Answered from further down a long card: bring the top of the next card back into view
+    if (shownCardIdRef.current && currentCard) {
+      const area = cardAreaRef.current;
+      if (area && area.getBoundingClientRect().top < 0) area.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    }
+    shownCardIdRef.current = currentCard?.id;
     if (currentCard && currentCard.type === 'vocab' && currentCard.wort && leitnerEngine.getSettings().autoSpeak) {
       const speakWord = isNounCard(currentCard) ? stripArticleFromWord(currentCard.wort) : currentCard.wort;
       handleSpeak(speakWord);
@@ -382,7 +391,7 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
       </div>
 
       {/* Flashcard */}
-      <div className="relative min-h-[400px] sm:min-h-[460px] flex flex-col">
+      <div ref={cardAreaRef} className="relative min-h-[400px] sm:min-h-[460px] flex flex-col scroll-mt-24">
         <div
           onClick={handleFlip}
           className="cursor-pointer flex-1 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-3xl p-5 sm:p-10 flex flex-col justify-between gap-4 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-700 transition-all relative overflow-hidden group select-none"
@@ -695,8 +704,8 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
           </div>
         )}
 
-        {/* Answer buttons */}
-        <div className="mt-4">
+        {/* Answer buttons (sticky at the bottom on phones) */}
+        <div className={`mt-4 ${MOBILE_STICKY_ACTIONS}`}>
           {currentCard.type === 'vocab' ? (
             <div className="grid grid-cols-2 gap-3">
               <button

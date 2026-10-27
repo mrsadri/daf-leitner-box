@@ -8,9 +8,15 @@ import { ConjugationButton } from './ConjugationDialog';
 import { maskParticiples, PerfektResult } from '../services/perfekt';
 import { PerfektQuiz } from './PerfektQuiz';
 import { PluralInfo } from './PluralInfo';
-import { Volume2, RotateCw, ArrowLeft, BookOpen, PlusCircle, CheckCircle2, Sparkles, SkipForward } from 'lucide-react';
+import { Volume2, RotateCw, ArrowLeft, BookOpen, PlusCircle, CheckCircle2, Sparkles, SkipForward, X } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
 import { De, Auto } from './ui/Text';
+import { MOBILE_STICKY_ACTIONS } from './ui/sticky';
+
+const BANNER_HIDDEN_KEY = 'daf_new_words_banner_hidden';
+const readBannerHidden = () => {
+  try { return localStorage.getItem(BANNER_HIDDEN_KEY) === '1'; } catch { return false; }
+};
 
 interface NewWordsStudySessionProps {
   onFinish: () => void;
@@ -34,6 +40,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
   // Read once per session, so the layout never switches in the middle of a card
   const [flipMode] = useState<boolean>(() => !!leitnerEngine.getSettings().newWordsFlipCard);
   const sessionTopRef = useRef<HTMLDivElement>(null);
+  const [bannerHidden, setBannerHidden] = useState<boolean>(readBannerHidden);
   const shownIndexRef = useRef<number>(0);
 
   useEffect(() => {
@@ -226,11 +233,25 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
         </span>
       </div>
 
-      {/* Info banner */}
-      <div className="p-3.5 bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-800/40 rounded-2xl flex items-start gap-3 text-xs text-amber-900 dark:text-amber-200">
-        <Sparkles className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-        <p className="leading-relaxed">{flipMode ? t.newWords.banner : t.newWords.bannerOneSided}</p>
-      </div>
+      {/* Info banner (closing it hides it on this device for good) */}
+      {!bannerHidden && (
+        <div className="p-3.5 pe-2 bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-800/40 rounded-2xl flex items-start gap-3 text-xs text-amber-900 dark:text-amber-200">
+          <Sparkles className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+          <p className="flex-1 leading-relaxed">{flipMode ? t.newWords.banner : t.newWords.bannerOneSided}</p>
+          <button
+            type="button"
+            onClick={() => {
+              setBannerHidden(true);
+              try { localStorage.setItem(BANNER_HIDDEN_KEY, '1'); } catch { /* private mode: hidden for this session only */ }
+            }}
+            title={t.newWords.hideBanner}
+            aria-label={t.newWords.hideBanner}
+            className="-my-1 p-1.5 shrink-0 rounded-lg text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* Card */}
       <div className="relative min-h-[400px] flex flex-col">
@@ -475,10 +496,8 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
         )}
 
         {/* Actions */}
-        {/* One-sided cards can be long on phones: keep the buttons in reach at the bottom of the screen */}
-        <div className={`mt-4 flex flex-col-reverse sm:flex-row gap-3 ${
-          flipMode ? '' : 'max-sm:sticky max-sm:bottom-0 max-sm:z-10 max-sm:-mx-4 max-sm:px-4 max-sm:pt-3 max-sm:pb-[calc(0.75rem+env(safe-area-inset-bottom))] max-sm:flex-row max-sm:bg-slate-50/95 max-sm:dark:bg-slate-950/95 max-sm:backdrop-blur-sm max-sm:border-t max-sm:border-slate-200 max-sm:dark:border-slate-800'
-        }`}>
+        {/* Cards can be long on phones: keep the buttons in reach at the bottom of the screen */}
+        <div className={`mt-4 flex flex-row gap-3 ${MOBILE_STICKY_ACTIONS}`}>
           <button
             type="button"
             onClick={goToNextWord}
