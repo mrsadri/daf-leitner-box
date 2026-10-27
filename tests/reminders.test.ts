@@ -1,8 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import {
   localTime, safeTimeZone, isClassReminderDue, inactivityDecision, inactivityPayload, classPayload, QUOTES
-} from '../supabase/functions/send-reminders/index.ts';
+} from '../supabase/functions/send-reminders/reminders.ts';
 
 const at = (iso: string) => new Date(iso);
 const sub = (timezone: string, last: string | null = null) => ({ timezone, last_class_reminder_on: last });
@@ -104,4 +105,15 @@ test('messages in both languages', () => {
   assert.equal(p.url, '/?go=review');
   assert.equal(p.body, QUOTES.en[5]);
   assert.equal(inactivityPayload('fa', 5).body, QUOTES.fa[5]);
+});
+
+test('index.ts contains the current reminders.ts (run scripts/build-edge-function.py after edits)', () => {
+  const dir = new URL('../supabase/functions/send-reminders/', import.meta.url);
+  const source = readFileSync(new URL('reminders.ts', dir), 'utf8').replace(/^\/\*\*[\s\S]*?\*\/\s*/, '').trim();
+  const index = readFileSync(new URL('index.ts', dir), 'utf8');
+  assert.ok(index.includes(source), 'index.ts is out of date: run python3 scripts/build-edge-function.py');
+  // Supabase only bundles packages imported statically at the top of the file
+  assert.match(index, /^import \{ createClient \} from 'npm:@supabase\/supabase-js@[\d.]+';$/m);
+  assert.match(index, /^import webpush from 'npm:web-push@[\d.]+';$/m);
+  assert.doesNotMatch(index, /import\((?!['"])/, 'no dynamic imports with computed specifiers');
 });
