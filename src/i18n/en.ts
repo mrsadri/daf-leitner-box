@@ -440,6 +440,30 @@ export const en: Messages = {
     option: (name: string, label: string | undefined, count: number) => `${name}${label ? ` (${label})` : ''} · ${n(count)}`
   },
 
+  pwa: {
+    installTitle: 'Install the app',
+    installBody: 'Keep the Leitner box on your home screen like a real app: full screen, without the address bar.',
+    installButton: 'Install app',
+    installed: 'The app is installed on this device.',
+    iosSteps: ['In Safari, tap the Share button (the square with an arrow pointing up).', 'Choose “Add to Home Screen”.', 'Tap “Add”, then open the app from your home screen.'],
+    iosOtherBrowser: 'On iPhone, the app can only be installed from Safari.',
+    manualSteps: 'Open the browser menu (⋮) and choose “Install app” or “Add to Home screen”.',
+    bannerTitle: 'Install the Leitner box on your phone',
+    bannerBody: 'Full screen, one tap from your home screen.',
+    bannerHow: 'How?',
+    dismiss: 'Dismiss',
+    notifTitle: 'Reminders',
+    notifBody: 'Saturday to Wednesday at 09:30 (your phone’s time), a nudge to learn new words during the class break; and if you stay away for more than a day, a motivational line to keep your reviews going.',
+    notifOn: 'Reminders are on for this device.',
+    notifEnable: 'Turn on reminders',
+    notifDisable: 'Turn off',
+    notifIosInstall: 'On iPhone, reminders only work once the app is on your home screen (iOS 16.4 or newer). Install the app first, then turn reminders on from there.',
+    notifDenied: 'Notifications are blocked for this site. Allow them in your browser or phone settings (Notifications) and try again.',
+    notifUnsupported: "This browser doesn't support notifications.",
+    notifError: "Couldn't turn on reminders. Check your connection and try again.",
+    notifPerDevice: 'Reminders are turned on separately for each device.'
+  },
+
   dashboard: {
     badgeAlgorithm: 'Leitner algorithm with 2ⁿ-day intervals',
     badgeDrop: 'Wrong answer: back one box',

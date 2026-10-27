@@ -5,6 +5,7 @@ import { vocabText } from '../services/vocabText';
 import { Play, CheckCircle2, HelpCircle, BookOpen, Target, X } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
 import { De, Auto } from './ui/Text';
+import { InstallBanner } from './AppInstall';
 
 interface LeitnerDashboardProps {
   cards: LeitnerCard[];
@@ -13,6 +14,7 @@ interface LeitnerDashboardProps {
   onNavigateToCatalog: () => void;
   onNavigateToReflections: () => void;
   onOpenNewCardModal: () => void;
+  onOpenSettings?: () => void;
 }
 
 const ARTICLE_CHIP: Record<'der' | 'die' | 'das', string> = {
@@ -24,7 +26,8 @@ const ARTICLE_CHIP: Record<'der' | 'die' | 'das', string> = {
 export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
   cards,
   onStartReview,
-  onStartNewWordsLearning
+  onStartNewWordsLearning,
+  onOpenSettings
 }) => {
   const { t, lang, num, date } = useI18n();
   const [selectedBoxModal, setSelectedBoxModal] = useState<number | null>(null);
@@ -50,6 +53,7 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
 
   return (
     <div className="space-y-8 pb-12">
+      {onOpenSettings && <InstallBanner onShowHow={onOpenSettings} />}
 
       {/* Hero / status */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 lg:p-8 shadow-xs">

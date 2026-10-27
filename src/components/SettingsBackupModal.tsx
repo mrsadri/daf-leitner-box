@@ -10,6 +10,7 @@ import { Switch } from './ui/Switch';
 import { LanguageSwitch } from './ui/LanguageSwitch';
 import { Auto, Ltr } from './ui/Text';
 import { Credit } from './ui/Credit';
+import { InstallSection, NotificationSection } from './AppInstall';
 
 interface SettingsBackupModalProps {
   settings: AppSettings;
@@ -133,6 +134,14 @@ export const SettingsBackupModal: React.FC<SettingsBackupModalProps> = ({
             <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">{t.settings.languageBody}</p>
           </div>
           <LanguageSwitch className="self-start sm:self-auto shrink-0" />
+        </div>
+      </div>
+
+      {/* Install + reminders */}
+      <div id="app-install" className={`${section} text-xs scroll-mt-40 xl:scroll-mt-24`}>
+        <InstallSection />
+        <div className="border-t border-slate-100 dark:border-slate-800 pt-5 empty:hidden">
+          <NotificationSection />
         </div>
       </div>
 

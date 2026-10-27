@@ -3,6 +3,10 @@
 @layer base {
   body {
     font-family: 'Vazirmatn', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    /* Installed app on phones with a home indicator / rounded corners */
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
 
   /* English interface: Latin font first, Vazirmatn only as a fallback for Persian text (e.g. user notes) */

@@ -17,3 +17,6 @@ metadata.json
 *.pem
 *.key
 client_secret*.json
+
+# Local files with secrets (e.g. filled-in setup instructions)
+*.local.md
