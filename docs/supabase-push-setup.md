@@ -47,6 +47,15 @@ Edge Functions → Deploy a new function → Via Editor:
 - Deploy, then open the function's settings and turn **off** “Enforce JWT verification”
   (the function checks the `x-cron-secret` header itself).
 
+Before deploying a changed version, check it the way Supabase bundles it (only static imports, no later downloads):
+
+```bash
+python3 scripts/build-edge-function.py          # after editing reminders.ts
+cd supabase/functions/send-reminders
+deno check --node-modules-dir=none index.ts
+deno cache --node-modules-dir=none index.ts      # then run with --cached-only
+```
+
 ## 5. Test (sends nothing)
 
 ```sql
