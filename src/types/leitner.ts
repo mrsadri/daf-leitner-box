@@ -102,6 +102,7 @@ export interface AppSettings {
   autoSpeak: boolean;
   hapticFeedback: boolean;
   nounsOnlyMode: boolean; // Focus solely on Nouns & mastering articles
+  newWordsFlipCard?: boolean; // New-words session: two-sided card (front/back). Unset/false = one-sided card
   language?: Lang; // Interface language; unset means the default (Persian)
 }
 

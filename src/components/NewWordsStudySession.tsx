@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { LeitnerCard } from '../types/leitner';
 import { leitnerEngine, stripArticleFromWord, getQuizArticle, calculateNextReviewDate } from '../services/leitnerEngine';
 import { soundService } from '../services/soundService';
@@ -31,6 +31,10 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
 
   const [hadWordsAtStart, setHadWordsAtStart] = useState<boolean>(false);
   const [perfektResult, setPerfektResult] = useState<PerfektResult | null>(null);
+  // Read once per session, so the layout never switches in the middle of a card
+  const [flipMode] = useState<boolean>(() => !!leitnerEngine.getSettings().newWordsFlipCard);
+  const sessionTopRef = useRef<HTMLDivElement>(null);
+  const shownIndexRef = useRef<number>(0);
 
   useEffect(() => {
     const list = leitnerEngine.getUnlearnedWords();
@@ -46,6 +50,9 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
   const frontWordDisplay = currentWord 
     ? (isNoun ? stripArticleFromWord(currentWord.wort) : currentWord.wort)
     : '';
+  const fullWordDisplay = currentWord
+    ? (quizArticle ? `${quizArticle} ${stripArticleFromWord(currentWord.wort)}` : (currentWord.wort || ''))
+    : '';
 
   const handleSpeak = useCallback(async (text: string) => {
     if (!text || isSpeaking) return;
@@ -56,15 +63,24 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
 
   useEffect(() => {
     if (currentWord && leitnerEngine.getSettings().autoSpeak && !isFlipped) {
-      // Speak the stripped word on front so speech doesn't spoil article either!
-      handleSpeak(frontWordDisplay || '');
+      // Two-sided card: speak the stripped word so speech doesn't spoil the article.
+      // One-sided card: the article is visible anyway, so say it too.
+      handleSpeak((flipMode ? frontWordDisplay : fullWordDisplay) || '');
     }
     setIsFlipped(false);
     setSelectedArticleGuess(null);
     setPerfektResult(null);
+
+    // Moving on from the bottom of a long card: bring the top of the next word back into view
+    if (shownIndexRef.current !== currentIndex) {
+      shownIndexRef.current = currentIndex;
+      const top = sessionTopRef.current;
+      if (top && top.getBoundingClientRect().top < 0) top.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    }
   }, [currentIndex, currentWord?.id]);
 
   const handleFlip = () => {
+    if (!flipMode) return;
     soundService.playFlip();
     setIsFlipped(!isFlipped);
   };
@@ -109,13 +125,27 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!currentWord) return;
       const target = e.target as HTMLElement | null;
-      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) return;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT')) return;
+      // Enter on a focused button already presses that button; don't also add the card
+      const onButton = !!target?.closest('button, a');
+
+      if (!flipMode) {
+        if (onButton) return;
+        if (e.code === 'Space') {
+          e.preventDefault();
+          handleSpeak(fullWordDisplay);
+        } else if (e.code === 'Enter') {
+          e.preventDefault();
+          handleAddToBox0();
+        }
+        return;
+      }
 
       if (e.code === 'Space') {
         e.preventDefault();
         handleFlip();
       } else if (e.code === 'Enter') {
-        if (isFlipped) {
+        if (isFlipped && !onButton) {
           e.preventDefault();
           handleAddToBox0();
         }
@@ -135,7 +165,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentWord, isFlipped, isNoun, currentIndex]);
+  }, [currentWord, isFlipped, isNoun, currentIndex, flipMode, fullWordDisplay, handleSpeak]);
 
 
   const kbd = 'px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-[11px] font-mono-num font-bold';
@@ -169,11 +199,13 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
   const plural = isNoun ? pluralParts(currentWord) : [];
   const perfektAccepted = perfektAnswers(currentWord);
   const conjugation = conjugationOf(currentWord);
-  // Until the practice answer is in, don't give the Perfekt away on the back of the card
-  const hide = (s: string) => (perfektAccepted.length && !perfektResult ? maskParticiples(s, perfektAccepted) : s);
+  // Two-sided card: until the practice answer is in, don't give the Perfekt away on the back of the card.
+  // One-sided card: no practice, everything is visible.
+  const perfektLocked = flipMode && perfektAccepted.length > 0 && !perfektResult;
+  const hide = (s: string) => (perfektLocked ? maskParticiples(s, perfektAccepted) : s);
 
   return (
-    <div className="max-w-3xl mx-auto space-y-5 sm:space-y-6 pb-12">
+    <div ref={sessionTopRef} className="max-w-3xl mx-auto space-y-5 sm:space-y-6 pb-12 scroll-mt-24">
 
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 text-xs">
@@ -197,14 +229,17 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
       {/* Info banner */}
       <div className="p-3.5 bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-800/40 rounded-2xl flex items-start gap-3 text-xs text-amber-900 dark:text-amber-200">
         <Sparkles className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-        <p className="leading-relaxed">{t.newWords.banner}</p>
+        <p className="leading-relaxed">{flipMode ? t.newWords.banner : t.newWords.bannerOneSided}</p>
       </div>
 
       {/* Card */}
       <div className="relative min-h-[400px] flex flex-col">
         <div
-          onClick={handleFlip}
-          className="cursor-pointer flex-1 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-3xl p-5 sm:p-10 flex flex-col justify-between gap-4 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-700 transition-all select-none"
+          onClick={flipMode ? handleFlip : undefined}
+          data-card-mode={flipMode ? 'flip' : 'single'}
+          className={`flex-1 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-3xl p-5 sm:p-10 flex flex-col justify-between gap-4 shadow-sm transition-all ${
+            flipMode ? 'cursor-pointer hover:border-indigo-300 dark:hover:border-indigo-700 select-none' : ''
+          }`}
         >
           {/* Card meta */}
           <div className="flex items-start justify-between gap-3 text-xs text-slate-600 dark:text-slate-400">
@@ -220,14 +255,16 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
               )}
             </div>
 
-            <span className="flex items-center gap-1.5 shrink-0 text-slate-500" title={isFlipped ? t.review.showFront : t.newWords.flip}>
-              <RotateCw className="w-4 h-4" />
-              <span className="hidden sm:inline">{isFlipped ? t.review.showFront : t.newWords.flip}</span>
-            </span>
+            {flipMode && (
+              <span className="flex items-center gap-1.5 shrink-0 text-slate-500" title={isFlipped ? t.review.showFront : t.newWords.flip}>
+                <RotateCw className="w-4 h-4" />
+                <span className="hidden sm:inline">{isFlipped ? t.review.showFront : t.newWords.flip}</span>
+              </span>
+            )}
           </div>
 
-          {/* FRONT */}
-          {!isFlipped ? (
+          {/* FRONT (two-sided card only) */}
+          {flipMode && !isFlipped ? (
             <div className="py-6 sm:py-8 text-center space-y-6">
               <div className="space-y-3">
                 {isNoun && (
@@ -302,10 +339,10 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
               <p className="text-xs text-slate-500 dark:text-slate-400">{t.newWords.flipHint}</p>
             </div>
           ) : (
-            /* BACK */
+            /* BACK of the two-sided card, or the whole one-sided card */
             <div className="py-4 space-y-6 text-start">
               <div className="space-y-1.5 pb-4 border-b border-slate-100 dark:border-slate-800">
-                <span className="text-xs text-slate-500 dark:text-slate-400 block">{t.newWords.fullWord}</span>
+                {flipMode && <span className="text-xs text-slate-500 dark:text-slate-400 block">{t.newWords.fullWord}</span>}
                 <div className="flex items-start justify-between gap-3">
                   <De as="div" className="flex flex-wrap items-baseline gap-x-2 min-w-0 break-words hyphens-auto">
                     {quizArticle && (
@@ -326,7 +363,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleSpeak(quizArticle ? `${quizArticle} ${stripArticleFromWord(currentWord.wort)}` : (currentWord.wort || ''));
+                      handleSpeak(fullWordDisplay);
                     }}
                     title={t.review.pronounceTitle}
                     aria-label={t.review.pronounceTitle}
@@ -338,7 +375,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
 
                 {conjugation && (
                   <div className="pt-1">
-                    <ConjugationButton verb={currentWord.wort || ''} conjugation={conjugation} disabled={perfektAccepted.length > 0 && !perfektResult} />
+                    <ConjugationButton verb={currentWord.wort || ''} conjugation={conjugation} disabled={perfektLocked} />
                   </div>
                 )}
 
@@ -351,6 +388,13 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                {!flipMode && perfektAccepted.length > 0 && (
+                  <div className="p-3 rounded-xl bg-violet-50/70 dark:bg-violet-950/30 border border-violet-200/60 dark:border-violet-800/40 sm:col-span-2">
+                    <De className="text-violet-700 dark:text-violet-300 font-semibold block mb-1">Perfekt</De>
+                    <De as="div" className="text-sm font-bold text-slate-900 dark:text-white leading-relaxed">{perfektAccepted.join(' / ')}</De>
+                  </div>
+                )}
+
                 {plural.length > 0 && (
                   <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 sm:col-span-2">
                     <span className="text-slate-500 dark:text-slate-400 block mb-1">{t.review.plural}</span>
@@ -402,12 +446,14 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
 
           {/* Keyboard shortcuts (only on devices with a keyboard/mouse) */}
           <div className="hidden pointer-fine:flex pt-4 border-t border-slate-100 dark:border-slate-800 items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
-            <span>{t.review.kbdFlip} <kbd className={kbd}>Space</kbd></span>
+            {flipMode
+              ? <span>{t.review.kbdFlip} <kbd className={kbd}>Space</kbd></span>
+              : <span>{t.newWords.kbdSpeak} <kbd className={kbd}>Space</kbd></span>}
             <span>{t.newWords.kbdAdd} <kbd className={kbd}>Enter</kbd></span>
           </div>
         </div>
 
-        {perfektAccepted.length > 0 && (
+        {flipMode && perfektAccepted.length > 0 && (
           <div className="mt-4">
             <PerfektQuiz
               key={currentWord.id}
@@ -429,7 +475,10 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
         )}
 
         {/* Actions */}
-        <div className="mt-4 flex flex-col-reverse sm:flex-row gap-3">
+        {/* One-sided cards can be long on phones: keep the buttons in reach at the bottom of the screen */}
+        <div className={`mt-4 flex flex-col-reverse sm:flex-row gap-3 ${
+          flipMode ? '' : 'max-sm:sticky max-sm:bottom-0 max-sm:z-10 max-sm:-mx-4 max-sm:px-4 max-sm:pt-3 max-sm:pb-[calc(0.75rem+env(safe-area-inset-bottom))] max-sm:flex-row max-sm:bg-slate-50/95 max-sm:dark:bg-slate-950/95 max-sm:backdrop-blur-sm max-sm:border-t max-sm:border-slate-200 max-sm:dark:border-slate-800'
+        }`}>
           <button
             type="button"
             onClick={goToNextWord}

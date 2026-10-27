@@ -21,7 +21,8 @@ export const DEFAULT_SETTINGS: AppSettings = {
   speechRate: 0.9,
   autoSpeak: true,
   hapticFeedback: true,
-  nounsOnlyMode: false
+  nounsOnlyMode: false,
+  newWordsFlipCard: false
 };
 
 /**
