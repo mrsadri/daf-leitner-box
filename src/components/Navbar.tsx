@@ -45,7 +45,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const tabs = TABS.filter(tab => tab.id !== 'admin' || profile.isAdmin);
 
   return (
-    <header className="sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+    <header className="sticky top-0 z-30 pt-[env(safe-area-inset-top)] bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3 xl:gap-6">
 
         {/* Brand */}

@@ -21,6 +21,10 @@ import { Loader2, WifiOff } from 'lucide-react';
 import { useI18n } from './i18n/I18nProvider';
 import { DEFAULT_LANG } from './i18n/format';
 import { Credit } from './components/ui/Credit';
+import { refreshPush, disablePush } from './services/pwa';
+
+// Where a tapped reminder wants to go ("?go=learn" / "?go=review"), read before the URL is cleaned up
+const initialGo = new URLSearchParams(window.location.search).get('go');
 
 const PRESENCE_INTERVAL_MS = 5 * 60 * 1000;
 
@@ -185,7 +189,25 @@ function LeitnerApp({ user }: { user: User }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile, lang]);
 
+  // Keep this device's reminder subscription current (time zone, language)
+  useEffect(() => {
+    if (profile && !profile.suspended) refreshPush(lang);
+  }, [profile, lang]);
+
+  // Open the screen a tapped reminder points to
+  const goHandled = useRef(false);
+  useEffect(() => {
+    if (!profile || goHandled.current) return;
+    goHandled.current = true;
+    if (initialGo === 'learn') setIsStudyingNewWords(true);
+    else if (initialGo === 'review') handleStartReview();
+    if (initialGo) window.history.replaceState(null, '', window.location.pathname);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile]);
+
   const handleSignOut = async () => {
+    // The next person signing in on this device must not get this user's reminders
+    await disablePush().catch(() => undefined);
     await cloudSync.stop();
     await supabase?.auth.signOut();
   };
@@ -245,6 +267,10 @@ function LeitnerApp({ user }: { user: User }) {
                 onNavigateToCatalog={() => setActiveTab('catalog')}
                 onNavigateToReflections={() => setActiveTab('reflections')}
                 onOpenNewCardModal={() => setIsNewCardModalOpen(true)}
+                onOpenSettings={() => {
+                  setActiveTab('settings');
+                  setTimeout(() => document.getElementById('app-install')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+                }}
               />
             )}
 
