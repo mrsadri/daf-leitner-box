@@ -22,8 +22,11 @@ import { useI18n } from './i18n/I18nProvider';
 import { DEFAULT_LANG } from './i18n/format';
 import { Credit } from './components/ui/Credit';
 import { refreshPush, disablePush } from './services/pwa';
+import { fetchUnseenOverdueMoves, markOverdueMovesSeen } from './services/overdue';
+import type { OverdueMove } from './services/overdueSummary';
+import { OverdueNotice } from './components/OverdueNotice';
 
-// Where a tapped reminder wants to go ("?go=learn" / "?go=review"), read before the URL is cleaned up
+// Where a tapped notification wants to go ("?go=learn" / "?go=review" / "?go=leaderboard"), read before the URL is cleaned up
 const initialGo = new URLSearchParams(window.location.search).get('go');
 
 const PRESENCE_INTERVAL_MS = 5 * 60 * 1000;
@@ -80,6 +83,7 @@ function LeitnerApp({ user }: { user: User }) {
   const [reviewNounsOnly, setReviewNounsOnly] = useState<boolean>(false);
   const [reviewSessionKey, setReviewSessionKey] = useState(0);
   const [isStudyingNewWords, setIsStudyingNewWords] = useState<boolean>(false);
+  const [overdueMoves, setOverdueMoves] = useState<OverdueMove[]>([]);
 
   const refreshState = () => {
     setCards([...leitnerEngine.getCards()]);
@@ -126,6 +130,14 @@ function LeitnerApp({ user }: { user: User }) {
       clearInterval(interval);
       document.removeEventListener('visibilitychange', ping);
     };
+  }, [ready]);
+
+  // Cards the nightly overdue rule moved back: explain them once (fresh server data is loaded by now)
+  useEffect(() => {
+    if (!ready) return;
+    let cancelled = false;
+    fetchUnseenOverdueMoves().then(moves => { if (!cancelled) setOverdueMoves(moves); });
+    return () => { cancelled = true; };
   }, [ready]);
 
   // The sound toggle used to reset to "on" after every reload
@@ -201,9 +213,16 @@ function LeitnerApp({ user }: { user: User }) {
     goHandled.current = true;
     if (initialGo === 'learn') setIsStudyingNewWords(true);
     else if (initialGo === 'review') handleStartReview();
+    else if (initialGo === 'leaderboard') setActiveTab('leaderboard');
     if (initialGo) window.history.replaceState(null, '', window.location.pathname);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile]);
+
+  const closeOverdueNotice = () => {
+    setOverdueMoves([]);
+    markOverdueMovesSeen().catch(() => undefined);
+    if (!settings.overdueRuleSeen) handleUpdateSettings({ overdueRuleSeen: true });
+  };
 
   const handleSignOut = async () => {
     // The next person signing in on this device must not get this user's reminders
@@ -333,6 +352,20 @@ function LeitnerApp({ user }: { user: User }) {
           </>
         )}
       </main>
+
+      {overdueMoves.length > 0 && (
+        <OverdueNotice
+          moves={overdueMoves}
+          cards={cards}
+          firstTime={!settings.overdueRuleSeen}
+          dueCount={dueCards.length}
+          onClose={closeOverdueNotice}
+          onStartReview={() => {
+            closeOverdueNotice();
+            handleStartReview();
+          }}
+        />
+      )}
 
       <NewCardModal
         isOpen={isNewCardModalOpen}

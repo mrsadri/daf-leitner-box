@@ -141,7 +141,10 @@ export const SettingsBackupModal: React.FC<SettingsBackupModalProps> = ({
       <div id="app-install" className={`${section} text-xs scroll-mt-40 xl:scroll-mt-24`}>
         <InstallSection />
         <div className="border-t border-slate-100 dark:border-slate-800 pt-5 empty:hidden">
-          <NotificationSection />
+          <NotificationSection
+            notifyOvertake={settings.notifyOvertake !== false}
+            onNotifyOvertakeChange={v => onUpdateSettings({ notifyOvertake: v })}
+          />
         </div>
       </div>
 

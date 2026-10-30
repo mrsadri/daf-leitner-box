@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { CheckCircle2, XCircle, AlertCircle, PencilLine } from 'lucide-react';
+import { CheckCircle2, XCircle, AlertCircle, PencilLine, Lightbulb } from 'lucide-react';
 import { checkPerfekt, PerfektResult } from '../services/perfekt';
 import { useI18n } from '../i18n/I18nProvider';
 import { De } from './ui/Text';
+import type { PerfektGuide } from '../services/perfektGuide';
+import { PerfektHint, PerfektExplanation } from './PerfektGuide';
 
 interface PerfektQuizProps {
   /** Accepted answers, e.g. ["ist gerudert", "hat gerudert"] */
@@ -11,6 +13,8 @@ interface PerfektQuizProps {
   onGraded: (result: PerfektResult) => void;
   /** Practice: no effect on the card's box (new-words session) */
   practice?: boolean;
+  /** How the verb forms its Perfekt: a hint button before answering, the explanation after (beginner boxes) */
+  guide?: PerfektGuide | null;
 }
 
 const UMLAUTS = ['ä', 'ö', 'ü', 'ß'];
@@ -29,12 +33,13 @@ const PerfektForm: React.FC<{ value: string }> = ({ value }) => {
  * Typing quiz for a verb's Perfekt. Grades once: after a graded answer the field is locked
  * and the parent decides what happens to the card. Remount (key) for the next card.
  */
-export const PerfektQuiz: React.FC<PerfektQuizProps> = ({ accepted, onGraded, practice = false }) => {
+export const PerfektQuiz: React.FC<PerfektQuizProps> = ({ accepted, onGraded, practice = false, guide = null }) => {
   const { t } = useI18n();
   const inputRef = useRef<HTMLInputElement>(null);
   const [value, setValue] = useState('');
   const [result, setResult] = useState<PerfektResult | null>(null);
   const [needsAux, setNeedsAux] = useState(false);
+  const [hintOpen, setHintOpen] = useState(false);
 
   // Focus the field on devices with a keyboard; on phones the on-screen keyboard would cover the card
   useEffect(() => {
@@ -125,6 +130,7 @@ export const PerfektQuiz: React.FC<PerfektQuizProps> = ({ accepted, onGraded, pr
       </form>
 
       {!graded && (
+        <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex gap-1.5" dir="ltr">
           {UMLAUTS.map(ch => (
             <button
@@ -140,7 +146,23 @@ export const PerfektQuiz: React.FC<PerfektQuizProps> = ({ accepted, onGraded, pr
             </button>
           ))}
         </div>
+        {guide && (
+          <button
+            type="button"
+            onClick={() => setHintOpen(o => !o)}
+            aria-expanded={hintOpen}
+            className={`flex items-center gap-1.5 px-3 h-8 rounded-lg text-xs font-semibold transition-colors ${
+              hintOpen ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200' : 'bg-amber-50 hover:bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:hover:bg-amber-900/50 dark:text-amber-300'
+            }`}
+          >
+            <Lightbulb className="w-4 h-4" />
+            {t.perfektGuide.hint}
+          </button>
+        )}
+        </div>
       )}
+
+      {!graded && guide && hintOpen && <PerfektHint guide={guide} />}
 
       <div id="perfekt-feedback" aria-live="polite">
         {needsAux && (
@@ -178,6 +200,8 @@ export const PerfektQuiz: React.FC<PerfektQuizProps> = ({ accepted, onGraded, pr
           </div>
         )}
       </div>
+
+      {graded && guide && <PerfektExplanation guide={guide} />}
     </div>
   );
 };

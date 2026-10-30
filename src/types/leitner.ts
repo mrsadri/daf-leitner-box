@@ -103,6 +103,8 @@ export interface AppSettings {
   hapticFeedback: boolean;
   nounsOnlyMode: boolean; // Focus solely on Nouns & mastering articles
   newWordsFlipCard?: boolean; // New-words session: two-sided card (front/back). Unset/false = one-sided card
+  overdueRuleSeen?: boolean; // The overdue rule was explained once (popup); later popups are shorter
+  notifyOvertake?: boolean; // Push when someone passes the user on the leaderboard. Unset = on
   language?: Lang; // Interface language; unset means the default (Persian)
 }
 

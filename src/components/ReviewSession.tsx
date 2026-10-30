@@ -3,7 +3,7 @@ import { LeitnerCard, BOX_CONFIGS, MASTERED_BOX } from '../types/leitner';
 import { leitnerEngine, isNounCard, stripArticleFromWord, getQuizArticle } from '../services/leitnerEngine';
 import { soundService } from '../services/soundService';
 import { speechService } from '../services/speechService';
-import { vocabText, perfektAnswers, pluralParts, conjugationOf } from '../services/vocabText';
+import { vocabText, perfektAnswers, pluralParts, conjugationOf, perfektGuideOf } from '../services/vocabText';
 import { ConjugationButton } from './ConjugationDialog';
 import { maskParticiples, PerfektResult } from '../services/perfekt';
 import { PerfektQuiz } from './PerfektQuiz';
@@ -12,7 +12,6 @@ import { PluralInfo } from './PluralInfo';
 import { Volume2, RotateCw, Check, X, Sparkles, ArrowLeft, Trophy, BookOpen, Quote, Edit3 } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
 import { De, Auto } from './ui/Text';
-import { Switch } from './ui/Switch';
 
 interface ReviewSessionProps {
   /** Cards due when the session started. Snapshotted on mount (remount with a new `key` to start a new session). */
@@ -40,6 +39,7 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
   onStartNewWordsLearning
 }) => {
   const { t, lang, num } = useI18n();
+  // Noun-only mode comes from Settings (or the dashboard's noun-review button); the empty-queue button turns it off for this session only
   const [nounsOnly, setNounsOnly] = useState<boolean>(initialNounsOnly || leitnerEngine.getSettings().nounsOnlyMode);
 
   // The session works on a fixed snapshot. Answered cards stop being "due" and disappear from the
@@ -71,11 +71,6 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
   const actionBarRef = useMobileActionBar<HTMLDivElement>();
   const shownCardIdRef = useRef<string | undefined>(undefined);
 
-  const handleToggleNounsOnly = (checked: boolean) => {
-    setNounsOnly(checked);
-    leitnerEngine.saveSettings({ nounsOnlyMode: checked });
-    onCardUpdated();
-  };
 
   const snapshotCard = remaining[0];
   const currentCard = snapshotCard ? (liveById.get(snapshotCard.id) || snapshotCard) : undefined;
@@ -87,6 +82,8 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
   // Verbs: the typed Perfekt decides; "Knew it" stays locked until it was answered correctly
   const perfektAccepted = useMemo(() => (currentCard ? perfektAnswers(currentCard) : []), [currentCard]);
   const hasPerfektQuiz = perfektAccepted.length > 0;
+  // Beginner boxes (0–2): hint before answering and the explanation after
+  const perfektGuide = useMemo(() => (currentCard && hasPerfektQuiz && currentCard.box <= 2 ? perfektGuideOf(currentCard) : null), [currentCard, hasPerfektQuiz]);
   const perfektLocked = hasPerfektQuiz && !perfektResult?.correct;
 
   const handleSpeak = useCallback(async (text: string) => {
@@ -260,7 +257,7 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
         <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
           {nounsOnly && (
             <button
-              onClick={() => handleToggleNounsOnly(false)}
+              onClick={() => setNounsOnly(false)}
               className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold transition-colors"
             >
               {t.review.showAllCards}
@@ -372,23 +369,6 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
             style={{ width: `${((answeredCount + 1) / sessionTotal) * 100}%` }}
           />
         </div>
-      </div>
-
-      {/* Noun mode */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
-        <div className="flex items-start gap-3">
-          <Switch id="nomenSwitch" checked={nounsOnly} onChange={handleToggleNounsOnly} className="mt-0.5" />
-          <label htmlFor="nomenSwitch" className="cursor-pointer min-w-0">
-            <span className="font-bold text-xs text-slate-900 dark:text-white block">{t.review.nounsToggleTitle}</span>
-            <span className="text-[11px] text-slate-500 dark:text-slate-400 block leading-relaxed">{t.review.nounsToggleBody}</span>
-          </label>
-        </div>
-
-        {nounsOnly && (
-          <span className="self-start sm:self-auto text-xs text-indigo-700 dark:text-indigo-300 font-semibold px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 shrink-0">
-            {t.review.nounsInQueue(remaining.length)}
-          </span>
-        )}
       </div>
 
       {/* Flashcard */}
@@ -696,7 +676,7 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
         {/* Perfekt quiz (verbs), kept outside the card so it stays visible when the card is flipped */}
         {hasPerfektQuiz && (
           <div className="mt-4">
-            <PerfektQuiz key={currentCard.id} accepted={perfektAccepted} onGraded={handlePerfektGraded} />
+            <PerfektQuiz key={currentCard.id} accepted={perfektAccepted} onGraded={handlePerfektGraded} guide={perfektGuide} />
             {perfektResult && conjugation && (
               <div className="mt-2 flex justify-end">
                 <ConjugationButton verb={currentCard.wort || ''} conjugation={conjugation} />

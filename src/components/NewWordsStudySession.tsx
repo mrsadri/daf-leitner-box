@@ -3,11 +3,12 @@ import { LeitnerCard } from '../types/leitner';
 import { leitnerEngine, stripArticleFromWord, getQuizArticle, calculateNextReviewDate } from '../services/leitnerEngine';
 import { soundService } from '../services/soundService';
 import { speechService } from '../services/speechService';
-import { vocabText, perfektAnswers, pluralParts, conjugationOf } from '../services/vocabText';
+import { vocabText, perfektAnswers, pluralParts, conjugationOf, perfektGuideOf } from '../services/vocabText';
 import { ConjugationButton } from './ConjugationDialog';
 import { maskParticiples, PerfektResult } from '../services/perfekt';
 import { PerfektQuiz } from './PerfektQuiz';
 import { PluralInfo } from './PluralInfo';
+import { PerfektExplanation } from './PerfektGuide';
 import { Volume2, RotateCw, ArrowLeft, BookOpen, PlusCircle, CheckCircle2, Sparkles, SkipForward, X } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
 import { De, Auto } from './ui/Text';
@@ -207,6 +208,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
   const plural = isNoun ? pluralParts(currentWord) : [];
   const perfektAccepted = perfektAnswers(currentWord);
   const conjugation = conjugationOf(currentWord);
+  const perfektGuide = perfektAccepted.length ? perfektGuideOf(currentWord) : null;
   // Two-sided card: until the practice answer is in, don't give the Perfekt away on the back of the card.
   // One-sided card: no practice, everything is visible.
   const perfektLocked = flipMode && perfektAccepted.length > 0 && !perfektResult;
@@ -414,6 +416,11 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
                   <div className="p-3 rounded-xl bg-violet-50/70 dark:bg-violet-950/30 border border-violet-200/60 dark:border-violet-800/40 sm:col-span-2">
                     <De className="text-violet-700 dark:text-violet-300 font-semibold block mb-1">Perfekt</De>
                     <De as="div" className="text-sm font-bold text-slate-900 dark:text-white leading-relaxed">{perfektAccepted.join(' / ')}</De>
+                    {perfektGuide && (
+                      <div className="mt-2.5 pt-2.5 border-t border-violet-200/60 dark:border-violet-800/40">
+                        <PerfektExplanation guide={perfektGuide} bare />
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -481,6 +488,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
               key={currentWord.id}
               accepted={perfektAccepted}
               practice
+              guide={perfektGuide}
               onGraded={r => {
                 setPerfektResult(r);
                 if (r.correct) soundService.playSuccess();

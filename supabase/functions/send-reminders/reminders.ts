@@ -16,7 +16,6 @@ export interface Subscription {
   auth: string;
   timezone: string;
   lang: string;
-  last_class_reminder_on: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -29,20 +28,24 @@ export interface UserActivity {
 export interface PushState {
   inactivity_count: number;
   last_inactivity_at: string | null;
-  last_class_at: string | null;
+  /** Leaderboard rank last notified about (or the best rank since); null = not tracked yet */
+  overtake_rank: number | null;
+  last_overtake_at: string | null;
+}
+
+/** The user's place on the all-time leaderboard; null when hidden from it (or suspended) */
+export interface Standing {
+  rank: number;
+  score: number;
 }
 
 const HOUR = 3600_000;
 const DEFAULT_TZ = 'Asia/Tehran';
-// Saturday to Wednesday (JS: Sunday = 0)
-const CLASS_DAYS = new Set([6, 0, 1, 2, 3]);
-const CLASS_FROM = 9 * 60 + 30;
-const CLASS_UNTIL = 10 * 60;           // exclusive: the 09:30 / 09:45 runs (or a late one) catch it
 const INACTIVE_AFTER = 24 * HOUR;
 const MAX_INACTIVITY_REMINDERS = 3;
-const QUIET_BEFORE = 10;               // inactivity reminders only 10:00–21:00 local time
+const QUIET_BEFORE = 10;               // notifications only 10:00–21:00 local time
 const QUIET_FROM = 21;
-const AFTER_CLASS_GAP = 2 * HOUR;
+const GAP_BETWEEN_KINDS = 2 * HOUR;    // an overtake and an inactivity reminder are at least this far apart
 
 export function safeTimeZone(tz: string | null | undefined): string {
   if (!tz) return DEFAULT_TZ;
@@ -70,10 +73,13 @@ export function localTime(now: Date, tz: string): { weekday: number; minutes: nu
   };
 }
 
-export function isClassReminderDue(sub: Pick<Subscription, 'timezone' | 'last_class_reminder_on'>, now: Date): boolean {
-  const t = localTime(now, sub.timezone);
-  return CLASS_DAYS.has(t.weekday) && t.minutes >= CLASS_FROM && t.minutes < CLASS_UNTIL && sub.last_class_reminder_on !== t.date;
-}
+const inQuietHours = (now: Date, tz: string) => {
+  const hour = Math.floor(localTime(now, tz).minutes / 60);
+  return hour < QUIET_BEFORE || hour >= QUIET_FROM;
+};
+
+const within = (iso: string | null | undefined, now: Date, ms: number) =>
+  !!iso && now.getTime() - new Date(iso).getTime() < ms;
 
 /**
  * Whether this user should get an inactivity reminder now, and the counter value after sending.
@@ -96,24 +102,60 @@ export function inactivityDecision(
   if (t - lastActive <= INACTIVE_AFTER) return { send: false, count };
   if (count >= MAX_INACTIVITY_REMINDERS) return { send: false, count };
   if (lastReminder !== null && lastReminder >= lastActive && t - lastReminder < INACTIVE_AFTER) return { send: false, count };
-  const hour = Math.floor(localTime(now, timezone).minutes / 60);
-  if (hour < QUIET_BEFORE || hour >= QUIET_FROM) return { send: false, count };
-  if (state?.last_class_at && t - new Date(state.last_class_at).getTime() < AFTER_CLASS_GAP) return { send: false, count };
+  if (inQuietHours(now, timezone)) return { send: false, count };
+  if (within(state?.last_overtake_at, now, GAP_BETWEEN_KINDS)) return { send: false, count };
   return { send: true, count: count + 1 };
+}
+
+/**
+ * "Someone passed you on the leaderboard". The baseline is the rank last notified about: it follows
+ * improvements silently; when the rank gets worse, notify (at most once per local day, 10:00–21:00,
+ * not right after an inactivity reminder). While a notification has to wait, the baseline stays, so it
+ * goes out later only if the user is still behind. Users hidden from the leaderboard lose their baseline,
+ * so showing up again doesn't count as being passed. Users with no score yet or who turned this
+ * notification off just follow along.
+ */
+export function overtakeDecision(
+  standing: Standing | null,
+  enabled: boolean,
+  state: PushState | null,
+  timezone: string,
+  now: Date
+): { send: boolean; passedBy: number; rank: number; baseline: number | null } {
+  const base = state?.overtake_rank ?? null;
+  if (!standing) return { send: false, passedBy: 0, rank: 0, baseline: null };
+  const { rank, score } = standing;
+  const follow = { send: false, passedBy: 0, rank, baseline: rank };
+  if (base === null || rank <= base) return follow;
+  if (!enabled || score <= 0) return follow;
+
+  const wait = { send: false, passedBy: 0, rank, baseline: base };
+  if (inQuietHours(now, timezone)) return wait;
+  const last = state?.last_overtake_at;
+  if (last && localTime(new Date(last), timezone).date === localTime(now, timezone).date) return wait;
+  if (within(state?.last_inactivity_at, now, GAP_BETWEEN_KINDS)) return wait;
+  return { send: true, passedBy: rank - base, rank, baseline: rank };
 }
 
 export const asLang = (lang: string | null | undefined): Lang => (lang === 'en' ? 'en' : 'fa');
 
-export const CLASS_MESSAGE: Record<Lang, { title: string; body: string }> = {
-  fa: {
-    title: 'وقت استراحت بین کلاس ☕',
-    body: 'امیدوارم کلاس تا این‌جا خوب بوده باشه! الان فرصت خوبیه که توی این نیم ساعت بین کلاس بیای و کلمات جدید یاد بگیری.'
-  },
-  en: {
-    title: 'Class break ☕',
-    body: 'I hope class has gone well so far! This half-hour break is a great moment to come in and learn some new words.'
-  }
-};
+const faDigits = (x: number) => String(x).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[Number(d)]);
+
+export function overtakePayload(lang: Lang, passedBy: number, rank: number) {
+  const title = lang === 'fa'
+    ? (passedBy > 1 ? `${faDigits(passedBy)} نفر ازت جلو زدن! 🏁` : 'یک نفر ازت جلو زد! 🏁')
+    : (passedBy > 1 ? `${passedBy} people passed you! 🏁` : 'Someone passed you! 🏁');
+  const body = lang === 'fa'
+    ? `الان رتبه‌ی ${faDigits(rank)} جدول رقابت هستی. با چند مرور کوتاه می‌تونی جایگاهت رو پس بگیری.`
+    : `You're now #${rank} on the leaderboard. A few quick reviews can win your place back.`;
+  return { title, body, url: '/?go=leaderboard', tag: 'daf-overtake', lang };
+}
+
+export function testPayload(lang: Lang) {
+  return lang === 'fa'
+    ? { title: 'آزمایش اعلان ✅', body: 'اعلان‌های لایتنر روی این دستگاه کار می‌کنند.', url: '/', tag: 'daf-test', lang }
+    : { title: 'Test notification ✅', body: 'Leitner notifications work on this device.', url: '/', tag: 'daf-test', lang };
+}
 
 export const INACTIVITY_TITLE: Record<Lang, string> = {
   fa: 'مسیرت رو ادامه بده 🌱',
@@ -187,10 +229,6 @@ export const QUOTES: Record<Lang, string[]> = {
     "Your German is waiting for you. Let's keep going!"
   ]
 };
-
-export function classPayload(lang: Lang) {
-  return { ...CLASS_MESSAGE[lang], url: '/?go=learn', tag: 'daf-class', lang };
-}
 
 /** `index` picks the quote; the lists are aligned, so every device gets the same line in its own language. */
 export function inactivityPayload(lang: Lang, index: number) {
