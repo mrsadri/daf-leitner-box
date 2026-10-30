@@ -25,6 +25,7 @@ import { refreshPush, disablePush } from './services/pwa';
 import { fetchUnseenOverdueMoves, markOverdueMovesSeen } from './services/overdue';
 import type { OverdueMove } from './services/overdueSummary';
 import { OverdueNotice } from './components/OverdueNotice';
+import { startSilver, refreshSilver } from './services/silver';
 
 // Where a tapped notification wants to go ("?go=learn" / "?go=review" / "?go=leaderboard"), read before the URL is cleaned up
 const initialGo = new URLSearchParams(window.location.search).get('go');
@@ -132,6 +133,11 @@ function LeitnerApp({ user }: { user: User }) {
     };
   }, [ready]);
 
+  // Silver cards: this device's running count, brought up to date with the server
+  useEffect(() => {
+    if (ready) startSilver(user.id);
+  }, [ready, user.id]);
+
   // Cards the nightly overdue rule moved back: explain them once (fresh server data is loaded by now)
   useEffect(() => {
     if (!ready) return;
@@ -157,6 +163,7 @@ function LeitnerApp({ user }: { user: User }) {
     setReviewNounsOnly(!!nounsOnly);
     setReviewSessionKey(k => k + 1);
     setIsStudyingNewWords(false);
+    refreshSilver();
     setActiveTab('review');
   };
 

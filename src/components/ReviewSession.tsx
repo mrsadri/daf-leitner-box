@@ -8,6 +8,8 @@ import { ConjugationButton } from './ConjugationDialog';
 import { maskParticiples, PerfektResult } from '../services/perfekt';
 import { PerfektQuiz } from './PerfektQuiz';
 import { MOBILE_ACTION_BAR, useMobileActionBar } from './ui/mobileActionBar';
+import { recordSilverCorrect } from '../services/silver';
+import { SilverCardEarned } from './SilverCards';
 import { PluralInfo } from './PluralInfo';
 import { Volume2, RotateCw, Check, X, Sparkles, ArrowLeft, Trophy, BookOpen, Quote, Edit3 } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
@@ -68,6 +70,7 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
   const knewRef = useRef<HTMLButtonElement>(null);
   const forgotRef = useRef<HTMLButtonElement>(null);
   const cardAreaRef = useRef<HTMLDivElement>(null);
+  const [silverWon, setSilverWon] = useState<number | null>(null);
   const actionBarRef = useMobileActionBar<HTMLDivElement>();
   const shownCardIdRef = useRef<string | undefined>(undefined);
 
@@ -139,6 +142,11 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
 
     const { newBox } = leitnerEngine.recordVocabAnswer(currentCard.id, isCorrect);
     const graduated = newBox >= MASTERED_BOX;
+    // More than 15 correct answers today: a silver card
+    if (isCorrect) {
+      const won = recordSilverCorrect();
+      if (won) setSilverWon(won);
+    }
     if (graduated) soundService.playMastered();
 
     setSessionStats(prev => ({
@@ -274,10 +282,13 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
     );
   }
 
+  const silverDialog = silverWon !== null && <SilverCardEarned index={silverWon} onClose={() => setSilverWon(null)} />;
+
   // Completion screen
   if (isComplete || !currentCard) {
     return (
       <div className="max-w-xl mx-auto py-12 text-center space-y-6">
+        {silverDialog}
         <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-300 text-slate-950 flex items-center justify-center shadow-lg animate-bounce">
           <Trophy className="w-10 h-10" />
         </div>
@@ -341,6 +352,7 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
 
   return (
     <div className="max-w-3xl mx-auto space-y-5 sm:space-y-6 pb-12">
+      {silverDialog}
 
       {/* Session progress */}
       <div className="space-y-2 text-xs">

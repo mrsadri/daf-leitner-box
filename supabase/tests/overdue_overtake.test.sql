@@ -104,6 +104,40 @@ select pg_temp.check((select count(*) = 1 from public.leaderboard_ranks()), 'ran
 select pg_temp.check((select rank = 1 and score = (select sum(box) from public.cards where user_id = '00000000-0000-0000-0000-000000000001') from public.leaderboard_ranks()), 'ranks: score = sum of boxes');
 reset role;
 
+-- Silver cards (review_day validation is switched off here to write past days)
+alter table public.review_events disable trigger review_events_validate;
+insert into public.review_events (user_id, card_id, card_type, correct, from_box, to_box, review_day)
+select '00000000-0000-0000-0000-000000000001', 'c' || g, 'vocab', true, 1, 2, '2026-11-01' from generate_series(1, 16) g;   -- 16 correct → a card
+insert into public.review_events (user_id, card_id, card_type, correct, from_box, to_box, review_day)
+select '00000000-0000-0000-0000-000000000001', 'c' || g, 'vocab', true, 1, 2, '2026-11-02' from generate_series(1, 15) g;   -- only 15 …
+insert into public.review_events (user_id, card_id, card_type, correct, from_box, to_box, review_day)
+select '00000000-0000-0000-0000-000000000001', 'r' || g, 'reflection', true, 1, 2, '2026-11-02' from generate_series(1, 5) g; -- … reflections don't count
+insert into public.review_events (user_id, card_id, card_type, correct, from_box, to_box, review_day)
+select '00000000-0000-0000-0000-000000000001', 'w' || g, 'vocab', false, 2, 1, '2026-11-02' from generate_series(1, 9) g;     -- … nor wrong answers
+insert into public.review_events (user_id, card_id, card_type, correct, from_box, to_box, review_day)
+select '00000000-0000-0000-0000-000000000001', 'c' || g, 'vocab', true, 1, 2, '2026-10-30' from generate_series(1, 20) g;   -- before the start date
+
+set role authenticated;
+set test.uid = '00000000-0000-0000-0000-000000000001';
+select pg_temp.check((select total = 1 and today_correct = 16 and earned_today from public.get_silver_status('2026-11-01')), 'silver: 16 correct on 11-01 → 1 card, earned that day');
+select pg_temp.check((select total = 1 and today_correct = 15 and not earned_today from public.get_silver_status('2026-11-02')), 'silver: 15 correct (+ reflections, wrong answers) → no card');
+select pg_temp.check((select total = 1 and today_correct = 0 from public.get_silver_status('2026-11-05')), 'silver: quiet day');
+select pg_temp.check((select silver = 1 from public.get_leaderboard('all', 100) where is_me), 'leaderboard shows the silver count');
+set test.uid = '00000000-0000-0000-0000-000000000003';
+select pg_temp.check((select total = 0 from public.get_silver_status('2026-11-01')), 'silver status is per user');
+reset role;
+
+insert into public.review_events (user_id, card_id, card_type, correct, from_box, to_box, review_day)
+select '00000000-0000-0000-0000-000000000001', 'c' || g, 'vocab', true, 1, 2, date '2026-11-10' + d
+from generate_series(1, 16) g, generate_series(0, 39) d;   -- 40 more good days
+set role authenticated;
+set test.uid = '00000000-0000-0000-0000-000000000001';
+select pg_temp.check((select total = 30 from public.get_silver_status('2026-12-30')), 'silver: at most 30');
+select pg_temp.check((select silver = 30 from public.get_leaderboard('all', 100) where is_me), 'leaderboard: at most 30');
+select pg_temp.check((select count(*) >= 1 from public.get_leaderboard('week', 100)), 'leaderboard week tab still works');
+reset role;
+alter table public.review_events enable trigger review_events_validate;
+
 -- Cron job registered once (file can run twice)
 select pg_temp.check((select count(*) = 1 and min(schedule) = '35 20 * * *' from cron.job where jobname = 'daf-overdue-demotions'), 'cron job scheduled at 00:05 Tehran');
 select pg_temp.check((select count(*) = 2 from information_schema.columns where table_name = 'push_state' and column_name in ('overtake_rank', 'last_overtake_at')), 'push_state columns added');

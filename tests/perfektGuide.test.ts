@@ -87,6 +87,20 @@ test('why haben or sein', () => {
   assert.equal(guide('fahren', 'ist gefahren | hat gefahren').aux, 'sein');
 });
 
+test('prefixes that can go either way, the extra g of essen, alternative forms', () => {
+  const uebersetzen = guide('übersetzen', 'hat übersetzt');
+  assert.deepEqual([uebersetzen.prefix, uebersetzen.dualPrefix], ['inseparable', true]);
+  const umziehen = guide('umziehen', 'ist umgezogen');
+  assert.deepEqual([umziehen.prefix, umziehen.dualPrefix], ['separable', true]);
+  assert.equal(guide('wiederholen', 'hat wiederholt').dualPrefix, true);
+  assert.equal(guide('besuchen', 'hat besucht').dualPrefix, false);
+  assert.equal(guide('anrufen', 'hat angerufen').dualPrefix, false);
+  assert.equal(guide('essen', 'hat gegessen').extraG, true);
+  assert.equal(guide('sehen', 'hat gesehen').extraG, false);
+  assert.deepEqual(guide('senden', 'hat gesandt | hat gesendet').alternatives, ['gesendet']);
+  assert.deepEqual(guide('stehen', 'hat gestanden | ist gestanden').alternatives, []);
+});
+
 test('no guide without a well-formed answer', () => {
   assert.equal(explainPerfekt('machen', []), null);
   assert.equal(explainPerfekt('machen', ['gemacht']), null);

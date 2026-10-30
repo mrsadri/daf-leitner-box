@@ -295,6 +295,8 @@ export const en: Messages = {
     explainer: 'Score = the sum of (cards in each box × that box number). Box 0 scores nothing and each mastered card is worth 6. The weekly score is how much that score changed in the last 7 days. Only numbers are shown; nobody can see the content of your cards.',
     refresh: 'Refresh',
     tabAll: 'All time',
+    colSilver: 'Silver',
+    silverTitle: 'Silver cards',
     tabWeek: 'This week',
     myRank: 'Your rank',
     totalScore: 'Total score',
@@ -421,23 +423,28 @@ export const en: Messages = {
       mixed: 'The ending is t like a regular verb, but the stem changes.'
     },
     formula: 'Pattern:',
+    rootNote: 'The stem is the infinitive without -en (or -n), e.g. mach in machen.',
     separable: (p: string) => `Separable prefix ${p}-: ge goes between the prefix and the stem (${p} + ge + …).`,
+    separableDual: (p: string) => `The prefix ${p}- is separable in some verbs and not in others. Here it is separable (stressed), so ge goes between the prefix and the stem.`,
     inseparable: (p: string) => `Inseparable prefix ${p}-: no ge.`,
+    inseparableDual: (p: string) => `The prefix ${p}- is separable in some verbs and not in others. Here it is inseparable (the stem is stressed), so there is no ge.`,
     sepInsep: (sep: string, insep: string) => `Separable prefix ${sep}- followed by the inseparable prefix ${insep}-: no ge.`,
     ieren: 'Verbs in -ieren never take ge and end in t.',
     sepIeren: (sep: string) => `Separable prefix ${sep}- with an -ieren verb: no ge.`,
     phrase: (w: string) => `Two-word verb: “${w}” stays separate and only the main verb forms the Perfekt.`,
-    unstressed: 'The stress is not on the first syllable, so there is no ge.',
-    endingEt: 'The stem ends in t or d (or a consonant + n/m), so it takes -et instead of -t.',
+    unstressed: 'The stress is not on the first part of the verb, so there is no ge.',
+    endingEt: 'The stem ends in t or d (or in m/n after a consonant other than l or r, as in öffnen), so it takes -et instead of -t to be easier to say.',
     stemChanged: (from: string, to: string) => `The stem changes: ${from} → ${to}`,
+    extraG: 'essen also gets an extra g: ge + g + ess + en.',
+    alternatives: (forms: string) => `Also correct: ${forms}`,
     auxTitle: 'Why this auxiliary?',
     aux: {
       reflexive: 'haben: reflexive verbs (with sich) always take haben.',
-      special: 'sein: sein, bleiben, werden and a few verbs such as passieren and gelingen always take sein.',
+      special: 'sein: sein, bleiben, werden and a few verbs such as passieren, geschehen, gelingen and begegnen always take sein.',
       motion: 'sein: it describes movement from one place to another or a change of state, with no direct object.',
       default: 'haben: most verbs take haben, especially those with a direct object or that are not about movement or change of state.',
-      both: 'Both are correct: sein for movement or change of state (ich bin gefahren), haben with a direct object (ich habe das Auto gefahren).',
-      austria: 'Both are correct: usually haben in Germany, sein in Austria and southern Germany.'
+      both: 'Both are correct: sein for movement somewhere or a change of state (ich bin nach Wien gefahren), haben with a direct object or when the activity itself matters (ich habe das Auto gefahren).',
+      austria: 'Both are correct: usually haben in northern and central Germany, sein in Austria, Switzerland and southern Germany.'
     },
     parts: { prefix: 'prefix', ge: 'ge', stem: 'stem', ending: 'ending' }
   },
@@ -456,6 +463,23 @@ export const en: Messages = {
     tip: 'A few minutes of review every day keeps your cards from moving back.',
     ok: 'Got it',
     review: (x: number) => `Start review (${n(x)})`
+  },
+
+  silver: {
+    name: 'Silver card',
+    earnedTitle: 'You earned a silver card! 🥈',
+    earnedBody: 'You answered more than 15 cards correctly today; this card is your reward.',
+    numberOf: (i: number, max: number) => `Silver card ${n(i)} of ${n(max)}`,
+    complete: 'Collection complete! You collected every silver card. 🎉',
+    continue: 'Continue',
+    widgetTitle: 'Silver cards',
+    count: (x: number, max: number) => `${n(x)} of ${n(max)}`,
+    todayProgress: (x: number, need: number) => `Today ${n(x)} of ${n(need)} correct answers`,
+    todayEarned: 'Today’s card is yours ✓ Another one tomorrow!',
+    howTo: 'Every day you answer more than 15 cards correctly in review, you get a silver card with a fun fact about German.',
+    collection: 'My collection',
+    collectionTitle: 'My silver cards',
+    locked: 'Not unlocked yet'
   },
 
   plural: {
@@ -546,7 +570,8 @@ export const en: Messages = {
       { title: '2. One step back', body: 'A wrong answer moves a card back one box, not all the way to Box 0.' },
       { title: '3. No daily limit', body: 'You can add as many new words to Box 0 as you like.' },
       { title: '4. Decision & motivation cards', body: 'No quiz; they come back at Leitner intervals and move on when you tap “Read”.' },
-      { title: '5. Overdue cards', body: 'A card not reviewed within 3 days of its due date goes back to the start of the previous box; for example from Box 3 to Box 2, due again 4 days later. Box 0 cards don\'t go lower.' }
+      { title: '5. Overdue cards', body: 'A card not reviewed within 3 days of its due date goes back to the start of the previous box; for example from Box 3 to Box 2, due again 4 days later. Box 0 cards don\'t go lower.' },
+      { title: '6. Silver cards', body: 'Every day you answer more than 15 cards correctly in review, you get a silver card with a fun fact about German (30 in all). The leaderboard shows how many you have.' }
     ],
     modalTitleBox: (name: string) => `Cards in ${name}`,
     modalSubtitleBox: (days: number) => `Review interval: ${plural(days, 'day', 'days')}`,

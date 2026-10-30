@@ -100,6 +100,35 @@ day D+3 to box 2, with its next review on D+3 + 4 days (box 2's interval).
 
 The frontend tolerates each step being missing.
 
+## 5. Follow-up: wording, grammar check, silver cards
+
+- **"ستاک" replaced by "ریشه"** everywhere (Perfekt guide, conjugation legend, docs), with a one-line definition:
+  the stem is the infinitive without -en, e.g. mach in machen.
+- **Grammar re-checked against German grammar references.** Corrections:
+  - -et only after t/d, or after m/n preceded by a consonant other than l/r (öffnen → geöffnet, lernen → gelernt);
+  - sein with stehen/liegen/sitzen/hängen in Austria, Switzerland and southern Germany;
+  - über-, unter-, durch-, um-, wieder-, wider- can be separable or inseparable depending on stress;
+    the text now says which one applies to the verb;
+  - gegessen has an extra g;
+  - verbs with two correct participles (senden, wenden) show the other form;
+  - "both auxiliaries" explained by meaning (movement or change → sein; direct object or the activity itself → haben).
+- **Silver cards:**
+  - **When:** a day (the user's local day) with more than 15 correct vocabulary answers in review earns one silver card, i.e. on the 16th correct answer.
+  - **What counts:** reflection cards and wrong answers don't count.
+  - **Limits:** at most one per day and 30 in total, counted from 2026-10-31 (not retroactive).
+  - **Content:** each card is a fun, checked fact about German or learning it (fa/en), in a fixed order. The 30th completes the collection.
+  - **Display:**
+    - a popup the moment the card is earned;
+    - a dashboard widget with the count and today's progress, plus "my collection" (open and locked cards);
+    - a leaderboard column and the count in "my progress";
+    - rule 6 in the rules list.
+  - **Server:** derived from `review_events`, nothing new stored:
+    - `get_silver_status(day)` for the app;
+    - `get_leaderboard` gets a `silver` column.
+  - **Device count:** the device counts locally and merges with the server (other devices, earlier sessions). Offline, the popup still appears, and the server count follows after sync.
+- [x] Wording + grammar corrections, tests over all verbs
+- [x] Silver cards: logic + tests, facts, popup, widget, collection, leaderboard, SQL + tests, e2e
+
 ## Tasks
 
 - [x] Dashboard + review cleanup, settings rename (fa/en)

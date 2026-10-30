@@ -15,8 +15,10 @@ const PART_STYLE: Record<SegmentPart, string> = {
 function usePrefixRule(guide: Guide): string | null {
   const g = useI18n().t.perfektGuide;
   switch (guide.prefix) {
-    case 'separable': return g.separable(guide.separable);
-    case 'inseparable': return guide.separable ? g.sepInsep(guide.separable, guide.inseparable) : g.inseparable(guide.inseparable);
+    case 'separable': return guide.dualPrefix ? g.separableDual(guide.separable) : g.separable(guide.separable);
+    case 'inseparable':
+      if (guide.separable) return g.sepInsep(guide.separable, guide.inseparable);
+      return guide.dualPrefix ? g.inseparableDual(guide.inseparable) : g.inseparable(guide.inseparable);
     case 'ieren': return guide.separable ? g.sepIeren(guide.separable) : g.ieren;
     case 'phrase': return g.phrase(guide.separable);
     case 'unstressed': return g.unstressed;
@@ -55,6 +57,7 @@ export const PerfektHint: React.FC<{ guide: Guide }> = ({ guide }) => {
       <p><span className="font-semibold">{g.formula}</span> <Formula guide={guide} /></p>
       {prefixRule && <p>{prefixRule}</p>}
       {guide.endingEt && <p>{g.endingEt}</p>}
+      <p className="text-[11px] opacity-80">{g.rootNote}</p>
     </div>
   );
 };
@@ -91,8 +94,10 @@ export const PerfektExplanation: React.FC<{ guide: Guide; bare?: boolean }> = ({
       <p><span className="font-semibold">{g.group}</span> {g.groups[guide.group]}. {g.groupDesc[guide.group]}</p>
       {prefixRule && <p>{prefixRule}</p>}
       {guide.endingEt && <p>{g.endingEt}</p>}
-      {guide.stemChanged && <p>{g.stemChanged(guide.infinitiveStem, guide.participleStem)}</p>}
+      {guide.extraG ? <p>{g.extraG}</p> : guide.stemChanged && <p>{g.stemChanged(guide.infinitiveStem, guide.participleStem)}</p>}
+      {guide.alternatives.length > 0 && <p>{g.alternatives(guide.alternatives.join(' / '))}</p>}
       <p><span className="font-semibold">{g.auxTitle}</span> {g.aux[guide.auxReason]}</p>
+      <p className="text-[11px] text-slate-500 dark:text-slate-400">{g.rootNote}</p>
     </div>
   );
 };

@@ -47,6 +47,12 @@ export interface PerfektGuide {
   stemChanged: boolean;
   /** Ending "-et" (arbeiten → gearbeitet) instead of "-t" */
   endingEt: boolean;
+  /** The prefix is separable in some verbs and inseparable in others (über-, um-, durch-, …) */
+  dualPrefix: boolean;
+  /** essen → ge|g|essen: an extra g before the stem */
+  extraG: boolean;
+  /** Other correct participles (senden: gesendet next to gesandt) */
+  alternatives: string[];
 }
 
 // Longest first, so "zurück" wins over "zu" and "herein" over "her"
@@ -67,7 +73,10 @@ const SPECIAL_SEIN = new Set(['sein', 'bleiben', 'werden', 'passieren', 'gescheh
 const ONLY_INSEPARABLE = new Set(['be', 'emp', 'ent', 'er', 'ge', 'miss', 'ver', 'zer']);
 
 /** Position verbs that take sein in Austria and southern Germany */
-const AUSTRIAN_SEIN = new Set(['stehen', 'liegen', 'sitzen', 'hängen', 'stecken']);
+const AUSTRIAN_SEIN = new Set(['stehen', 'liegen', 'sitzen', 'hängen']);
+
+/** Prefixes that are separable in some verbs and inseparable in others, depending on stress and meaning */
+const DUAL_PREFIXES = new Set(['über', 'unter', 'durch', 'um', 'wieder', 'wider', 'hinter', 'voll']);
 
 const lower = (s: string) => s.toLocaleLowerCase('de');
 
@@ -218,6 +227,8 @@ export function explainPerfekt(infinitive: string, accepted: string[]): PerfektG
   take(ending.length, 'ending');
 
   const reflexive = parsed.some(p => p.reflexive);
+  const shownPrefix = prefix === 'separable' ? core.separable : prefix === 'inseparable' ? (core.separable ? '' : core.inseparable) : '';
+  const alternatives = [...new Set(parsed.map(p => p.participle))].filter(p => p !== first.participle);
   const aux = first.aux;
   const baseVerb = infL.slice(core.separable.length);
   const auxReason: AuxReason = bothAux ? (AUSTRIAN_SEIN.has(baseVerb) ? 'austria' : 'both')
@@ -239,6 +250,9 @@ export function explainPerfekt(infinitive: string, accepted: string[]): PerfektG
     infinitiveStem: infStem.slice(core.inseparable && !core.hasGe ? core.inseparable.length : 0),
     participleStem: participleStem.slice(core.inseparable && !core.hasGe ? core.inseparable.length : 0),
     stemChanged,
-    endingEt
+    endingEt,
+    dualPrefix: DUAL_PREFIXES.has(shownPrefix),
+    extraG: participleStem === 'g' + infStem,
+    alternatives
   };
 }

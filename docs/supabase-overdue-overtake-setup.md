@@ -1,13 +1,14 @@
-# Supabase setup: overdue rule + leaderboard notification (no more class reminder)
+# Supabase setup: overdue rule, leaderboard notification, silver cards (no more class reminder)
 
 For the Supabase dashboard of the **daf-leitner-box** project, done in the browser.
 
 **What changes:**
 - **Additive objects:**
   - one table `overdue_demotions`;
-  - three functions: `apply_overdue_demotions`, `mark_overdue_demotions_seen`, `leaderboard_ranks`;
+  - four functions: `apply_overdue_demotions`, `mark_overdue_demotions_seen`, `leaderboard_ranks`, `get_silver_status`;
   - two columns on `push_state`;
   - one scheduled job.
+- **`get_leaderboard`:** recreated with one extra column (`silver`, the number of silver cards). For a second during the migration the leaderboard may not load.
 - **Edge Function `send-reminders`:** gets new code. The class-break reminder is removed and the leaderboard notification is added.
 - **Card data:** changes only in step 3, by the agreed rule:
   - a card not reviewed within 3 days of its due date moves to the start of the previous box;
@@ -32,12 +33,13 @@ Expected:
 
 Notices such as "already exists, skipping" are fine.
 
-Check (should return 3 rows):
+Check (should return 5 rows):
 
 ```sql
 select routine_name from information_schema.routines
 where routine_schema = 'public'
-  and routine_name in ('apply_overdue_demotions', 'mark_overdue_demotions_seen', 'leaderboard_ranks');
+  and routine_name in ('apply_overdue_demotions', 'mark_overdue_demotions_seen', 'leaderboard_ranks',
+                       'get_silver_status', 'get_leaderboard');
 ```
 
 ## 2. Dry run (shows the effect, changes nothing)

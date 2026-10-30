@@ -6,6 +6,7 @@ import { Play, CheckCircle2, HelpCircle, BookOpen, Target, X } from 'lucide-reac
 import { useI18n } from '../i18n/I18nProvider';
 import { De, Auto } from './ui/Text';
 import { InstallBanner } from './AppInstall';
+import { SilverWidget } from './SilverCards';
 
 interface LeitnerDashboardProps {
   cards: LeitnerCard[];
@@ -122,6 +123,8 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
         </div>
       </div>
 
+      <SilverWidget />
+
       {/* The Leitner boxes */}
       <div>
         <div className="mb-4">
@@ -220,7 +223,7 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
           <HelpCircle className="w-4 h-4 text-indigo-500" />
           <span>{t.dashboard.rulesTitle}</span>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 text-xs text-slate-600 dark:text-slate-400">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs text-slate-600 dark:text-slate-400">
           {t.dashboard.rules.map(rule => (
             <div key={rule.title} className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl space-y-1">
               <span className="font-semibold text-slate-800 dark:text-slate-200 block">{rule.title}</span>
