@@ -31,18 +31,18 @@
 - **بررسی خودکار:** هر فعلی که قاعده‌ی باقاعده برایش Präsens یا Partizip متفاوتی از داده بدهد، باید Präteritum صریح داشته باشد؛ وگرنه اسکریپت متوقف می‌شود. با این کار هیچ فعل بی‌قاعده‌ای بی‌صدا «باقاعده» حساب نمی‌شود.
 
 ### موتور صرف (`src/services/conjugation.ts`، تابع خالص + تست)
-- **Präsens:** ich، wir، ihr و sie از ستاک مصدر ساخته می‌شوند (`fahr-e`، `fahr-en`). du و er از فرم سوم‌شخص داده ساخته می‌شوند، تا تغییر ستاک (`fährt`) درست بیاید.
-  - قواعد املایی: ستاک مختوم به t/d: `arbeitest`، `arbeitet`. مختوم به s/ß/z: `du heißt`، `du liest`. ‎-eln: `ich sammle`. ‎-ern: `wir ändern`.
+- **Präsens:** ich، wir، ihr و sie از ریشه مصدر ساخته می‌شوند (`fahr-e`، `fahr-en`). du و er از فرم سوم‌شخص داده ساخته می‌شوند، تا تغییر ریشه (`fährt`) درست بیاید.
+  - قواعد املایی: ریشه مختوم به t/d: `arbeitest`، `arbeitet`. مختوم به s/ß/z: `du heißt`، `du liest`. ‎-eln: `ich sammle`. ‎-ern: `wir ändern`.
   - استثناهای du: `hält → hältst`، `lädt → lädst`، `wird → wirst`.
 - **Präteritum:** از سوم‌شخص مفرد.
-  - قوی: `fuhr`، `fuhrst`، `fuhr`، `fuhren`، `fuhrt`، `fuhren`. ستاک مختوم به t/d/s/ß: `fandest`، `fandet`، `lasest`.
+  - قوی: `fuhr`، `fuhrst`، `fuhr`، `fuhren`، `fuhrt`، `fuhren`. ریشه مختوم به t/d/s/ß: `fandest`، `fandet`، `lasest`.
   - ضعیف و مختلط: `machte → machten`، `brachte → brachtest`.
 - **Perfekt:** فعل کمکی صرف‌شده (`bin/bist/ist…` یا `habe/hast/hat…`) + Partizip از ستون `Perfekt`. اگر دو فعل کمکی مجاز باشد، هر دو نمایش داده می‌شوند.
 - **جداشدنی و چندکلمه‌ای:** جزء جداشدنی یا مکمل در آخر می‌آید (`ich komme an`، `ich fahre Ski`، `es tut weh`). مثال بازتابی همراه جداشدنی: `ich rege mich auf`.
 - **بازتابی:** `mich/dich/sich/uns/euch/sich` یا `mir/dir/sich/uns/euch/sich` بعد از فعل صرف‌شده (و در Perfekt بعد از فعل کمکی: `ich habe mich gefreut`).
 - **فعل‌های کاملاً خاص:** جدول ثابت برای `sein`، `haben`، `werden`، `wissen`، `tun` و فعل‌های وجهی (`können`، `müssen`، `dürfen`، `sollen`، `wollen`، `mögen`)، شامل مرکب‌هایشان (`vorhaben` ← `haben`).
 - **نوع فعل:** باقاعده / بی‌قاعده (قوی) / مختلط (`brachte`، `kannte`). نشانی کنار عنوان پاپ‌آپ.
-- **رنگ قرمز:** هر فرم با «فرم باقاعده‌ی متناظر» مقایسه می‌شود (diff حرف‌به‌حرف به روش LCS) و حروف اضافه یا تغییرکرده قرمز می‌شوند. برای Präteritum قوی، فرم مقایسه ستاک مصدر با پایانه‌های قوی است (`fuhr` با `fahr` → فقط `u`). برای Partizip قوی، `ge + ستاک + en` است (`gefahren` → هیچ حرف قرمزی). فعل باقاعده هیچ حرف قرمزی ندارد.
+- **رنگ قرمز:** هر فرم با «فرم باقاعده‌ی متناظر» مقایسه می‌شود (diff حرف‌به‌حرف به روش LCS) و حروف اضافه یا تغییرکرده قرمز می‌شوند. برای Präteritum قوی، فرم مقایسه ریشه مصدر با پایانه‌های قوی است (`fuhr` با `fahr` → فقط `u`). برای Partizip قوی، `ge + ریشه + en` است (`gefahren` → هیچ حرف قرمزی). فعل باقاعده هیچ حرف قرمزی ندارد.
 
 ### رابط کاربری
 - **دکمه‌ی «صرف فعل»** روی کارت‌های فعل: پشت کارت در مرور و یادگیری کلمات جدید، و در مخزن واژگان.
@@ -57,10 +57,10 @@
 
 **صرف:**
 - [x] باقاعده (`machen`، `lernen`): هیچ حرف قرمزی نیست
-- [x] ستاک t/d (`arbeiten`، `finden` → `du findest`، `ihr fandet`)
-- [x] ستاک s/ß/z (`heißen` → `du heißt`؛ `lesen` → `du liest`، `du lasest`)
+- [x] ریشه t/d (`arbeiten`، `finden` → `du findest`، `ihr fandet`)
+- [x] ریشه s/ß/z (`heißen` → `du heißt`؛ `lesen` → `du liest`، `du lasest`)
 - [x] ‎-eln و ‎-ern (`sammeln` → `ich sammle`؛ `ändern` → `wir ändern`)
-- [x] تغییر ستاک (`fahren` → `du fährst`؛ `nehmen` → `du nimmst`؛ `halten` → `du hältst`؛ `laden` → `du lädst`)
+- [x] تغییر ریشه (`fahren` → `du fährst`؛ `nehmen` → `du nimmst`؛ `halten` → `du hältst`؛ `laden` → `du lädst`)
 - [x] قوی / مختلط (`kommen` → `kam`؛ `bringen` → `brachte`؛ `kennen` → `kannte`؛ `denken` → `dachte`)
 - [x] جداشدنی (`ankommen` → `ich komme an`، `er kam an`، `ich bin angekommen`)
 - [x] پیشوند جدانشدنی و ‎-ieren (`verstehen` → `verstanden`؛ `studieren` → `studiert`)

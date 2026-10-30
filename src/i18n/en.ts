@@ -3,7 +3,6 @@ import { formatNumber } from './format';
 
 const n = (x: number) => formatNumber('en', x);
 const plural = (x: number, one: string, many: string) => `${n(x)} ${x === 1 ? one : many}`;
-const SUP = ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶'];
 
 /** English interface strings. Must have exactly the same keys as `fa` (enforced by the type). */
 export const en: Messages = {
@@ -47,7 +46,6 @@ export const en: Messages = {
 
   boxes: {
     name: (i: number) => `Box ${i}`,
-    formula: (i: number, days: number) => `2${SUP[i] ?? ''} = ${plural(days, 'day', 'days')}`,
     description: [
       'New cards, reviewed every day',
       'Reviewed after a two-day break',
@@ -148,9 +146,6 @@ export const en: Messages = {
     cardOf: (i: number, total: number) => `Card ${n(i)} of ${n(total)}`,
     currentBox: (name: string) => `Current: ${name}`,
     interval: (days: number) => `Every ${plural(days, 'day', 'days')}`,
-    nounsToggleTitle: 'Noun (Nomen) mode: practise articles',
-    nounsToggleBody: 'When on, only nouns are reviewed. Other cards are skipped and stay in their current box.',
-    nounsInQueue: (x: number) => `${plural(x, 'noun', 'nouns')} to review`,
     vocabSource: 'DaF kompakt word',
     reflectionNoQuiz: 'No quiz (read only)',
     flip: 'Flip card',
@@ -300,6 +295,8 @@ export const en: Messages = {
     explainer: 'Score = the sum of (cards in each box × that box number). Box 0 scores nothing and each mastered card is worth 6. The weekly score is how much that score changed in the last 7 days. Only numbers are shown; nobody can see the content of your cards.',
     refresh: 'Refresh',
     tabAll: 'All time',
+    colSilver: 'Silver',
+    silverTitle: 'Silver cards',
     tabWeek: 'This week',
     myRank: 'Your rank',
     totalScore: 'Total score',
@@ -340,8 +337,8 @@ export const en: Messages = {
     soundEffectsBody: 'Soft sounds when you flip a card, move a card up, or answer correctly',
     autoSpeak: 'Auto-play pronunciation',
     autoSpeakBody: 'Read each word aloud in German when its card comes up',
-    nounsDefault: 'Noun mode by default',
-    nounsDefaultBody: 'Review sessions show only nouns and articles; other cards stay in their current box',
+    nounsDefault: 'Noun (Nomen) mode: practise articles',
+    nounsDefaultBody: 'Review sessions show only nouns. Other cards stay in their box, but like every card they move back one box when they are more than 3 days overdue.',
     flipCard: 'Two-sided cards for new words',
     flipCardBody: 'The front shows only the word; flip the card to see the article, meaning and details (with article guessing and Perfekt practice). When off, everything is shown on one side.',
     speechRate: 'Speech rate',
@@ -414,6 +411,77 @@ export const en: Messages = {
     insert: (c: string) => `Insert ${c}`
   },
 
+  perfektGuide: {
+    hint: 'Hint',
+    hintTitle: 'Hint (without giving the answer away)',
+    explainTitle: 'How is the Perfekt of this verb formed?',
+    group: 'Group:',
+    groups: { weak: 'regular (schwach)', strong: 'irregular (stark)', mixed: 'mixed (gemischt)' },
+    groupDesc: {
+      weak: 'The stem stays the same and the ending is t.',
+      strong: 'The ending is en and the stem vowel often changes.',
+      mixed: 'The ending is t like a regular verb, but the stem changes.'
+    },
+    formula: 'Pattern:',
+    rootNote: 'The stem is the infinitive without -en (or -n), e.g. mach in machen.',
+    separable: (p: string) => `Separable prefix ${p}-: ge goes between the prefix and the stem (${p} + ge + …).`,
+    separableDual: (p: string) => `The prefix ${p}- is separable in some verbs and not in others. Here it is separable (stressed), so ge goes between the prefix and the stem.`,
+    inseparable: (p: string) => `Inseparable prefix ${p}-: no ge.`,
+    inseparableDual: (p: string) => `The prefix ${p}- is separable in some verbs and not in others. Here it is inseparable (the stem is stressed), so there is no ge.`,
+    sepInsep: (sep: string, insep: string) => `Separable prefix ${sep}- followed by the inseparable prefix ${insep}-: no ge.`,
+    ieren: 'Verbs in -ieren never take ge and end in t.',
+    sepIeren: (sep: string) => `Separable prefix ${sep}- with an -ieren verb: no ge.`,
+    phrase: (w: string) => `Two-word verb: “${w}” stays separate and only the main verb forms the Perfekt.`,
+    unstressed: 'The stress is not on the first part of the verb, so there is no ge.',
+    endingEt: 'The stem ends in t or d (or in m/n after a consonant other than l or r, as in öffnen), so it takes -et instead of -t to be easier to say.',
+    stemChanged: (from: string, to: string) => `The stem changes: ${from} → ${to}`,
+    extraG: 'essen also gets an extra g: ge + g + ess + en.',
+    alternatives: (forms: string) => `Also correct: ${forms}`,
+    auxTitle: 'Why this auxiliary?',
+    aux: {
+      reflexive: 'haben: reflexive verbs (with sich) always take haben.',
+      special: 'sein: sein, bleiben, werden and a few verbs such as passieren, geschehen, gelingen and begegnen always take sein.',
+      motion: 'sein: it describes movement from one place to another or a change of state, with no direct object.',
+      default: 'haben: most verbs take haben, especially those with a direct object or that are not about movement or change of state.',
+      both: 'Both are correct: sein for movement somewhere or a change of state (ich bin nach Wien gefahren), haben with a direct object or when the activity itself matters (ich habe das Auto gefahren).',
+      austria: 'Both are correct: usually haben in northern and central Germany, sein in Austria, Switzerland and southern Germany.'
+    },
+    parts: { prefix: 'prefix', ge: 'ge', stem: 'stem', ending: 'ending' }
+  },
+
+  overdue: {
+    titleFirst: 'New rule: overdue cards move back one box',
+    title: 'Some cards moved back one box',
+    intro: (x: number) => `${plural(x, 'card was', 'cards were')} more than 3 days past their review date and went back to the start of the previous box.`,
+    move: (from: string, to: string) => `${from} → ${to}`,
+    count: (x: number) => plural(x, 'card', 'cards'),
+    examples: 'Including:',
+    whyTitle: 'Why?',
+    why: 'Leitner works through timely reviews. A card reviewed days late is probably partly forgotten; going back one box means you see it again sooner and it sticks better.',
+    ruleTitle: 'The rule',
+    rule: 'A card not reviewed within 3 days of its due date goes back to the start of the previous box; for example from Box 3 to Box 2, due again 4 days later. Box 0 cards don\'t go lower. Your leaderboard score drops accordingly.',
+    tip: 'A few minutes of review every day keeps your cards from moving back.',
+    ok: 'Got it',
+    review: (x: number) => `Start review (${n(x)})`
+  },
+
+  silver: {
+    name: 'Silver card',
+    earnedTitle: 'You earned a silver card! 🥈',
+    earnedBody: 'You answered more than 15 cards correctly today; this card is your reward.',
+    numberOf: (i: number, max: number) => `Silver card ${n(i)} of ${n(max)}`,
+    complete: 'Collection complete! You collected every silver card. 🎉',
+    continue: 'Continue',
+    widgetTitle: 'Silver cards',
+    count: (x: number, max: number) => `${n(x)} of ${n(max)}`,
+    todayProgress: (x: number, need: number) => `Today ${n(x)} of ${n(need)} correct answers`,
+    todayEarned: 'Today’s card is yours ✓ Another one tomorrow!',
+    howTo: 'Every day you answer more than 15 cards correctly in review, you get a silver card with a fun fact about German.',
+    collection: 'My collection',
+    collectionTitle: 'My silver cards',
+    locked: 'Not unlocked yet'
+  },
+
   plural: {
     singularOnly: 'singular only',
     singularOnlyHere: 'singular only (in this sense)',
@@ -458,7 +526,9 @@ export const en: Messages = {
     bannerHow: 'How?',
     dismiss: 'Dismiss',
     notifTitle: 'Reminders',
-    notifBody: 'Saturday to Wednesday at 09:30 (your phone’s time), a nudge to learn new words during the class break; and if you stay away for more than a day, a motivational line to keep your reviews going.',
+    notifBody: 'When someone passes you on the leaderboard, and a motivational line if you stay away for more than a day. Notifications only arrive between 10:00 and 21:00 your phone’s time.',
+    notifOvertake: 'When someone passes me on the leaderboard',
+    notifOvertakeBody: 'At most once a day; only while your name is shown on the leaderboard. This choice applies to all your devices.',
     notifOn: 'Reminders are on for this device.',
     notifEnable: 'Turn on reminders',
     notifDisable: 'Turn off',
@@ -470,31 +540,21 @@ export const en: Messages = {
   },
 
   dashboard: {
-    badgeAlgorithm: 'Leitner algorithm with 2ⁿ-day intervals',
-    badgeDrop: 'Wrong answer: back one box',
-    badgeNouns: 'Noun (Nomen) mode',
     title: 'Leitner box dashboard',
-    subtitle: 'Your active cards across the boxes, what is due today, and the DaF kompakt words alongside your own notes and decisions.',
     startReview: "Start today's review",
     allDone: "You've finished all of today's reviews!",
     nounReview: 'Review nouns & articles',
     nounReviewHint: 'Review only nouns to practise articles (other cards stay in their box)',
     learnNew: 'Learn new words from the book',
     learnNewHint: 'Add the next words from the book, in lesson order, to Box 0',
-    articlesTitle: 'Nouns and article mastery',
-    articlesSummary: (total: number, mastered: number) => `Nouns in your boxes: ${n(total)} (mastered: ${n(mastered)})`,
     dueToday: 'Due today',
     dueSplit: (nouns: number, other: number) => `${plural(nouns, 'noun', 'nouns')} · ${n(other)} other`,
     inRotation: 'Cards in rotation',
     rotationSplit: (vocab: number, refl: number) => `${plural(vocab, 'word', 'words')} · ${plural(refl, 'insight', 'insights')}`,
-    mastered: 'Mastered',
-    masteryRate: 'Mastery rate',
     boxesTitle: 'Leitner boxes (Box 0 to 5)',
     boxesSubtitle: 'Intervals of 2ⁿ days: 1, 2, 4, 8, 16 and 32 days. A right answer moves a card forward one box; a wrong answer moves it back only one box.',
     cardUnit: 'cards',
     interval: (days: number) => `Interval: ${plural(days, 'day', 'days')}`,
-    boxDue: 'Due today:',
-    boxNoDue: 'Nothing due today',
     boxVocab: (x: number) => plural(x, 'word', 'words'),
     boxRefl: (x: number) => plural(x, 'insight', 'insights'),
     reviewN: (x: number) => `Review (${n(x)})`,
@@ -509,7 +569,9 @@ export const en: Messages = {
       { title: '1. Growing intervals', body: 'The review interval is 2 to the power of the box number (1, 2, 4, 8, 16 and 32 days).' },
       { title: '2. One step back', body: 'A wrong answer moves a card back one box, not all the way to Box 0.' },
       { title: '3. No daily limit', body: 'You can add as many new words to Box 0 as you like.' },
-      { title: '4. Decision & motivation cards', body: 'No quiz; they come back at Leitner intervals and move on when you tap “Read”.' }
+      { title: '4. Decision & motivation cards', body: 'No quiz; they come back at Leitner intervals and move on when you tap “Read”.' },
+      { title: '5. Overdue cards', body: 'A card not reviewed within 3 days of its due date goes back to the start of the previous box; for example from Box 3 to Box 2, due again 4 days later. Box 0 cards don\'t go lower.' },
+      { title: '6. Silver cards', body: 'Every day you answer more than 15 cards correctly in review, you get a silver card with a fun fact about German (30 in all). The leaderboard shows how many you have.' }
     ],
     modalTitleBox: (name: string) => `Cards in ${name}`,
     modalSubtitleBox: (days: number) => `Review interval: ${plural(days, 'day', 'days')}`,

@@ -445,6 +445,8 @@ export interface LeaderboardRow {
   learning: number;
   reviews_7d: number;
   streak: number;
+  /** Silver cards collected (missing until the database part is installed) */
+  silver?: number;
   rank: number;
   is_me: boolean;
 }
@@ -461,6 +463,7 @@ export async function fetchLeaderboard(period: 'all' | 'week', limit = 100): Pro
     learning: Number(r.learning),
     reviews_7d: Number(r.reviews_7d),
     streak: Number(r.streak),
+    silver: r.silver === undefined || r.silver === null ? undefined : Number(r.silver),
     rank: Number(r.rank)
   })) as LeaderboardRow[];
 }
@@ -507,9 +510,9 @@ export async function adminDeleteUser(userId: string) {
 }
 
 const DEMO_LEADERBOARD: LeaderboardRow[] = [
-  { user_id: 'u1', display_name: 'Sara', avatar_url: null, score: 1840, score_7d: 210, mastered: 120, learning: 380, reviews_7d: 260, streak: 21, rank: 1, is_me: false },
-  { user_id: 'demo-user', display_name: 'Demo', avatar_url: null, score: 960, score_7d: 85, mastered: 40, learning: 150, reviews_7d: 90, streak: 6, rank: 2, is_me: true },
-  { user_id: 'u3', display_name: 'Alexander Müller-Lüdenscheidt', avatar_url: null, score: 410, score_7d: -12, mastered: 9, learning: 60, reviews_7d: 14, streak: 0, rank: 3, is_me: false }
+  { user_id: 'u1', display_name: 'Sara', avatar_url: null, score: 1840, score_7d: 210, mastered: 120, learning: 380, reviews_7d: 260, streak: 21, silver: 12, rank: 1, is_me: false },
+  { user_id: 'demo-user', display_name: 'Demo', avatar_url: null, score: 960, score_7d: 85, mastered: 40, learning: 150, reviews_7d: 90, streak: 6, silver: 3, rank: 2, is_me: true },
+  { user_id: 'u3', display_name: 'Alexander Müller-Lüdenscheidt', avatar_url: null, score: 410, score_7d: -12, mastered: 9, learning: 60, reviews_7d: 14, streak: 0, silver: 0, rank: 3, is_me: false }
 ];
 
 const DEMO_ADMIN_USERS: AdminUserRow[] = [

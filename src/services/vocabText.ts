@@ -5,6 +5,7 @@ import { splitExample, hasPersian } from '../components/ui/Text';
 import { parseAccepted, perfektFromFormen } from './perfekt';
 import { describePlural, PluralPart } from './plural';
 import { conjugate, Conjugation } from './conjugation';
+import { explainPerfekt, PerfektGuide } from './perfektGuide';
 
 export interface VocabText {
   /** Meaning in the interface language (falls back to Persian when no English is available) */
@@ -67,6 +68,14 @@ export function perfektAnswers(card: LeitnerCard): string[] {
 export function pluralParts(card: LeitnerCard): PluralPart[] {
   const src = leitnerEngine.getCatalogWord(card.id) ?? card;
   return describePlural(src.wort || card.wort, src.plural || card.plural);
+}
+
+/** How the verb forms its Perfekt (group, prefix, why haben/sein), or null when there is no Perfekt answer. */
+export function perfektGuideOf(card: LeitnerCard): PerfektGuide | null {
+  const accepted = perfektAnswers(card);
+  if (!accepted.length) return null;
+  const src = leitnerEngine.getCatalogWord(card.id) ?? card;
+  return explainPerfekt(src.infinitiv || src.wort || card.wort || '', accepted);
 }
 
 /** Conjugation table of a book verb, or null (not a verb, no data, or a custom card). */

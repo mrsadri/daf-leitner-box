@@ -68,7 +68,8 @@ select net.http_post(
 select status_code, content from net._http_response order by created desc limit 1;
 ```
 
-Expected: `status_code` 200 and JSON like `{"classSent":0,"inactivitySent":0,...,"dryRun":true}`.
+Expected: `status_code` 200 and JSON like `{"overtakeSent":0,"inactivitySent":0,...,"dryRun":true}`.
+(The class-break reminder of the first version was removed; see [supabase-overdue-overtake-setup.md](supabase-overdue-overtake-setup.md).)
 Without the header the function must answer 401.
 
 ## 6. Schedule (every 15 minutes)

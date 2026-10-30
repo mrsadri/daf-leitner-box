@@ -103,7 +103,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ profile, onOpenSetting
 
       {/* My progress */}
       {me && (
-        <div className="bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 rounded-2xl p-5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+        <div className="bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 rounded-2xl p-5 grid grid-cols-2 sm:grid-cols-5 gap-4 text-center">
           <div>
             <span className="text-xs text-indigo-800 dark:text-indigo-300 block">{t.leaderboard.myRank}</span>
             <span className="text-2xl font-bold font-mono-num text-indigo-700 dark:text-indigo-300">{num(me.rank)}</span>
@@ -124,6 +124,10 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ profile, onOpenSetting
               <Flame className="w-5 h-5" />
               {num(me.streak)}
             </span>
+          </div>
+          <div className="col-span-2 sm:col-span-1">
+            <span className="text-xs text-indigo-800 dark:text-indigo-300 block">{t.leaderboard.silverTitle}</span>
+            <span className="text-2xl font-bold font-mono-num text-slate-600 dark:text-slate-300">🥈 {num(me.silver ?? 0)}</span>
           </div>
         </div>
       )}
@@ -153,6 +157,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ profile, onOpenSetting
                 <th scope="col" className={`${th} text-start w-14`}>{t.leaderboard.colRank}</th>
                 <th scope="col" className={`${th} text-start`}>{t.leaderboard.colUser}</th>
                 <th scope="col" className={`${th} text-end`}>{metricLabel}</th>
+                <th scope="col" className={`${th} text-end`} title={t.leaderboard.silverTitle}>🥈 {t.leaderboard.colSilver}</th>
                 <th scope="col" className={`${th} text-end hidden sm:table-cell`}>{t.leaderboard.colMastered}</th>
                 <th scope="col" className={`${th} text-end hidden sm:table-cell`}>{t.leaderboard.colStreak}</th>
               </tr>
@@ -160,12 +165,12 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ profile, onOpenSetting
             <tbody>
               {status === 'loading' && rows.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="py-12 text-center text-xs text-slate-600 dark:text-slate-400">{t.leaderboard.loading}</td>
+                  <td colSpan={6} className="py-12 text-center text-xs text-slate-600 dark:text-slate-400">{t.leaderboard.loading}</td>
                 </tr>
               )}
               {status !== 'loading' && rows.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="py-12 text-center text-xs text-slate-600 dark:text-slate-400">{t.leaderboard.empty}</td>
+                  <td colSpan={6} className="py-12 text-center text-xs text-slate-600 dark:text-slate-400">{t.leaderboard.empty}</td>
                 </tr>
               )}
               {rows.map(r => (
@@ -191,6 +196,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ profile, onOpenSetting
                   <td className={`${td} text-end font-mono-num font-bold text-slate-900 dark:text-white`}>
                     {period === 'week' ? <span dir="ltr">{t.leaderboard.signed(metricOf(r))}</span> : num(metricOf(r))}
                   </td>
+                  <td className={`${td} text-end font-mono-num font-semibold text-slate-600 dark:text-slate-300`}>{r.silver ? num(r.silver) : '—'}</td>
                   <td className={`${td} text-end font-mono-num text-emerald-700 dark:text-emerald-400 hidden sm:table-cell`}>{num(r.mastered)}</td>
                   <td className={`${td} text-end text-orange-600 dark:text-orange-400 hidden sm:table-cell whitespace-nowrap`}>
                     {r.streak > 0 ? t.common.day(r.streak) : '—'}

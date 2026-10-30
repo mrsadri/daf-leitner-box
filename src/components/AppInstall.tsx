@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Smartphone, Bell, BellOff, CheckCircle2, AlertTriangle, Loader2, X, Share } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
+import { Switch } from './ui/Switch';
 import {
   isStandalone, isIOS, isMobile, canPromptInstall, promptInstall, onPwaChange,
   getPushStatus, enablePush, disablePush, PushStatus
@@ -66,7 +67,13 @@ export const InstallSection: React.FC = () => {
 };
 
 /** "Reminders" part of the settings page. */
-export const NotificationSection: React.FC = () => {
+interface NotificationSectionProps {
+  /** Account setting (profiles.settings.notifyOvertake); unset means on */
+  notifyOvertake: boolean;
+  onNotifyOvertakeChange: (on: boolean) => void;
+}
+
+export const NotificationSection: React.FC<NotificationSectionProps> = ({ notifyOvertake, onNotifyOvertakeChange }) => {
   const { t, lang } = useI18n();
   const tick = usePwaState();
   const [status, setStatus] = useState<PushStatus | null>(null);
@@ -141,6 +148,15 @@ export const NotificationSection: React.FC = () => {
             </button>
           )}
           <span className="text-[11px] text-slate-500 dark:text-slate-400">{t.pwa.notifPerDevice}</span>
+        </div>
+      )}
+      {status === 'on' && (
+        <div className="flex items-start justify-between gap-4 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <label htmlFor="notifyOvertake" className="min-w-0 cursor-pointer">
+            <span className="font-semibold text-slate-800 dark:text-slate-200 block">{t.pwa.notifOvertake}</span>
+            <span className="text-slate-600 dark:text-slate-400 leading-relaxed">{t.pwa.notifOvertakeBody}</span>
+          </label>
+          <Switch id="notifyOvertake" checked={notifyOvertake} onChange={onNotifyOvertakeChange} />
         </div>
       )}
       {error && <p className="text-red-700 dark:text-red-300">{t.pwa.notifError}</p>}

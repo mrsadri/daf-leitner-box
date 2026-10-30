@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { LeitnerCard, BOX_CONFIGS } from '../types/leitner';
-import { isCardDue, getTodayString, isNounCard, getQuizArticle } from '../services/leitnerEngine';
+import { isCardDue, getTodayString, isNounCard } from '../services/leitnerEngine';
 import { vocabText } from '../services/vocabText';
 import { Play, CheckCircle2, HelpCircle, BookOpen, Target, X } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
 import { De, Auto } from './ui/Text';
 import { InstallBanner } from './AppInstall';
+import { SilverWidget } from './SilverCards';
 
 interface LeitnerDashboardProps {
   cards: LeitnerCard[];
@@ -17,11 +18,6 @@ interface LeitnerDashboardProps {
   onOpenSettings?: () => void;
 }
 
-const ARTICLE_CHIP: Record<'der' | 'die' | 'das', string> = {
-  der: 'bg-blue-100 dark:bg-blue-950/70 text-blue-800 dark:text-blue-200 border-blue-200 dark:border-blue-800',
-  die: 'bg-red-100 dark:bg-red-950/70 text-red-800 dark:text-red-200 border-red-200 dark:border-red-800',
-  das: 'bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-200 border-emerald-200 dark:border-emerald-800'
-};
 
 export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
   cards,
@@ -39,13 +35,6 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
   const vocabCards = cards.filter(c => c.type === 'vocab' && c.box < 6);
   const reflectionCards = cards.filter(c => c.type === 'reflection' && c.box < 6);
 
-  const allNounsCards = cards.filter(c => isNounCard(c));
-  const articleCounts = {
-    der: allNounsCards.filter(c => getQuizArticle(c) === 'der').length,
-    die: allNounsCards.filter(c => getQuizArticle(c) === 'die').length,
-    das: allNounsCards.filter(c => getQuizArticle(c) === 'das').length
-  };
-  const masteredNouns = allNounsCards.filter(c => c.box >= 6).length;
 
   const getBoxCards = (boxIndex: number) => cards.filter(c => c.box === boxIndex);
   const getBoxDueCount = (boxIndex: number) => cards.filter(c => c.box === boxIndex && isCardDue(c, todayStr)).length;
@@ -59,18 +48,9 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 lg:p-8 shadow-xs">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2 min-w-0">
-            <div className="dot-list flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-semibold text-indigo-600 dark:text-indigo-400">
-              <i aria-hidden="true" className="w-2 h-2 rounded-full bg-indigo-500" />
-              <span>{t.dashboard.badgeAlgorithm}</span>
-              <span className="text-slate-600 dark:text-slate-400">{t.dashboard.badgeDrop}</span>
-              <span className="text-blue-600 dark:text-blue-400">{t.dashboard.badgeNouns}</span>
-            </div>
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
               {t.dashboard.title}
             </h1>
-            <p className="text-sm text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
-              {t.dashboard.subtitle}
-            </p>
           </div>
 
           {/* Calls to action */}
@@ -118,34 +98,8 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
           </div>
         </div>
 
-        {/* Article mastery */}
-        <div className="mt-8 p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-800 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0">
-              <Target className="w-5 h-5" />
-            </div>
-            <div className="min-w-0">
-              <span className="font-bold text-xs text-slate-900 dark:text-white block">
-                {t.dashboard.articlesTitle}
-              </span>
-              <span className="text-[11px] text-slate-600 dark:text-slate-400">
-                {t.dashboard.articlesSummary(allNounsCards.length, masteredNouns)}
-              </span>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs">
-            {(['der', 'die', 'das'] as const).map(art => (
-              <span key={art} className={`flex items-center gap-1.5 px-3 py-1 rounded-lg border ${ARTICLE_CHIP[art]}`}>
-                <De className="font-bold">{art}</De>
-                <span className="font-mono-num">{num(articleCounts[art])}</span>
-              </span>
-            ))}
-          </div>
-        </div>
-
         {/* Key metrics */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
+        <div className="grid grid-cols-2 gap-4 mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 sm:max-w-md">
           <div>
             <span className="text-xs text-slate-600 dark:text-slate-400 block">{t.dashboard.dueToday}</span>
             <span className="text-2xl font-bold font-mono-num text-amber-600 dark:text-amber-400">
@@ -166,21 +120,10 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
             </span>
           </div>
 
-          <div>
-            <span className="text-xs text-slate-600 dark:text-slate-400 block">{t.dashboard.mastered}</span>
-            <span className="text-2xl font-bold font-mono-num text-emerald-600 dark:text-emerald-400">
-              {num(masteredCards.length)}
-            </span>
-          </div>
-
-          <div>
-            <span className="text-xs text-slate-600 dark:text-slate-400 block">{t.dashboard.masteryRate}</span>
-            <span className="text-2xl font-bold font-mono-num text-indigo-600 dark:text-indigo-400">
-              {t.common.percent(cards.length > 0 ? Math.round((masteredCards.length / cards.length) * 100) : 0)}
-            </span>
-          </div>
         </div>
       </div>
+
+      <SilverWidget />
 
       {/* The Leitner boxes */}
       <div>
@@ -204,9 +147,6 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
                 <div>
                   <div className="flex flex-wrap items-center justify-between gap-1 mb-2">
                     <span className="text-xs font-bold text-slate-600 dark:text-slate-400">{t.boxes.name(box.index)}</span>
-                    <span dir="ltr" className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 whitespace-nowrap">
-                      {t.boxes.formula(box.index, box.intervalDays)}
-                    </span>
                   </div>
 
                   <div className="mb-3">
@@ -219,16 +159,6 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
                     </span>
                   </div>
 
-                  <div className="mb-3 pt-2.5 border-t border-slate-100 dark:border-slate-800/80 text-xs">
-                    {dueCount > 0 ? (
-                      <div className="flex items-center justify-between gap-1 text-amber-600 dark:text-amber-400 font-medium">
-                        <span className="text-[11px]">{t.dashboard.boxDue}</span>
-                        <span className="font-bold font-mono-num px-1 py-0.5 rounded bg-amber-50 dark:bg-amber-950/50 text-[11px]">{num(dueCount)}</span>
-                      </div>
-                    ) : (
-                      <span className="text-slate-500 text-[11px]">{t.dashboard.boxNoDue}</span>
-                    )}
-                  </div>
                 </div>
 
                 <div className="space-y-2 pt-2.5 border-t border-slate-100 dark:border-slate-800/80">
@@ -293,7 +223,7 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
           <HelpCircle className="w-4 h-4 text-indigo-500" />
           <span>{t.dashboard.rulesTitle}</span>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs text-slate-600 dark:text-slate-400">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs text-slate-600 dark:text-slate-400">
           {t.dashboard.rules.map(rule => (
             <div key={rule.title} className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl space-y-1">
               <span className="font-semibold text-slate-800 dark:text-slate-200 block">{rule.title}</span>

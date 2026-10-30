@@ -1,11 +1,14 @@
 /**
  * Supabase Edge Function "send-reminders" (Deno). Called every 15 minutes by pg_cron.
  *
- *  1. Class-break reminder: Saturday–Wednesday, 09:30–09:59 in each device's own time zone,
- *     once per local day per device.
+ *  1. Leaderboard: someone passed the user on the all-time leaderboard → "N people passed you, you're
+ *     now #R". Only users who are visible on the leaderboard, have a score and didn't turn it off
+ *     (profiles.settings.notifyOvertake). At most once per local day, 10:00–21:00 local time.
+ *     Needs public.leaderboard_ranks() (migrations/20261030_overdue_overtake.sql).
  *  2. Inactivity reminder: more than 24 h without opening the app → a random motivational line,
  *     at most once per 24 h and at most 3 times per absence, only 10:00–21:00 local time,
- *     never within 2 h of a class reminder. Resets when the user comes back.
+ *     never within 2 h of a leaderboard notification. Resets when the user comes back.
+ *  (The class-break reminder of the first version was removed.)
  *
  * Auth: the caller must send the header  x-cron-secret: <CRON_SECRET>  (JWT verification is off).
  * Secrets: CRON_SECRET, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT
@@ -36,7 +39,6 @@ export interface Subscription {
   auth: string;
   timezone: string;
   lang: string;
-  last_class_reminder_on: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -49,20 +51,24 @@ export interface UserActivity {
 export interface PushState {
   inactivity_count: number;
   last_inactivity_at: string | null;
-  last_class_at: string | null;
+  /** Leaderboard rank last notified about (or the best rank since); null = not tracked yet */
+  overtake_rank: number | null;
+  last_overtake_at: string | null;
+}
+
+/** The user's place on the all-time leaderboard; null when hidden from it (or suspended) */
+export interface Standing {
+  rank: number;
+  score: number;
 }
 
 const HOUR = 3600_000;
 const DEFAULT_TZ = 'Asia/Tehran';
-// Saturday to Wednesday (JS: Sunday = 0)
-const CLASS_DAYS = new Set([6, 0, 1, 2, 3]);
-const CLASS_FROM = 9 * 60 + 30;
-const CLASS_UNTIL = 10 * 60;           // exclusive: the 09:30 / 09:45 runs (or a late one) catch it
 const INACTIVE_AFTER = 24 * HOUR;
 const MAX_INACTIVITY_REMINDERS = 3;
-const QUIET_BEFORE = 10;               // inactivity reminders only 10:00–21:00 local time
+const QUIET_BEFORE = 10;               // notifications only 10:00–21:00 local time
 const QUIET_FROM = 21;
-const AFTER_CLASS_GAP = 2 * HOUR;
+const GAP_BETWEEN_KINDS = 2 * HOUR;    // an overtake and an inactivity reminder are at least this far apart
 
 export function safeTimeZone(tz: string | null | undefined): string {
   if (!tz) return DEFAULT_TZ;
@@ -90,10 +96,13 @@ export function localTime(now: Date, tz: string): { weekday: number; minutes: nu
   };
 }
 
-export function isClassReminderDue(sub: Pick<Subscription, 'timezone' | 'last_class_reminder_on'>, now: Date): boolean {
-  const t = localTime(now, sub.timezone);
-  return CLASS_DAYS.has(t.weekday) && t.minutes >= CLASS_FROM && t.minutes < CLASS_UNTIL && sub.last_class_reminder_on !== t.date;
-}
+const inQuietHours = (now: Date, tz: string) => {
+  const hour = Math.floor(localTime(now, tz).minutes / 60);
+  return hour < QUIET_BEFORE || hour >= QUIET_FROM;
+};
+
+const within = (iso: string | null | undefined, now: Date, ms: number) =>
+  !!iso && now.getTime() - new Date(iso).getTime() < ms;
 
 /**
  * Whether this user should get an inactivity reminder now, and the counter value after sending.
@@ -116,24 +125,60 @@ export function inactivityDecision(
   if (t - lastActive <= INACTIVE_AFTER) return { send: false, count };
   if (count >= MAX_INACTIVITY_REMINDERS) return { send: false, count };
   if (lastReminder !== null && lastReminder >= lastActive && t - lastReminder < INACTIVE_AFTER) return { send: false, count };
-  const hour = Math.floor(localTime(now, timezone).minutes / 60);
-  if (hour < QUIET_BEFORE || hour >= QUIET_FROM) return { send: false, count };
-  if (state?.last_class_at && t - new Date(state.last_class_at).getTime() < AFTER_CLASS_GAP) return { send: false, count };
+  if (inQuietHours(now, timezone)) return { send: false, count };
+  if (within(state?.last_overtake_at, now, GAP_BETWEEN_KINDS)) return { send: false, count };
   return { send: true, count: count + 1 };
+}
+
+/**
+ * "Someone passed you on the leaderboard". The baseline is the rank last notified about: it follows
+ * improvements silently; when the rank gets worse, notify (at most once per local day, 10:00–21:00,
+ * not right after an inactivity reminder). While a notification has to wait, the baseline stays, so it
+ * goes out later only if the user is still behind. Users hidden from the leaderboard lose their baseline,
+ * so showing up again doesn't count as being passed. Users with no score yet or who turned this
+ * notification off just follow along.
+ */
+export function overtakeDecision(
+  standing: Standing | null,
+  enabled: boolean,
+  state: PushState | null,
+  timezone: string,
+  now: Date
+): { send: boolean; passedBy: number; rank: number; baseline: number | null } {
+  const base = state?.overtake_rank ?? null;
+  if (!standing) return { send: false, passedBy: 0, rank: 0, baseline: null };
+  const { rank, score } = standing;
+  const follow = { send: false, passedBy: 0, rank, baseline: rank };
+  if (base === null || rank <= base) return follow;
+  if (!enabled || score <= 0) return follow;
+
+  const wait = { send: false, passedBy: 0, rank, baseline: base };
+  if (inQuietHours(now, timezone)) return wait;
+  const last = state?.last_overtake_at;
+  if (last && localTime(new Date(last), timezone).date === localTime(now, timezone).date) return wait;
+  if (within(state?.last_inactivity_at, now, GAP_BETWEEN_KINDS)) return wait;
+  return { send: true, passedBy: rank - base, rank, baseline: rank };
 }
 
 export const asLang = (lang: string | null | undefined): Lang => (lang === 'en' ? 'en' : 'fa');
 
-export const CLASS_MESSAGE: Record<Lang, { title: string; body: string }> = {
-  fa: {
-    title: 'وقت استراحت بین کلاس ☕',
-    body: 'امیدوارم کلاس تا این‌جا خوب بوده باشه! الان فرصت خوبیه که توی این نیم ساعت بین کلاس بیای و کلمات جدید یاد بگیری.'
-  },
-  en: {
-    title: 'Class break ☕',
-    body: 'I hope class has gone well so far! This half-hour break is a great moment to come in and learn some new words.'
-  }
-};
+const faDigits = (x: number) => String(x).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[Number(d)]);
+
+export function overtakePayload(lang: Lang, passedBy: number, rank: number) {
+  const title = lang === 'fa'
+    ? (passedBy > 1 ? `${faDigits(passedBy)} نفر ازت جلو زدن! 🏁` : 'یک نفر ازت جلو زد! 🏁')
+    : (passedBy > 1 ? `${passedBy} people passed you! 🏁` : 'Someone passed you! 🏁');
+  const body = lang === 'fa'
+    ? `الان رتبه‌ی ${faDigits(rank)} جدول رقابت هستی. با چند مرور کوتاه می‌تونی جایگاهت رو پس بگیری.`
+    : `You're now #${rank} on the leaderboard. A few quick reviews can win your place back.`;
+  return { title, body, url: '/?go=leaderboard', tag: 'daf-overtake', lang };
+}
+
+export function testPayload(lang: Lang) {
+  return lang === 'fa'
+    ? { title: 'آزمایش اعلان ✅', body: 'اعلان‌های لایتنر روی این دستگاه کار می‌کنند.', url: '/', tag: 'daf-test', lang }
+    : { title: 'Test notification ✅', body: 'Leitner notifications work on this device.', url: '/', tag: 'daf-test', lang };
+}
 
 export const INACTIVITY_TITLE: Record<Lang, string> = {
   fa: 'مسیرت رو ادامه بده 🌱',
@@ -208,10 +253,6 @@ export const QUOTES: Record<Lang, string[]> = {
   ]
 };
 
-export function classPayload(lang: Lang) {
-  return { ...CLASS_MESSAGE[lang], url: '/?go=learn', tag: 'daf-class', lang };
-}
-
 /** `index` picks the quote; the lists are aligned, so every device gets the same line in its own language. */
 export function inactivityPayload(lang: Lang, index: number) {
   const quotes = QUOTES[lang];
@@ -222,6 +263,13 @@ export function inactivityPayload(lang: Lang, index: number) {
 
 // ---------------------------------------------------------------------------------------------
 // Edge Function
+
+interface ProfileRow {
+  id: string;
+  last_seen_at: string | null;
+  suspended_at: string | null;
+  settings: { notifyOvertake?: boolean } | null;
+}
 
 async function handle(req: Request): Promise<Response> {
   const secret = Deno.env.get('CRON_SECRET');
@@ -249,24 +297,40 @@ async function handle(req: Request): Promise<Response> {
     if (!data || data.length < 1000) break;
   }
   const userIds = [...new Set(subs.map(s => s.user_id))];
-  const profiles = new Map<string, UserActivity>();
+  const profiles = new Map<string, UserActivity & { notifyOvertake: boolean }>();
   const states = new Map<string, PushState>();
   for (let i = 0; i < userIds.length; i += 200) {
     const chunk = userIds.slice(i, i + 200);
     const [p, s] = await Promise.all([
-      db.from('profiles').select('id, last_seen_at, suspended_at').in('id', chunk),
+      db.from('profiles').select('id, last_seen_at, suspended_at, settings').in('id', chunk),
       db.from('push_state').select('*').in('user_id', chunk)
     ]);
     if (p.error) throw p.error;
     if (s.error) throw s.error;
-    (p.data ?? []).forEach((r: { id: string; last_seen_at: string | null; suspended_at: string | null }) =>
-      profiles.set(r.id, { last_seen_at: r.last_seen_at, suspended: !!r.suspended_at }));
+    (p.data ?? []).forEach((r: ProfileRow) => profiles.set(r.id, {
+      last_seen_at: r.last_seen_at,
+      suspended: !!r.suspended_at,
+      notifyOvertake: r.settings?.notifyOvertake !== false
+    }));
     (s.data ?? []).forEach((r: PushState & { user_id: string }) => states.set(r.user_id, r));
+  }
+
+  // All-time leaderboard (visible, active users). Without the database function the overtake part is skipped.
+  const standings = new Map<string, Standing>();
+  let ranksAvailable = false;
+  if (!body.testUserId) {
+    const { data, error } = await db.rpc('leaderboard_ranks');
+    if (error) console.error('leaderboard_ranks unavailable', error.message);
+    else {
+      ranksAvailable = true;
+      (data ?? []).forEach((r: { user_id: string; score: number; rank: number }) =>
+        standings.set(r.user_id, { rank: Number(r.rank), score: Number(r.score) }));
+    }
   }
 
   const now = new Date();
   const removed: number[] = [];
-  const report = { classSent: 0, inactivitySent: 0, removed: 0, failed: 0, dryRun: !!body.dryRun, planned: [] as string[] };
+  const report = { overtakeSent: 0, inactivitySent: 0, testSent: 0, removed: 0, failed: 0, dryRun: !!body.dryRun, planned: [] as string[] };
 
   const send = async (sub: Subscription, payload: object): Promise<boolean> => {
     if (body.dryRun) return true;
@@ -291,60 +355,73 @@ async function handle(req: Request): Promise<Response> {
       return false;
     }
   };
+  const sendAll = async (userSubs: Subscription[], payloadFor: (lang: Lang) => object) => {
+    let delivered = false;
+    for (const sub of userSubs) delivered = (await send(sub, payloadFor(asLang(sub.lang)))) || delivered;
+    return delivered;
+  };
 
   // Test mode: one notification to the given user's devices
   if (body.testUserId) {
-    for (const sub of subs) {
-      const ok = await send(sub, { ...classPayload(asLang(sub.lang)), tag: 'daf-test' });
-      if (ok) report.classSent++;
-    }
+    for (const sub of subs) if (await send(sub, testPayload(asLang(sub.lang)))) report.testSent++;
   } else {
     const byUser = new Map<string, Subscription[]>();
     subs.forEach(s => byUser.set(s.user_id, [...(byUser.get(s.user_id) ?? []), s]));
 
     for (const [userId, userSubs] of byUser) {
-      const activity = profiles.get(userId);
-      if (!activity || activity.suspended) continue;
+      const user = profiles.get(userId);
+      if (!user || user.suspended) continue;
       const state = states.get(userId) ?? null;
-      let classSentAt: string | null = null;
+      // The most recently used device decides the time zone for quiet hours and "today"
+      const main = userSubs.reduce((a, b) => (a.updated_at > b.updated_at ? a : b));
+      const firstSubscribedAt = userSubs.map(s => s.created_at).sort()[0];
 
-      for (const sub of userSubs) {
-        if (!isClassReminderDue(sub, now)) continue;
-        report.planned.push(`class → ${userId} (${sub.timezone})`);
-        if (await send(sub, classPayload(asLang(sub.lang)))) {
-          report.classSent++;
-          classSentAt = now.toISOString();
-          if (!body.dryRun) {
-            await db.from('push_subscriptions').update({ last_class_reminder_on: localTime(now, sub.timezone).date }).eq('id', sub.id);
+      // 1. Someone passed the user on the leaderboard
+      let overtakeSentAt: string | null = null;
+      let baseline = state?.overtake_rank ?? null;
+      if (ranksAvailable) {
+        const o = overtakeDecision(standings.get(userId) ?? null, user.notifyOvertake, state, main.timezone, now);
+        baseline = o.baseline;
+        if (o.send) {
+          report.planned.push(`overtake (+${o.passedBy}, #${o.rank}) → ${userId}`);
+          if (await sendAll(userSubs, lang => overtakePayload(lang, o.passedBy, o.rank))) {
+            report.overtakeSent++;
+            overtakeSentAt = now.toISOString();
+          } else {
+            baseline = state?.overtake_rank ?? null;   // not delivered: try again next run
           }
         }
       }
 
-      // The most recently used device decides the time zone for quiet hours
-      const main = userSubs.reduce((a, b) => (a.updated_at > b.updated_at ? a : b));
-      const firstSubscribedAt = userSubs.map(s => s.created_at).sort()[0];
-      const effectiveState = classSentAt ? { ...(state ?? { inactivity_count: 0, last_inactivity_at: null }), last_class_at: classSentAt } : state;
-      const decision = inactivityDecision(activity, effectiveState, main.timezone, firstSubscribedAt, now);
+      // 2. Away for more than a day
+      const stateNow: PushState | null = overtakeSentAt
+        ? { inactivity_count: state?.inactivity_count ?? 0, last_inactivity_at: state?.last_inactivity_at ?? null, overtake_rank: baseline, last_overtake_at: overtakeSentAt }
+        : state;
+      const decision = inactivityDecision(user, stateNow, main.timezone, firstSubscribedAt, now);
       let inactivitySentAt: string | null = null;
       if (decision.send) {
         report.planned.push(`inactivity #${decision.count} → ${userId}`);
         const quote = Math.floor(Math.random() * QUOTES.fa.length);
-        let delivered = false;
-        for (const sub of userSubs) delivered = (await send(sub, inactivityPayload(asLang(sub.lang), quote))) || delivered;
-        if (delivered) {
+        if (await sendAll(userSubs, lang => inactivityPayload(lang, quote))) {
           report.inactivitySent++;
           inactivitySentAt = now.toISOString();
         }
       }
 
-      if (!body.dryRun && (classSentAt || inactivitySentAt)) {
-        await db.from('push_state').upsert({
-          user_id: userId,
-          // count after this run: +1 when sent, reset to 0 when the user came back, otherwise unchanged
-          inactivity_count: inactivitySentAt ? decision.count : decision.send ? decision.count - 1 : decision.count,
-          last_inactivity_at: inactivitySentAt ?? state?.last_inactivity_at ?? null,
-          last_class_at: classSentAt ?? state?.last_class_at ?? null
-        });
+      // count after this run: +1 when sent, reset to 0 when the user came back, otherwise unchanged
+      const inactivityCount = inactivitySentAt ? decision.count : decision.send ? decision.count - 1 : decision.count;
+      const next = {
+        user_id: userId,
+        inactivity_count: inactivityCount,
+        last_inactivity_at: inactivitySentAt ?? state?.last_inactivity_at ?? null,
+        overtake_rank: baseline,
+        last_overtake_at: overtakeSentAt ?? state?.last_overtake_at ?? null
+      };
+      const changed = !state || state.inactivity_count !== next.inactivity_count || state.last_inactivity_at !== next.last_inactivity_at
+        || state.overtake_rank !== next.overtake_rank || state.last_overtake_at !== next.last_overtake_at;
+      if (!body.dryRun && changed) {
+        const { error } = await db.from('push_state').upsert(next);
+        if (error) console.error('push_state update failed', error.message);
       }
     }
   }
