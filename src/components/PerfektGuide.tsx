@@ -1,5 +1,5 @@
-import React from 'react';
-import { Lightbulb } from 'lucide-react';
+import React, { useState } from 'react';
+import { Lightbulb, ChevronDown, GraduationCap } from 'lucide-react';
 import type { PerfektGuide as Guide, SegmentPart } from '../services/perfektGuide';
 import { diffSegments } from '../services/conjugation';
 import { useI18n } from '../i18n/I18nProvider';
@@ -63,17 +63,34 @@ export const PerfektHint: React.FC<{ guide: Guide }> = ({ guide }) => {
 };
 
 /** After answering (and on the new-words card): the participle in parts, the group, and why haben/sein. */
-export const PerfektExplanation: React.FC<{ guide: Guide; bare?: boolean }> = ({ guide, bare = false }) => {
+/** Collapsed by default (below the card); the learner opens it when they want the explanation. */
+export const PerfektExplanation: React.FC<{ guide: Guide; className?: string }> = ({ guide, className = '' }) => {
   const { t, lang } = useI18n();
   const g = t.perfektGuide;
   const prefixRule = usePrefixRule(guide);
+  const [open, setOpen] = useState(false);
 
   return (
     <div
-      className={`space-y-2 text-xs text-slate-700 dark:text-slate-300 leading-relaxed ${bare ? '' : 'p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800'}`}
+      className={`rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300 leading-relaxed ${className}`}
       data-testid="perfekt-explanation"
+      onClick={e => e.stopPropagation()}
     >
-      {!bare && <p className="font-bold text-slate-900 dark:text-white">{g.explainTitle}</p>}
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        aria-expanded={open}
+        className="w-full flex items-center justify-between gap-2 px-3 py-2.5 text-start font-bold text-slate-900 dark:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
+        data-testid="perfekt-explanation-toggle"
+      >
+        <span className="flex items-center gap-2">
+          <GraduationCap className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
+          {g.explainTitle}
+        </span>
+        <ChevronDown className={`w-4 h-4 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && (
+      <div className="space-y-2 px-3 pb-3" data-testid="perfekt-explanation-body">
 
       {/* The participle in its parts; letters of the stem that changed in red */}
       <div dir="ltr" className="flex flex-wrap items-end gap-1">
@@ -98,6 +115,8 @@ export const PerfektExplanation: React.FC<{ guide: Guide; bare?: boolean }> = ({
       {guide.alternatives.length > 0 && <p>{g.alternatives(guide.alternatives.join(' / '))}</p>}
       <p><span className="font-semibold">{g.auxTitle}</span> {g.aux[guide.auxReason]}</p>
       <p className="text-[11px] text-slate-500 dark:text-slate-400">{g.rootNote}</p>
+      </div>
+      )}
     </div>
   );
 };

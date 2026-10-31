@@ -23,7 +23,9 @@ interface SwipeCardProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onC
 }
 
 const FLY_MS = 220;
-const reducedMotion = () => typeof window !== 'undefined' && !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+// No card motion with reduced motion, or on desktop (mouse/trackpad): there buttons and keys change the card at once
+const reducedMotion = () => typeof window !== 'undefined' &&
+  !!(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || window.matchMedia?.('(hover: hover) and (pointer: fine)').matches);
 // Drags never start on controls inside the card
 const INTERACTIVE = 'button, a, input, textarea, select, label, [data-no-swipe]';
 
@@ -41,6 +43,8 @@ export const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(function Sw
   const rightStamp = useRef<HTMLDivElement>(null);
   const drag = useRef<{ id: number; x: number; y: number; t: number; axis: 'x' | 'y' | null; dx: number } | null>(null);
   const busy = useRef(false);
+  // Without animation (desktop), a short pause after each answer keeps an accidental double click from answering two cards
+  const cooldownUntil = useRef(0);
   const suppressClick = useRef(false);
   const latest = useRef({ onSwipe, canSwipe, onBlocked, onGesture });
   latest.current = { onSwipe, canSwipe, onBlocked, onGesture };
@@ -94,6 +98,7 @@ export const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(function Sw
     };
     if (!node || reducedMotion()) {
       setStamps(0);
+      cooldownUntil.current = performance.now() + 200;
       finish();
       return;
     }
@@ -108,7 +113,7 @@ export const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(function Sw
 
   useImperativeHandle(ref, () => ({
     fly: (dir: SwipeDir) => {
-      if (busy.current) return;
+      if (busy.current || performance.now() < cooldownUntil.current) return;
       commit(dir, false);
     }
   }));

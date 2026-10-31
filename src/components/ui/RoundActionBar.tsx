@@ -1,5 +1,5 @@
 import React from 'react';
-import { MOBILE_ACTION_BAR, useMobileActionBar } from './mobileActionBar';
+import { FIXED_ACTION_BAR, useFixedActionBar } from './mobileActionBar';
 
 export type RoundTone = 'no' | 'yes' | 'back' | 'undo' | 'next';
 
@@ -29,12 +29,12 @@ const TONE: Record<RoundTone, string> = {
 /**
  * Dating-app style row of round buttons with a short label under each. The order is physical
  * (left to right, also in Persian): it matches the swipe directions (left = no, right = yes).
- * Fixed at the bottom on phones.
+ * Always fixed at the bottom of the screen.
  */
 export const RoundActionBar: React.FC<{ actions: RoundAction[]; className?: string }> = ({ actions, className = '' }) => {
-  const barRef = useMobileActionBar<HTMLDivElement>();
+  const barRef = useFixedActionBar<HTMLDivElement>();
   return (
-    <div ref={barRef} dir="ltr" className={`mt-4 flex items-start justify-center gap-6 sm:gap-10 ${MOBILE_ACTION_BAR} max-sm:pt-2.5 ${className}`}>
+    <div ref={barRef} dir="ltr" data-testid="action-bar" className={`flex items-start justify-center gap-6 sm:gap-10 ${FIXED_ACTION_BAR} ${className}`}>
       {actions.map(a => {
         const lg = (a.size ?? 'lg') === 'lg';
         return (

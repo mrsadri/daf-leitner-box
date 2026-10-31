@@ -76,12 +76,12 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
             {dueNounsCards.length > 0 && (
               <button
                 onClick={() => onStartReview(undefined, true)}
-                className="flex items-center justify-center gap-2 px-5 py-3.5 bg-blue-600 hover:bg-blue-700 active:scale-98 text-white rounded-xl text-xs font-bold shadow-sm transition-all"
+                className="flex items-center justify-center gap-2 px-5 py-3.5 bg-white hover:bg-indigo-50 dark:bg-slate-900 dark:hover:bg-indigo-950/50 border-2 border-indigo-600 dark:border-indigo-400 text-indigo-700 dark:text-indigo-300 active:scale-98 rounded-xl text-xs font-bold transition-all"
                 title={t.dashboard.nounReviewHint}
               >
                 <Target className="w-4 h-4" />
                 <span>{t.dashboard.nounReview}</span>
-                <span className="px-2 py-0.5 bg-blue-800 text-blue-100 rounded-md font-mono-num font-bold">
+                <span className="px-2 py-0.5 bg-indigo-600 text-white rounded-md font-mono-num font-bold">
                   {t.common.nouns(dueNounsCards.length)}
                 </span>
               </button>

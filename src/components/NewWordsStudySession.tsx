@@ -502,11 +502,6 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
                   <div className="p-3 rounded-xl bg-violet-50/70 dark:bg-violet-950/30 border border-violet-200/60 dark:border-violet-800/40 sm:col-span-2">
                     <De className="text-violet-700 dark:text-violet-300 font-semibold block mb-1">Perfekt</De>
                     <De as="div" className="text-sm font-bold text-slate-900 dark:text-white leading-relaxed">{perfektAccepted.join(' / ')}</De>
-                    {perfektGuide && (
-                      <div className="mt-2.5 pt-2.5 border-t border-violet-200/60 dark:border-violet-800/40">
-                        <PerfektExplanation guide={perfektGuide} bare />
-                      </div>
-                    )}
                   </div>
                 )}
 
@@ -569,6 +564,9 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
             <span>{t.newWords.kbdPrevious} <kbd className={kbd}>Backspace</kbd></span>
           </div>
         </SwipeCard>
+
+        {/* How the Perfekt is formed: below the card, collapsed until the learner opens it */}
+        {!flipMode && perfektGuide && <PerfektExplanation guide={perfektGuide} className="mt-4" />}
 
         {showSwipeHint && (
           <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-slate-500 dark:text-slate-400" data-testid="swipe-hint">

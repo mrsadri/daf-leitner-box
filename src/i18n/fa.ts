@@ -14,6 +14,7 @@ export const fa = {
     shortName: 'لایتنر DaF',
     name: 'لایتنر هوشمند DaF & Mind',
     documentTitle: 'جعبه لایتنر هوشمند DaF & Mind',
+    independence: 'پروژه‌ای مستقل و داوطلبانه؛ محصول رسمی فرهنگسرای اتریش یا سفارت اتریش نیست.',
     tagline: 'فرمول فواصل ۲ⁿ روز · نسخه DaF kompakt',
     checkingSignIn: 'در حال بررسی ورود…',
     preparing: 'در حال آماده‌سازی جعبه‌های لایتنر شما…',

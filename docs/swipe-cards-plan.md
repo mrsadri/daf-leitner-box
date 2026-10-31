@@ -48,6 +48,11 @@ On phones the bottom bar of the new-words session was too tall and unbalanced:
 - **Small phones:** the bar fits at 320px. It stays fixed at the bottom with safe-area padding.
 - **iOS Safari edge-swipe:** the card has a 16px margin from the screen edge. In the installed app there is no browser back gesture.
 
+## Follow-up (user feedback)
+- **Desktop (mouse/trackpad):** no card motion. Buttons and keys change the card at once. A 200ms pause after each answer keeps an accidental double click from answering two cards.
+- **Bottom bar:** fixed at the bottom of the screen on every screen size, desktop included.
+- **Perfekt guide:** sits outside the card, below it, collapsed by default ("How is the Perfekt of this verb formed?" ▾). Inside the Perfekt quiz it is collapsed too.
+
 ## Tasks
 - [x] `SwipeCard` component (pointer gestures, stamps, fly-out / spring-back / enter animations, imperative fly for buttons and keys, reduced motion, lock while animating)
 - [x] `RoundActionBar` (round buttons, physical left→right order, labels, fixed on phones)
