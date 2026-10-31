@@ -752,7 +752,7 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
 
         {/* Why a swipe / tap on "Knew it" didn't count */}
         {blockedMsg && (
-          <div className="fixed inset-x-0 z-30 flex justify-center px-4 pointer-events-none bottom-[calc(var(--action-bar-h,0px)+0.75rem)] sm:bottom-6" role="status" data-testid="blocked-msg">
+          <div className="fixed inset-x-0 z-30 flex justify-center px-4 pointer-events-none bottom-[calc(var(--action-bar-h,0px)+0.75rem)]" role="status" data-testid="blocked-msg">
             <p className="max-w-sm px-4 py-2.5 rounded-xl bg-slate-900/90 dark:bg-slate-100/90 text-white dark:text-slate-900 text-xs font-medium text-center shadow-lg">{blockedMsg}</p>
           </div>
         )}

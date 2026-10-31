@@ -135,10 +135,10 @@ On Austrian hiking trails, the route is marked with **red-white-red** blazes (an
 
 | Text | Font |
 | --- | --- |
-| Persian | **Vazirmatn**, unchanged |
+| Persian interface | **Vazirmatn for everything**, German words and Latin numbers included (user decision) |
 | Latin interface | Plus Jakarta Sans, unchanged |
 | **Numbers, box labels, station displays, plate headings** | **D-DIN** (Datto, SIL OFL licence): a free typeface in the style of DIN 1451, the classic German signage font. Self-hosted, Latin only. |
-| German words on cards | Unchanged (readability first) |
+| German words on cards | Persian interface: Vazirmatn. English interface: Plus Jakarta Sans |
 
 ### 7. App icon and PWA
 

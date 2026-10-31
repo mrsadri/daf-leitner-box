@@ -47,11 +47,9 @@
   }
 
   /* English interface: Latin font first, Vazirmatn only as a fallback for Persian text (e.g. user notes) */
-  /* Phones: room under the page for a fixed action bar (see components/ui/mobileActionBar.ts) */
-  @media (max-width: 39.99rem) {
-    body.has-action-bar {
-      padding-bottom: var(--action-bar-h, 6rem);
-    }
+  /* Room under the page for the fixed action bar (see components/ui/mobileActionBar.ts) */
+  body.has-action-bar {
+    padding-bottom: var(--action-bar-h, 6rem);
   }
 
   html:lang(en) body {
@@ -81,6 +79,13 @@
 
   .font-de {
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  }
+
+  /* Persian interface: Vazirmatn everywhere (its Latin glyphs cover German, umlauts included) */
+  html:lang(fa) .font-de,
+  html:lang(fa) [lang='de'],
+  html:lang(fa) [lang='en'] {
+    font-family: 'Vazirmatn', system-ui, sans-serif;
   }
 
   .font-mono-num {
