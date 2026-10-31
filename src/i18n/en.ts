@@ -10,6 +10,7 @@ export const en: Messages = {
     shortName: 'DaF Leitner',
     name: 'DaF & Mind Leitner',
     documentTitle: 'DaF & Mind Leitner Box',
+    independence: 'An independent volunteer project, not an official offering of the Austrian Cultural Forum or the Austrian Embassy.',
     tagline: '2ⁿ-day intervals · DaF kompakt edition',
     checkingSignIn: 'Checking sign-in…',
     preparing: 'Preparing your Leitner boxes…',
