@@ -16,6 +16,7 @@ import { SwipeCard, SwipeCardHandle } from './ui/SwipeCard';
 import { RoundActionBar } from './ui/RoundActionBar';
 import type { SwipeDir } from '../services/swipe';
 import { vibrate } from '../services/haptics';
+import { Icon3D } from './ui/Icon3D';
 
 const BANNER_HIDDEN_KEY = 'daf_new_words_banner_hidden';
 const SWIPE_HINT_KEY = 'daf_swipe_hint_done';
@@ -53,7 +54,6 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
   const [flipMode] = useState<boolean>(() => !!leitnerEngine.getSettings().newWordsFlipCard);
   const sessionTopRef = useRef<HTMLDivElement>(null);
   const swipeRef = useRef<SwipeCardHandle>(null);
-  const [enterMode, setEnterMode] = useState<'fade' | 'rewind'>('fade');
   const [showSwipeHint, setShowSwipeHint] = useState<boolean>(() => coarsePointer() && !readSwipeHintDone());
   const [bannerHidden, setBannerHidden] = useState<boolean>(readBannerHidden);
   const shownIndexRef = useRef<number>(0);
@@ -141,12 +141,10 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
 
   // Past the last word, currentIndex === unlearnedWords.length shows the end screen (from where "back" still works)
   const goToNextWord = () => {
-    setEnterMode('fade');
     setCurrentIndex(i => Math.min(i + 1, unlearnedWords.length));
   };
 
   const goToPreviousWord = () => {
-    setEnterMode('rewind');
     setCurrentIndex(i => Math.max(i - 1, 0));
   };
 
@@ -188,7 +186,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
       // Arrow keys follow the swipe directions: → got it, ← skip
       if (e.code === 'ArrowRight' || e.code === 'ArrowLeft') {
         e.preventDefault();
-        swipeRef.current?.fly(e.code === 'ArrowRight' ? 'right' : 'left');
+        swipeRef.current?.answer(e.code === 'ArrowRight' ? 'right' : 'left');
         return;
       }
 
@@ -199,7 +197,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
           handleSpeak(fullWordDisplay);
         } else if (e.code === 'Enter') {
           e.preventDefault();
-          swipeRef.current?.fly('right');
+          swipeRef.current?.answer('right');
         }
         return;
       }
@@ -210,7 +208,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
       } else if (e.code === 'Enter') {
         if (isFlipped && !onButton) {
           e.preventDefault();
-          swipeRef.current?.fly('right');
+          swipeRef.current?.answer('right');
         }
       } else if (!isFlipped && isNoun) {
         if (e.key === 'd' || e.key === 'D' || e.code === 'Digit1') {
@@ -237,8 +235,8 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
     const finished = addedCount > 0 || hadWordsAtStart;
     return (
       <div className="max-w-xl mx-auto py-16 text-center space-y-6">
-        <div className="w-16 h-16 mx-auto rounded-full bg-emerald-100 dark:bg-emerald-950 flex items-center justify-center text-emerald-600">
-          <CheckCircle2 className="w-8 h-8" />
+        <div className="w-24 h-24 mx-auto flex items-center justify-center">
+          <Icon3D name={finished ? 'trophy' : 'pretzel'} size={96} />
         </div>
         <div className="space-y-2">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
@@ -328,7 +326,6 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
         <SwipeCard
           ref={swipeRef}
           cardKey={currentWord.id}
-          enter={enterMode}
           onSwipe={handleSwipe}
           canSwipe={dir => (isAdded && dir === 'left' ? '' : true)}
           onGesture={() => {
@@ -602,11 +599,11 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
           actions={isAdded ? [
             { id: 'undo', tone: 'undo', icon: <Undo2 />, label: t.newWords.undoAdd, hint: t.newWords.undoAddHint, onClick: handleUndoAdd },
             { id: 'back', tone: 'back', size: 'sm', icon: <RotateCcw />, label: t.newWords.previous, hint: t.newWords.previousHint, onClick: goToPreviousWord, disabled: currentIndex === 0 },
-            { id: 'next', tone: 'next', icon: <ArrowRight />, label: t.newWords.next, onClick: () => swipeRef.current?.fly('right') }
+            { id: 'next', tone: 'next', icon: <ArrowRight />, label: t.newWords.next, onClick: () => swipeRef.current?.answer('right') }
           ] : [
-            { id: 'skip', tone: 'no', icon: <X />, label: t.newWords.skip, hint: t.newWords.skipHint, onClick: () => swipeRef.current?.fly('left') },
+            { id: 'skip', tone: 'no', icon: <X />, label: t.newWords.skip, hint: t.newWords.skipHint, onClick: () => swipeRef.current?.answer('left') },
             { id: 'back', tone: 'back', size: 'sm', icon: <RotateCcw />, label: t.newWords.previous, hint: t.newWords.previousHint, onClick: goToPreviousWord, disabled: currentIndex === 0 },
-            { id: 'add', tone: 'yes', icon: <Check />, label: t.newWords.add, hint: t.newWords.addHint, onClick: () => swipeRef.current?.fly('right') }
+            { id: 'add', tone: 'yes', icon: <Check />, label: t.newWords.add, hint: t.newWords.addHint, onClick: () => swipeRef.current?.answer('right') }
           ]}
         />
       </div>

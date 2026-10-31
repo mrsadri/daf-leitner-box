@@ -4,7 +4,7 @@ import { signInWithGoogle } from '../lib/supabase';
 import { useI18n } from '../i18n/I18nProvider';
 import { LanguageSwitch } from './ui/LanguageSwitch';
 import { Ltr } from './ui/Text';
-import { Credit, AustriaStripe } from './ui/Credit';
+import { Credit } from './ui/Credit';
 
 const GoogleIcon = () => (
   <svg viewBox="0 0 24 24" className="w-5 h-5" aria-hidden="true">
@@ -34,7 +34,6 @@ export const LoginScreen: React.FC = () => {
 
   return (
     <div className="relative min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center gap-4 p-4">
-      <AustriaStripe className="absolute top-0 inset-x-0 mt-[env(safe-area-inset-top)]" />
       <LanguageSwitch />
       <div className="max-w-md w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6 text-center">
         <div className="w-14 h-14 mx-auto rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-bold text-2xl shadow-sm">

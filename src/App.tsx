@@ -20,7 +20,7 @@ import { AdminPanel } from './components/AdminPanel';
 import { Loader2, WifiOff } from 'lucide-react';
 import { useI18n } from './i18n/I18nProvider';
 import { DEFAULT_LANG } from './i18n/format';
-import { Credit, AustriaStripe } from './components/ui/Credit';
+import { Credit } from './components/ui/Credit';
 import { refreshPush, disablePush } from './services/pwa';
 import { fetchUnseenOverdueMoves, markOverdueMovesSeen } from './services/overdue';
 import type { OverdueMove } from './services/overdueSummary';
@@ -34,7 +34,6 @@ const PRESENCE_INTERVAL_MS = 5 * 60 * 1000;
 
 const FullScreenLoader: React.FC<{ text: string }> = ({ text }) => (
   <div className="relative min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center gap-4 text-slate-600 dark:text-slate-400">
-    <AustriaStripe className="absolute top-0 inset-x-0 mt-[env(safe-area-inset-top)]" />
     <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
     <span className="text-sm font-medium px-4 text-center">{text}</span>
     <Credit className="absolute bottom-6 inset-x-0 px-6 max-w-md mx-auto" />
@@ -74,6 +73,8 @@ function AuthGate() {
 function LeitnerApp({ user }: { user: User }) {
   const { t, lang, setLang } = useI18n();
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
+  // Lesson chosen on the dashboard's metro map; the word list opens with it selected
+  const [catalogLektion, setCatalogLektion] = useState<{ lektion: string; key: number } | null>(null);
   const [cards, setCards] = useState<LeitnerCard[]>([]);
   const [catalog, setCatalog] = useState<LeitnerCard[]>([]);
   const [settings, setSettings] = useState<AppSettings>(leitnerEngine.getSettings());
@@ -289,9 +290,14 @@ function LeitnerApp({ user }: { user: User }) {
             {activeTab === 'dashboard' && (
               <LeitnerDashboard
                 cards={cards}
+                catalog={catalog}
                 onStartReview={handleStartReview}
                 onStartNewWordsLearning={() => setIsStudyingNewWords(true)}
                 onNavigateToCatalog={() => setActiveTab('catalog')}
+                onOpenLesson={(lektion: string) => {
+                  setCatalogLektion({ lektion, key: Date.now() });
+                  setActiveTab('catalog');
+                }}
                 onNavigateToReflections={() => setActiveTab('reflections')}
                 onOpenNewCardModal={() => setIsNewCardModalOpen(true)}
                 onOpenSettings={() => {
@@ -323,6 +329,8 @@ function LeitnerApp({ user }: { user: User }) {
 
             {activeTab === 'catalog' && (
               <VocabCatalog
+                key={catalogLektion?.key ?? 0}
+                initialLektion={catalogLektion?.lektion}
                 catalogWords={catalog}
                 activeCards={cards}
                 onAddWordToLeitner={handleAddCard}
@@ -391,6 +399,7 @@ function LeitnerApp({ user }: { user: User }) {
             <span>{t.app.footerFormula}</span>
             <span>{t.app.footerDrop}</span>
             <span>{t.app.footerCloud}</span>
+            <a href="https://www.thiings.co" target="_blank" rel="noopener noreferrer" lang="de" className="underline underline-offset-2 hover:text-slate-800 dark:hover:text-slate-200">3D-Icons: thiings.co</a>
           </div>
         </div>
       </footer>

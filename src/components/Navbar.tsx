@@ -3,7 +3,6 @@ import { Layers, PlayCircle, BookOpen, Sparkles, Settings2, Plus, Trophy, Shield
 import { UserProfile } from '../types/leitner';
 import type { SyncStatus } from '../services/cloudSync';
 import { useI18n } from '../i18n/I18nProvider';
-import { AustriaStripe } from './ui/Credit';
 
 export type ActiveTab = 'dashboard' | 'review' | 'catalog' | 'reflections' | 'leaderboard' | 'settings' | 'admin';
 
@@ -47,7 +46,6 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header className="sticky top-0 z-30 pt-[env(safe-area-inset-top)] bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
-      <AustriaStripe />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3 xl:gap-6">
 
         {/* Brand */}

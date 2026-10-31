@@ -1,6 +1,10 @@
 # Design inspired by Austria (and a little Germany): plan
 
-Status: **plan for approval, not implemented.**
+Status:
+- **Phase 1:** live.
+- **Phases 2–5:** implemented (PR "design phases 2–5").
+- **Red-white-red band:** removed after feedback (distracting, no use).
+- **Not built:** the station-style progress display in sessions and the round sign stamps (phase 3 extras). They were left out to keep the session screens calm.
 
 ## Goal and limits
 
@@ -70,7 +74,7 @@ The app currently uses indigo as its main colour. It moves to colours taken from
 
 **Brand red vs error red:** red already means "wrong" in the app. The brand red therefore appears only as a stripe or mark, never as a status colour, and error states always carry an icon.
 
-### 2. Red-white-red stripe
+### 2. Red-white-red stripe (removed after user feedback)
 
 - A thin stripe (3px, red | white | red) at the top of the header, below the phone's safe area. It also appears on the loading screen and at the top of popups.
 - **Dark mode:** the white part becomes a light grey, so it doesn't glare.

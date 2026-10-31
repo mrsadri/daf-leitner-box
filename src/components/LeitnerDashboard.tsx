@@ -7,6 +7,9 @@ import { useI18n } from '../i18n/I18nProvider';
 import { De, Auto } from './ui/Text';
 import { InstallBanner } from './AppInstall';
 import { SilverWidget } from './SilverCards';
+import { MetroMap } from './MetroMap';
+import { MountainTrail } from './MountainTrail';
+import { Icon3D, SignHeading } from './ui/Icon3D';
 
 interface LeitnerDashboardProps {
   cards: LeitnerCard[];
@@ -16,6 +19,10 @@ interface LeitnerDashboardProps {
   onNavigateToReflections: () => void;
   onOpenNewCardModal: () => void;
   onOpenSettings?: () => void;
+  /** Book words (for the metro map of the lessons) */
+  catalog: LeitnerCard[];
+  /** Open the word list filtered to a lesson (tapping a station on the metro map) */
+  onOpenLesson: (lektion: string) => void;
 }
 
 
@@ -23,7 +30,9 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
   cards,
   onStartReview,
   onStartNewWordsLearning,
-  onOpenSettings
+  onOpenSettings,
+  catalog,
+  onOpenLesson
 }) => {
   const { t, lang, num, date } = useI18n();
   const [selectedBoxModal, setSelectedBoxModal] = useState<number | null>(null);
@@ -48,7 +57,8 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 lg:p-8 shadow-xs">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2 min-w-0">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+            <h1 className="flex items-center gap-2 text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+              <Icon3D name="coffee" size={44} className="-my-2" />
               {t.dashboard.title}
             </h1>
           </div>
@@ -127,9 +137,15 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
 
       {/* The Leitner boxes */}
       <div>
-        <div className="mb-4">
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">{t.dashboard.boxesTitle}</h2>
+        <div className="mb-3 space-y-2">
+          <SignHeading icon="mountain">{t.dashboard.boxesTitle}</SignHeading>
           <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{t.dashboard.boxesSubtitle}</p>
+        </div>
+
+        {/* Decoration: the boxes as a hiking trail from the valley to the summit */}
+        <div className="mb-4 space-y-1">
+          <MountainTrail />
+          <p className="text-center text-[11px] text-slate-500 dark:text-slate-400">{t.trail.caption}</p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-3.5">
@@ -190,6 +206,9 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
           })}
         </div>
       </div>
+
+      {/* The book as a metro line: one station per lesson */}
+      <MetroMap catalog={catalog} cards={cards} onOpenLesson={onOpenLesson} />
 
       {/* Mastered archive */}
       <div className="bg-gradient-to-l rtl:bg-gradient-to-r from-transparent via-emerald-500/5 to-emerald-500/10 border border-emerald-200 dark:border-emerald-800/60 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">

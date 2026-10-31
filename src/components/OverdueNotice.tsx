@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { History, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import type { LeitnerCard } from '../types/leitner';
 import type { OverdueMove } from '../services/overdueSummary';
 import { summarizeOverdueMoves } from '../services/overdueSummary';
 import { useI18n } from '../i18n/I18nProvider';
+import { Icon3D } from './ui/Icon3D';
 import { De, Auto } from './ui/Text';
 
 interface OverdueNoticeProps {
@@ -59,7 +60,7 @@ export const OverdueNotice: React.FC<OverdueNoticeProps> = ({ moves, cards, firs
       >
         <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-start justify-between gap-3">
           <h3 id="overdue-title" className="flex items-start gap-2 text-base font-bold text-slate-900 dark:text-white">
-            <History className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <Icon3D name="hourglass" size={40} className="-my-1" />
             <span>{firstTime ? o.titleFirst : o.title}</span>
           </h3>
           <button

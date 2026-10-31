@@ -17,17 +17,20 @@ interface VocabCatalogProps {
   activeCards: LeitnerCard[];
   onAddWordToLeitner: (word: LeitnerCard) => void;
   onBatchAddWords: (words: LeitnerCard[]) => void;
+  /** Open with this lesson selected (from the metro map on the dashboard) */
+  initialLektion?: string;
 }
 
 export const VocabCatalog: React.FC<VocabCatalogProps> = ({
   catalogWords,
   activeCards,
   onAddWordToLeitner,
-  onBatchAddWords
+  onBatchAddWords,
+  initialLektion
 }) => {
   const { t, lang } = useI18n();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedLektion, setSelectedLektion] = useState<string>('all');
+  const [selectedLektion, setSelectedLektion] = useState<string>(initialLektion || 'all');
   const [selectedNiveau, setSelectedNiveau] = useState<string>('all');
   const [selectedWortart, setSelectedWortart] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'not_in_box' | 'in_box'>('all');
