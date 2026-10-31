@@ -7,7 +7,10 @@ import { vocabText, perfektAnswers, pluralParts, conjugationOf, perfektGuideOf }
 import { ConjugationButton } from './ConjugationDialog';
 import { maskParticiples, PerfektResult } from '../services/perfekt';
 import { PerfektQuiz } from './PerfektQuiz';
-import { MOBILE_ACTION_BAR, useMobileActionBar } from './ui/mobileActionBar';
+import { SwipeCard, SwipeCardHandle } from './ui/SwipeCard';
+import { RoundActionBar } from './ui/RoundActionBar';
+import type { SwipeDir } from '../services/swipe';
+import { vibrate } from '../services/haptics';
 import { recordSilverCorrect } from '../services/silver';
 import { SilverCardEarned } from './SilverCards';
 import { PluralInfo } from './PluralInfo';
@@ -71,7 +74,9 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
   const forgotRef = useRef<HTMLButtonElement>(null);
   const cardAreaRef = useRef<HTMLDivElement>(null);
   const [silverWon, setSilverWon] = useState<number | null>(null);
-  const actionBarRef = useMobileActionBar<HTMLDivElement>();
+  const swipeRef = useRef<SwipeCardHandle>(null);
+  const [blockedMsg, setBlockedMsg] = useState<string | null>(null);
+  const blockedTimer = useRef<number | undefined>(undefined);
   const shownCardIdRef = useRef<string | undefined>(undefined);
 
 
@@ -178,6 +183,28 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
     onCardUpdated();
   };
 
+  /** Right = knew it / read, left = didn't know */
+  const handleSwipe = (dir: SwipeDir) => {
+    if (!currentCard) return;
+    if (currentCard.type === 'vocab') handleVocabAnswer(dir === 'right');
+    else if (dir === 'right') handleReflectionAcknowledge();
+  };
+
+  // "Knew it" is locked after a wrong article guess or until the Perfekt is answered correctly
+  const canSwipe = (dir: SwipeDir): true | string => {
+    if (!currentCard) return '';
+    if (currentCard.type !== 'vocab') return dir === 'right' ? true : '';
+    if (dir === 'right' && articleGuessWrong) return t.review.wrongArticleTitle;
+    if (dir === 'right' && perfektLocked) return t.perfekt.locked;
+    return true;
+  };
+
+  const showBlocked = (_dir: SwipeDir, reason: string) => {
+    setBlockedMsg(reason);
+    window.clearTimeout(blockedTimer.current);
+    blockedTimer.current = window.setTimeout(() => setBlockedMsg(null), 2800);
+  };
+
   const handleSaveReflectionEdit = () => {
     if (!currentCard || editingContent === null) return;
     leitnerEngine.updateCard(currentCard.id, { content: editingContent });
@@ -223,19 +250,21 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
       if (e.code === 'Space') {
         e.preventDefault();
         handleFlip();
+      } else if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') {
+        // Same directions as swiping: ← didn't know, → knew it / read
+        e.preventDefault();
+        swipeRef.current?.fly(e.code === 'ArrowRight' ? 'right' : 'left');
       } else if (e.code === 'Digit1' || e.code === 'Numpad1') {
         if (canGuess && nounsOnly) {
           handleArticleSelect('der');
         } else if (currentCard.type === 'vocab') {
-          handleVocabAnswer(false);
+          swipeRef.current?.fly('left');
         }
       } else if (e.code === 'Digit2' || e.code === 'Numpad2') {
         if (canGuess && nounsOnly) {
           handleArticleSelect('die');
-        } else if (currentCard.type === 'vocab') {
-          handleVocabAnswer(true);
         } else {
-          handleReflectionAcknowledge();
+          swipeRef.current?.fly('right');
         }
       } else if ((e.code === 'Digit3' || e.code === 'Numpad3') && canGuess && nounsOnly) {
         handleArticleSelect('das');
@@ -385,9 +414,18 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
 
       {/* Flashcard */}
       <div ref={cardAreaRef} className="relative min-h-[400px] sm:min-h-[460px] flex flex-col scroll-mt-24">
-        <div
+        <SwipeCard
+          ref={swipeRef}
+          cardKey={currentCard.id}
+          onSwipe={handleSwipe}
+          canSwipe={canSwipe}
+          onBlocked={showBlocked}
+          onGesture={vibrate}
+          stamps={currentCard.type === 'vocab'
+            ? { left: t.review.stampForgot, right: t.review.stampKnew }
+            : { left: '', right: `${t.review.readDone} ✓` }}
           onClick={handleFlip}
-          className="cursor-pointer flex-1 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-3xl p-5 sm:p-10 flex flex-col justify-between gap-4 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-700 transition-all relative overflow-hidden group select-none"
+          className="cursor-pointer flex-1 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-3xl p-5 sm:p-10 flex flex-col justify-between gap-4 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors overflow-hidden group select-none"
         >
           {/* Card header */}
           <div className="flex items-start justify-between gap-3 text-xs text-slate-600 dark:text-slate-400">
@@ -680,10 +718,10 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
           <div className="hidden pointer-fine:flex pt-4 border-t border-slate-100 dark:border-slate-800 items-center justify-between gap-3 text-xs text-slate-600 dark:text-slate-400">
             <span>{t.review.kbdFlip} <kbd className={kbd}>Space</kbd></span>
             <span>
-              {t.review.kbdAnswer} <kbd className={kbd}>1</kbd> {t.review.kbdAnd} <kbd className={kbd}>2</kbd>
+              {t.review.kbdAnswer} <kbd className={kbd}>←</kbd> <kbd className={kbd}>1</kbd> {t.review.kbdAnd} <kbd className={kbd}>→</kbd> <kbd className={kbd}>2</kbd>
             </span>
           </div>
-        </div>
+        </SwipeCard>
 
         {/* Perfekt quiz (verbs), kept outside the card so it stays visible when the card is flipped */}
         {hasPerfektQuiz && (
@@ -697,53 +735,27 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
           </div>
         )}
 
-        {/* Answer buttons (phones: fixed at the bottom of the screen) */}
-        <div ref={actionBarRef} className={`mt-4 ${MOBILE_ACTION_BAR}`}>
-          {currentCard.type === 'vocab' ? (
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                ref={forgotRef}
-                type="button"
-                onClick={() => handleVocabAnswer(false)}
-                className="flex items-center justify-center gap-2 py-3.5 px-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 bg-red-50 hover:bg-red-100 dark:bg-red-950/40 dark:hover:bg-red-950/60 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900/50 rounded-2xl font-bold text-sm shadow-xs active:scale-98 transition-all"
-              >
-                <X className="w-5 h-5 text-red-600 shrink-0" />
-                <span className="flex flex-col items-start leading-tight">
-                  <span>{t.review.forgot}</span>
-                  <span className="text-[11px] font-normal opacity-80">{t.review.forgotHint}</span>
-                </span>
-                <kbd className="hidden pointer-fine:inline text-xs opacity-75 font-mono-num font-normal">1</kbd>
-              </button>
+        {/* Answer buttons: round, in swipe order (left = didn't know, right = knew it); fixed at the bottom on phones */}
+        <RoundActionBar
+          actions={currentCard.type === 'vocab' ? [
+            { id: 'forgot', tone: 'no', icon: <X />, label: t.review.forgot, hint: t.review.forgotHint, buttonRef: forgotRef, onClick: () => swipeRef.current?.fly('left') },
+            {
+              id: 'knew', tone: 'yes', icon: <Check />, label: t.review.knew, buttonRef: knewRef,
+              hint: articleGuessWrong ? t.review.wrongArticleTitle : perfektLocked ? t.perfekt.locked : t.review.knewHint,
+              muted: articleGuessWrong || perfektLocked,
+              onClick: () => swipeRef.current?.fly('right')
+            }
+          ] : [
+            { id: 'read', tone: 'yes', icon: <Check />, label: t.review.readDone, hint: t.review.readDoneHint, onClick: () => swipeRef.current?.fly('right') }
+          ]}
+        />
 
-              <button
-                ref={knewRef}
-                type="button"
-                onClick={() => handleVocabAnswer(true)}
-                disabled={articleGuessWrong || perfektLocked}
-                title={articleGuessWrong ? t.review.wrongArticleTitle : perfektLocked ? t.perfekt.locked : undefined}
-                className="flex items-center justify-center gap-2 py-3.5 px-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-950 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-2xl font-bold text-sm shadow-sm active:scale-98 transition-all"
-              >
-                <Check className="w-5 h-5 shrink-0" />
-                <span className="flex flex-col items-start leading-tight">
-                  <span>{t.review.knew}</span>
-                  <span className="text-[11px] font-normal opacity-85">{t.review.knewHint}</span>
-                </span>
-                <kbd className="hidden pointer-fine:inline text-xs opacity-80 font-mono-num font-normal">2</kbd>
-              </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={handleReflectionAcknowledge}
-              className="w-full flex items-center justify-center gap-3 py-4 px-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-bold text-base shadow-sm active:scale-98 transition-all"
-            >
-              <Check className="w-5 h-5 shrink-0" />
-              <span>{t.review.readDone}</span>
-              <span className="text-xs font-normal opacity-85">({t.review.readDoneHint})</span>
-              <kbd className="hidden pointer-fine:inline text-xs opacity-80 font-mono-num font-normal">2</kbd>
-            </button>
-          )}
-        </div>
+        {/* Why a swipe / tap on "Knew it" didn't count */}
+        {blockedMsg && (
+          <div className="fixed inset-x-0 z-30 flex justify-center px-4 pointer-events-none bottom-[calc(var(--action-bar-h,0px)+0.75rem)] sm:bottom-6" role="status" data-testid="blocked-msg">
+            <p className="max-w-sm px-4 py-2.5 rounded-xl bg-slate-900/90 dark:bg-slate-100/90 text-white dark:text-slate-900 text-xs font-medium text-center shadow-lg">{blockedMsg}</p>
+          </div>
+        )}
       </div>
     </div>
   );

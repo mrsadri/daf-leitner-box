@@ -9,12 +9,21 @@ import { maskParticiples, PerfektResult } from '../services/perfekt';
 import { PerfektQuiz } from './PerfektQuiz';
 import { PluralInfo } from './PluralInfo';
 import { PerfektExplanation } from './PerfektGuide';
-import { Volume2, RotateCw, ArrowLeft, BookOpen, PlusCircle, CheckCircle2, Sparkles, SkipForward, X, ChevronLeft, Undo2 } from 'lucide-react';
+import { Volume2, RotateCw, ArrowLeft, BookOpen, CheckCircle2, Sparkles, X, ChevronLeft, Undo2, Check, RotateCcw, ArrowRight, Hand } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
 import { De, Auto } from './ui/Text';
-import { MOBILE_ACTION_BAR, useMobileActionBar } from './ui/mobileActionBar';
+import { SwipeCard, SwipeCardHandle } from './ui/SwipeCard';
+import { RoundActionBar } from './ui/RoundActionBar';
+import type { SwipeDir } from '../services/swipe';
+import { vibrate } from '../services/haptics';
 
 const BANNER_HIDDEN_KEY = 'daf_new_words_banner_hidden';
+const SWIPE_HINT_KEY = 'daf_swipe_hint_done';
+const readSwipeHintDone = () => {
+  try { return localStorage.getItem(SWIPE_HINT_KEY) === '1'; } catch { return true; }
+};
+const coarsePointer = () => typeof window !== 'undefined' && !!window.matchMedia?.('(pointer: coarse)').matches;
+
 const readBannerHidden = () => {
   try { return localStorage.getItem(BANNER_HIDDEN_KEY) === '1'; } catch { return false; }
 };
@@ -43,7 +52,9 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
   // Read once per session, so the layout never switches in the middle of a card
   const [flipMode] = useState<boolean>(() => !!leitnerEngine.getSettings().newWordsFlipCard);
   const sessionTopRef = useRef<HTMLDivElement>(null);
-  const actionBarRef = useMobileActionBar<HTMLDivElement>();
+  const swipeRef = useRef<SwipeCardHandle>(null);
+  const [enterMode, setEnterMode] = useState<'fade' | 'rewind'>('fade');
+  const [showSwipeHint, setShowSwipeHint] = useState<boolean>(() => coarsePointer() && !readSwipeHintDone());
   const [bannerHidden, setBannerHidden] = useState<boolean>(readBannerHidden);
   const shownIndexRef = useRef<number>(0);
 
@@ -130,11 +141,19 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
 
   // Past the last word, currentIndex === unlearnedWords.length shows the end screen (from where "back" still works)
   const goToNextWord = () => {
+    setEnterMode('fade');
     setCurrentIndex(i => Math.min(i + 1, unlearnedWords.length));
   };
 
   const goToPreviousWord = () => {
+    setEnterMode('rewind');
     setCurrentIndex(i => Math.max(i - 1, 0));
+  };
+
+  /** Right = got it (or next, on a word already added), left = skip */
+  const handleSwipe = (dir: SwipeDir) => {
+    if (dir === 'right') handleAddToBox0();
+    else goToNextWord();
   };
 
   /** Undo an add from this session, as long as the card hasn't been reviewed yet. */
@@ -166,6 +185,13 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
         return;
       }
 
+      // Arrow keys follow the swipe directions: → got it, ← skip
+      if (e.code === 'ArrowRight' || e.code === 'ArrowLeft') {
+        e.preventDefault();
+        swipeRef.current?.fly(e.code === 'ArrowRight' ? 'right' : 'left');
+        return;
+      }
+
       if (!flipMode) {
         if (onButton) return;
         if (e.code === 'Space') {
@@ -173,7 +199,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
           handleSpeak(fullWordDisplay);
         } else if (e.code === 'Enter') {
           e.preventDefault();
-          handleAddToBox0();
+          swipeRef.current?.fly('right');
         }
         return;
       }
@@ -184,7 +210,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
       } else if (e.code === 'Enter') {
         if (isFlipped && !onButton) {
           e.preventDefault();
-          handleAddToBox0();
+          swipeRef.current?.fly('right');
         }
       } else if (!isFlipped && isNoun) {
         if (e.key === 'd' || e.key === 'D' || e.code === 'Digit1') {
@@ -299,10 +325,23 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
 
       {/* Card */}
       <div className="relative min-h-[400px] flex flex-col">
-        <div
+        <SwipeCard
+          ref={swipeRef}
+          cardKey={currentWord.id}
+          enter={enterMode}
+          onSwipe={handleSwipe}
+          canSwipe={dir => (isAdded && dir === 'left' ? '' : true)}
+          onGesture={() => {
+            vibrate();
+            if (showSwipeHint) {
+              setShowSwipeHint(false);
+              try { localStorage.setItem(SWIPE_HINT_KEY, '1'); } catch { /* ignore */ }
+            }
+          }}
+          stamps={isAdded ? { left: '', right: t.newWords.stampNext } : { left: t.newWords.stampSkip, right: t.newWords.stampAdd }}
           onClick={flipMode ? handleFlip : undefined}
           data-card-mode={flipMode ? 'flip' : 'single'}
-          className={`flex-1 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-3xl p-5 sm:p-10 flex flex-col justify-between gap-4 shadow-sm transition-all ${
+          className={`flex-1 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-3xl p-5 sm:p-10 flex flex-col justify-between gap-4 shadow-sm ${
             flipMode ? 'cursor-pointer hover:border-indigo-300 dark:hover:border-indigo-700 select-none' : ''
           }`}
         >
@@ -525,10 +564,18 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
             {flipMode
               ? <span>{t.review.kbdFlip} <kbd className={kbd}>Space</kbd></span>
               : <span>{t.newWords.kbdSpeak} <kbd className={kbd}>Space</kbd></span>}
+            <span>{t.newWords.kbdSkip} <kbd className={kbd}>←</kbd></span>
+            <span>{t.newWords.kbdAdd} <kbd className={kbd}>→</kbd> <kbd className={kbd}>Enter</kbd></span>
             <span>{t.newWords.kbdPrevious} <kbd className={kbd}>Backspace</kbd></span>
-            <span>{t.newWords.kbdAdd} <kbd className={kbd}>Enter</kbd></span>
           </div>
-        </div>
+        </SwipeCard>
+
+        {showSwipeHint && (
+          <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-slate-500 dark:text-slate-400" data-testid="swipe-hint">
+            <Hand className="w-4 h-4 shrink-0" />
+            {t.newWords.swipeHint}
+          </p>
+        )}
 
         {flipMode && perfektAccepted.length > 0 && (
           <div className="mt-4">
@@ -552,64 +599,18 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
           </div>
         )}
 
-        {/* Actions */}
-        {/* Phones: buttons fixed at the bottom of the screen */}
-        <div ref={actionBarRef} className={`mt-4 flex flex-row gap-2 sm:gap-3 ${MOBILE_ACTION_BAR}`}>
-          <button
-            type="button"
-            onClick={goToPreviousWord}
-            disabled={currentIndex === 0}
-            className="flex items-center justify-center gap-1.5 py-3.5 sm:py-4 px-3 sm:px-4 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 dark:text-slate-200 rounded-2xl font-semibold text-sm transition-colors"
-            title={t.newWords.previousHint}
-            aria-label={t.newWords.previous}
-          >
-            <ChevronLeft className="w-5 h-5 rtl:-scale-x-100" />
-            <span className="hidden sm:inline">{t.newWords.previous}</span>
-          </button>
-          {isAdded ? (
-            <>
-              <button
-                type="button"
-                onClick={handleUndoAdd}
-                className="flex items-center justify-center gap-2 py-3.5 sm:py-4 px-4 sm:px-5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-2xl font-semibold text-sm transition-colors"
-              >
-                <Undo2 className="w-4 h-4 shrink-0" />
-                <span>{t.newWords.undoAdd}</span>
-              </button>
-              <button
-                type="button"
-                onClick={goToNextWord}
-                className="flex-1 flex items-center justify-center gap-2 py-4 px-5 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white rounded-2xl font-bold text-base shadow-sm transition-all"
-              >
-                <span>{t.newWords.next}</span>
-                <ChevronLeft className="w-5 h-5 ltr:-scale-x-100" />
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                type="button"
-                onClick={goToNextWord}
-                className="flex items-center justify-center gap-2 py-3.5 sm:py-4 px-4 sm:px-5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-2xl font-semibold text-sm transition-colors"
-                title={t.newWords.skipHint}
-              >
-                <SkipForward className="w-4 h-4 rtl:-scale-x-100" />
-                <span>{t.newWords.skip}</span>
-              </button>
-              <button
-                type="button"
-                onClick={handleAddToBox0}
-                className="flex-1 flex items-center justify-center gap-3 py-4 px-4 sm:px-5 bg-indigo-600 hover:bg-indigo-700 active:scale-98 text-white rounded-2xl font-bold text-base shadow-sm transition-all"
-              >
-                <PlusCircle className="w-5 h-5 shrink-0" />
-                <span className="flex flex-col items-start leading-tight">
-                  <span>{t.newWords.add}</span>
-                  <span className="text-xs font-normal opacity-85">{t.newWords.addHint}</span>
-                </span>
-              </button>
-            </>
-          )}
-        </div>
+        {/* Actions: round buttons in swipe order (left = skip, right = got it); fixed at the bottom on phones */}
+        <RoundActionBar
+          actions={isAdded ? [
+            { id: 'undo', tone: 'undo', icon: <Undo2 />, label: t.newWords.undoAdd, hint: t.newWords.undoAddHint, onClick: handleUndoAdd },
+            { id: 'back', tone: 'back', size: 'sm', icon: <RotateCcw />, label: t.newWords.previous, hint: t.newWords.previousHint, onClick: goToPreviousWord, disabled: currentIndex === 0 },
+            { id: 'next', tone: 'next', icon: <ArrowRight />, label: t.newWords.next, onClick: () => swipeRef.current?.fly('right') }
+          ] : [
+            { id: 'skip', tone: 'no', icon: <X />, label: t.newWords.skip, hint: t.newWords.skipHint, onClick: () => swipeRef.current?.fly('left') },
+            { id: 'back', tone: 'back', size: 'sm', icon: <RotateCcw />, label: t.newWords.previous, hint: t.newWords.previousHint, onClick: goToPreviousWord, disabled: currentIndex === 0 },
+            { id: 'add', tone: 'yes', icon: <Check />, label: t.newWords.add, hint: t.newWords.addHint, onClick: () => swipeRef.current?.fly('right') }
+          ]}
+        />
       </div>
 
     </div>

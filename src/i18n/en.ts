@@ -182,7 +182,10 @@ export const en: Messages = {
     knewHint: 'forward one box',
     wrongArticleTitle: 'You guessed the wrong article, so this card should go back one box',
     readDone: 'Read it',
-    readDoneHint: 'forward one box'
+    readDoneHint: 'forward one box',
+    stampKnew: 'KNEW IT ✓',
+    stampForgot: 'NOPE',
+    swipeHint: 'Swipe the card right: knew it · left: didn\'t know'
   },
 
   newWords: {
@@ -204,19 +207,25 @@ export const en: Messages = {
     fullWord: 'Full word with article:',
     kbdAdd: 'Add to Box 0:',
     hideBanner: 'Hide this tip',
-    previous: 'Previous',
+    previous: 'Back',
     previousHint: 'Back to the previous word (e.g. if you skipped it by mistake)',
     backToLast: 'Back to the previous word',
     next: 'Next',
     inBox0: 'In Box 0',
-    undoAdd: 'Remove from Box 0',
-    kbdPrevious: 'Previous:',
+    undoAdd: 'Remove',
+    undoAddHint: 'Takes this word out of Box 0 again (if you added it by mistake)',
+    kbdPrevious: 'Back:',
+    kbdSkip: 'Skip:',
+    stampAdd: 'GOT IT ✓',
+    stampSkip: 'SKIP',
+    stampNext: 'NEXT',
+    swipeHint: 'Swipe the card right: got it · left: skip',
     kbdSpeak: 'Pronounce:',
     bannerOneSided: 'Words from the book appear in lesson order. Everything about the word is on the card; once you have read it, tap “Got it” to put it in Box 0. It comes back for review tomorrow.',
     skip: 'Skip',
     skipHint: "Don't add this word for now",
-    add: 'Got it, add to Box 0',
-    addHint: 'review tomorrow'
+    add: 'Got it',
+    addHint: 'goes to Box 0, review tomorrow'
   },
 
   catalog: {
