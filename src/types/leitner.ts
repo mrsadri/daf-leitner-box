@@ -47,6 +47,8 @@ export interface LeitnerCard {
   title?: string;
   content?: string;
   category?: ReflectionCategory;
+  // Copy of a public insight card (id 'shared_<sharedId>'); read-only for whoever added it
+  sharedId?: string;
 }
 
 export interface BoxConfig {
