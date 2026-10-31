@@ -9,7 +9,7 @@ import { maskParticiples, PerfektResult } from '../services/perfekt';
 import { PerfektQuiz } from './PerfektQuiz';
 import { PluralInfo } from './PluralInfo';
 import { PerfektExplanation } from './PerfektGuide';
-import { Volume2, RotateCw, ArrowLeft, BookOpen, PlusCircle, CheckCircle2, Sparkles, SkipForward, X } from 'lucide-react';
+import { Volume2, RotateCw, ArrowLeft, BookOpen, PlusCircle, CheckCircle2, Sparkles, SkipForward, X, ChevronLeft, Undo2 } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
 import { De, Auto } from './ui/Text';
 import { MOBILE_ACTION_BAR, useMobileActionBar } from './ui/mobileActionBar';
@@ -34,6 +34,8 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
   const [isFlipped, setIsFlipped] = useState<boolean>(false);
   const [selectedArticleGuess, setSelectedArticleGuess] = useState<'der' | 'die' | 'das' | null>(null);
   const [addedCount, setAddedCount] = useState<number>(0);
+  // Words added to Box 0 in this session (going back to one shows it as added and allows undoing it)
+  const [addedIds, setAddedIds] = useState<Set<string>>(() => new Set());
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
 
   const [hadWordsAtStart, setHadWordsAtStart] = useState<boolean>(false);
@@ -107,6 +109,11 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
 
   const handleAddToBox0 = () => {
     if (!currentWord) return;
+    // Back on a word that is already in Box 0: Enter / the main button just move on
+    if (addedIds.has(currentWord.id)) {
+      goToNextWord();
+      return;
+    }
     soundService.playSuccess();
 
     // The word was just studied, so its first review is tomorrow (Box 0 interval = 2^0 = 1 day)
@@ -116,17 +123,33 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
     });
 
     setAddedCount(prev => prev + 1);
+    setAddedIds(prev => new Set(prev).add(currentWord.id));
     onCardAdded();
     goToNextWord();
   };
 
+  // Past the last word, currentIndex === unlearnedWords.length shows the end screen (from where "back" still works)
   const goToNextWord = () => {
-    if (currentIndex + 1 < unlearnedWords.length) {
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      // No more unlearned words left
-      setUnlearnedWords([]);
-    }
+    setCurrentIndex(i => Math.min(i + 1, unlearnedWords.length));
+  };
+
+  const goToPreviousWord = () => {
+    setCurrentIndex(i => Math.max(i - 1, 0));
+  };
+
+  /** Undo an add from this session, as long as the card hasn't been reviewed yet. */
+  const handleUndoAdd = () => {
+    if (!currentWord || !addedIds.has(currentWord.id)) return;
+    const card = leitnerEngine.getCards().find(c => c.id === currentWord.id);
+    if (card && (card.box !== 0 || card.reviewCount > 0)) return;
+    if (card) leitnerEngine.deleteCard(card.id);
+    setAddedIds(prev => {
+      const next = new Set(prev);
+      next.delete(currentWord.id);
+      return next;
+    });
+    setAddedCount(prev => Math.max(0, prev - 1));
+    onCardAdded();
   };
 
   // Keyboard shortcut (Space to flip, Enter to add)
@@ -137,6 +160,11 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
       if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT')) return;
       // Enter on a focused button already presses that button; don't also add the card
       const onButton = !!target?.closest('button, a');
+      if (e.code === 'Backspace' && !onButton) {
+        e.preventDefault();
+        goToPreviousWord();
+        return;
+      }
 
       if (!flipMode) {
         if (onButton) return;
@@ -174,12 +202,12 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentWord, isFlipped, isNoun, currentIndex, flipMode, fullWordDisplay, handleSpeak]);
+  }, [currentWord, isFlipped, isNoun, currentIndex, flipMode, fullWordDisplay, handleSpeak, addedIds]);
 
 
   const kbd = 'px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-[11px] font-mono-num font-bold';
 
-  if (!currentWord || unlearnedWords.length === 0) {
+  if (!currentWord) {
     const finished = addedCount > 0 || hadWordsAtStart;
     return (
       <div className="max-w-xl mx-auto py-16 text-center space-y-6">
@@ -194,15 +222,28 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
             {finished ? t.newWords.doneBody(addedCount) : t.newWords.allAddedBody}
           </p>
         </div>
-        <button
-          onClick={onFinish}
-          className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-xs"
-        >
-          {t.newWords.backToDashboard}
-        </button>
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          {unlearnedWords.length > 0 && (
+            <button
+              onClick={goToPreviousWord}
+              className="flex items-center gap-1.5 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold"
+            >
+              <ChevronLeft className="w-4 h-4 rtl:-scale-x-100" />
+              {t.newWords.backToLast}
+            </button>
+          )}
+          <button
+            onClick={onFinish}
+            className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-xs"
+          >
+            {t.newWords.backToDashboard}
+          </button>
+        </div>
       </div>
     );
   }
+
+  const isAdded = addedIds.has(currentWord.id);
 
   const text = vocabText(currentWord, lang);
   const plural = isNoun ? pluralParts(currentWord) : [];
@@ -279,7 +320,13 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
               )}
             </div>
 
-            {flipMode && (
+            {isAdded && (
+              <span className="flex items-center gap-1 shrink-0 px-2 py-0.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 font-semibold" data-testid="added-badge">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                {t.newWords.inBox0}
+              </span>
+            )}
+            {flipMode && !isAdded && (
               <span className="flex items-center gap-1.5 shrink-0 text-slate-500" title={isFlipped ? t.review.showFront : t.newWords.flip}>
                 <RotateCw className="w-4 h-4" />
                 <span className="hidden sm:inline">{isFlipped ? t.review.showFront : t.newWords.flip}</span>
@@ -478,6 +525,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
             {flipMode
               ? <span>{t.review.kbdFlip} <kbd className={kbd}>Space</kbd></span>
               : <span>{t.newWords.kbdSpeak} <kbd className={kbd}>Space</kbd></span>}
+            <span>{t.newWords.kbdPrevious} <kbd className={kbd}>Backspace</kbd></span>
             <span>{t.newWords.kbdAdd} <kbd className={kbd}>Enter</kbd></span>
           </div>
         </div>
@@ -506,27 +554,61 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
 
         {/* Actions */}
         {/* Phones: buttons fixed at the bottom of the screen */}
-        <div ref={actionBarRef} className={`mt-4 flex flex-row gap-3 ${MOBILE_ACTION_BAR}`}>
+        <div ref={actionBarRef} className={`mt-4 flex flex-row gap-2 sm:gap-3 ${MOBILE_ACTION_BAR}`}>
           <button
             type="button"
-            onClick={goToNextWord}
-            className="flex items-center justify-center gap-2 py-3.5 sm:py-4 px-5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-2xl font-semibold text-sm transition-colors"
-            title={t.newWords.skipHint}
+            onClick={goToPreviousWord}
+            disabled={currentIndex === 0}
+            className="flex items-center justify-center gap-1.5 py-3.5 sm:py-4 px-3 sm:px-4 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 dark:text-slate-200 rounded-2xl font-semibold text-sm transition-colors"
+            title={t.newWords.previousHint}
+            aria-label={t.newWords.previous}
           >
-            <SkipForward className="w-4 h-4 rtl:-scale-x-100" />
-            <span>{t.newWords.skip}</span>
+            <ChevronLeft className="w-5 h-5 rtl:-scale-x-100" />
+            <span className="hidden sm:inline">{t.newWords.previous}</span>
           </button>
-          <button
-            type="button"
-            onClick={handleAddToBox0}
-            className="flex-1 flex items-center justify-center gap-3 py-4 px-5 bg-indigo-600 hover:bg-indigo-700 active:scale-98 text-white rounded-2xl font-bold text-base shadow-sm transition-all"
-          >
-            <PlusCircle className="w-5 h-5 shrink-0" />
-            <span className="flex flex-col items-start leading-tight">
-              <span>{t.newWords.add}</span>
-              <span className="text-xs font-normal opacity-85">{t.newWords.addHint}</span>
-            </span>
-          </button>
+          {isAdded ? (
+            <>
+              <button
+                type="button"
+                onClick={handleUndoAdd}
+                className="flex items-center justify-center gap-2 py-3.5 sm:py-4 px-4 sm:px-5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-2xl font-semibold text-sm transition-colors"
+              >
+                <Undo2 className="w-4 h-4 shrink-0" />
+                <span>{t.newWords.undoAdd}</span>
+              </button>
+              <button
+                type="button"
+                onClick={goToNextWord}
+                className="flex-1 flex items-center justify-center gap-2 py-4 px-5 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white rounded-2xl font-bold text-base shadow-sm transition-all"
+              >
+                <span>{t.newWords.next}</span>
+                <ChevronLeft className="w-5 h-5 ltr:-scale-x-100" />
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={goToNextWord}
+                className="flex items-center justify-center gap-2 py-3.5 sm:py-4 px-4 sm:px-5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-2xl font-semibold text-sm transition-colors"
+                title={t.newWords.skipHint}
+              >
+                <SkipForward className="w-4 h-4 rtl:-scale-x-100" />
+                <span>{t.newWords.skip}</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleAddToBox0}
+                className="flex-1 flex items-center justify-center gap-3 py-4 px-4 sm:px-5 bg-indigo-600 hover:bg-indigo-700 active:scale-98 text-white rounded-2xl font-bold text-base shadow-sm transition-all"
+              >
+                <PlusCircle className="w-5 h-5 shrink-0" />
+                <span className="flex flex-col items-start leading-tight">
+                  <span>{t.newWords.add}</span>
+                  <span className="text-xs font-normal opacity-85">{t.newWords.addHint}</span>
+                </span>
+              </button>
+            </>
+          )}
         </div>
       </div>
 
