@@ -53,7 +53,6 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
   const [flipMode] = useState<boolean>(() => !!leitnerEngine.getSettings().newWordsFlipCard);
   const sessionTopRef = useRef<HTMLDivElement>(null);
   const swipeRef = useRef<SwipeCardHandle>(null);
-  const [enterMode, setEnterMode] = useState<'fade' | 'rewind'>('fade');
   const [showSwipeHint, setShowSwipeHint] = useState<boolean>(() => coarsePointer() && !readSwipeHintDone());
   const [bannerHidden, setBannerHidden] = useState<boolean>(readBannerHidden);
   const shownIndexRef = useRef<number>(0);
@@ -141,12 +140,10 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
 
   // Past the last word, currentIndex === unlearnedWords.length shows the end screen (from where "back" still works)
   const goToNextWord = () => {
-    setEnterMode('fade');
     setCurrentIndex(i => Math.min(i + 1, unlearnedWords.length));
   };
 
   const goToPreviousWord = () => {
-    setEnterMode('rewind');
     setCurrentIndex(i => Math.max(i - 1, 0));
   };
 
@@ -188,7 +185,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
       // Arrow keys follow the swipe directions: → got it, ← skip
       if (e.code === 'ArrowRight' || e.code === 'ArrowLeft') {
         e.preventDefault();
-        swipeRef.current?.fly(e.code === 'ArrowRight' ? 'right' : 'left');
+        swipeRef.current?.answer(e.code === 'ArrowRight' ? 'right' : 'left');
         return;
       }
 
@@ -199,7 +196,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
           handleSpeak(fullWordDisplay);
         } else if (e.code === 'Enter') {
           e.preventDefault();
-          swipeRef.current?.fly('right');
+          swipeRef.current?.answer('right');
         }
         return;
       }
@@ -210,7 +207,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
       } else if (e.code === 'Enter') {
         if (isFlipped && !onButton) {
           e.preventDefault();
-          swipeRef.current?.fly('right');
+          swipeRef.current?.answer('right');
         }
       } else if (!isFlipped && isNoun) {
         if (e.key === 'd' || e.key === 'D' || e.code === 'Digit1') {
@@ -328,7 +325,6 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
         <SwipeCard
           ref={swipeRef}
           cardKey={currentWord.id}
-          enter={enterMode}
           onSwipe={handleSwipe}
           canSwipe={dir => (isAdded && dir === 'left' ? '' : true)}
           onGesture={() => {
@@ -602,11 +598,11 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
           actions={isAdded ? [
             { id: 'undo', tone: 'undo', icon: <Undo2 />, label: t.newWords.undoAdd, hint: t.newWords.undoAddHint, onClick: handleUndoAdd },
             { id: 'back', tone: 'back', size: 'sm', icon: <RotateCcw />, label: t.newWords.previous, hint: t.newWords.previousHint, onClick: goToPreviousWord, disabled: currentIndex === 0 },
-            { id: 'next', tone: 'next', icon: <ArrowRight />, label: t.newWords.next, onClick: () => swipeRef.current?.fly('right') }
+            { id: 'next', tone: 'next', icon: <ArrowRight />, label: t.newWords.next, onClick: () => swipeRef.current?.answer('right') }
           ] : [
-            { id: 'skip', tone: 'no', icon: <X />, label: t.newWords.skip, hint: t.newWords.skipHint, onClick: () => swipeRef.current?.fly('left') },
+            { id: 'skip', tone: 'no', icon: <X />, label: t.newWords.skip, hint: t.newWords.skipHint, onClick: () => swipeRef.current?.answer('left') },
             { id: 'back', tone: 'back', size: 'sm', icon: <RotateCcw />, label: t.newWords.previous, hint: t.newWords.previousHint, onClick: goToPreviousWord, disabled: currentIndex === 0 },
-            { id: 'add', tone: 'yes', icon: <Check />, label: t.newWords.add, hint: t.newWords.addHint, onClick: () => swipeRef.current?.fly('right') }
+            { id: 'add', tone: 'yes', icon: <Check />, label: t.newWords.add, hint: t.newWords.addHint, onClick: () => swipeRef.current?.answer('right') }
           ]}
         />
       </div>

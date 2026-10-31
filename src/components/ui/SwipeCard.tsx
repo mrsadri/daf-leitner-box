@@ -2,15 +2,13 @@ import React, { forwardRef, useEffect, useImperativeHandle, useLayoutEffect, use
 import { SwipeDir, lockAxis, releaseDecision, stampOpacity, dragRotation } from '../../services/swipe';
 
 export interface SwipeCardHandle {
-  /** Animate the card out (buttons / keys); runs onSwipe afterwards, or bounces when not allowed. */
-  fly: (dir: SwipeDir) => void;
+  /** Buttons / keys: change the card at once, with no card motion (that is only for a drag). */
+  answer: (dir: SwipeDir) => void;
 }
 
 interface SwipeCardProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onClick'> {
-  /** Changes when a new card is shown: resets position and plays the enter animation */
+  /** Changes when a new card is shown: resets position (and fades in after a drag) */
   cardKey: string;
-  /** How the new card comes in: fade (next), rewind (back, from the left), none */
-  enter?: 'fade' | 'rewind' | 'none';
   onSwipe: (dir: SwipeDir) => void;
   /** true = allowed; a string = not allowed (the card springs back; '' means silently) */
   canSwipe?: (dir: SwipeDir) => true | string;
@@ -23,7 +21,8 @@ interface SwipeCardProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onC
 }
 
 const FLY_MS = 220;
-// No card motion with reduced motion, or on desktop (mouse/trackpad): there buttons and keys change the card at once
+// Card motion belongs to a finger drag only; buttons and keys always change the card at once.
+// No motion at all with reduced motion, or on desktop (mouse/trackpad).
 const reducedMotion = () => typeof window !== 'undefined' &&
   !!(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || window.matchMedia?.('(hover: hover) and (pointer: fine)').matches);
 // Drags never start on controls inside the card
@@ -35,7 +34,7 @@ const INTERACTIVE = 'button, a, input, textarea, select, label, [data-no-swipe]'
  * doesn't drag (text stays selectable), and nothing reacts while a card is flying out.
  */
 export const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(function SwipeCard(
-  { cardKey, enter = 'fade', onSwipe, canSwipe, onBlocked, onGesture, stamps, onClick, className = '', style, children, ...rest },
+  { cardKey, onSwipe, canSwipe, onBlocked, onGesture, stamps, onClick, className = '', style, children, ...rest },
   ref
 ) {
   const el = useRef<HTMLDivElement>(null);
@@ -43,8 +42,10 @@ export const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(function Sw
   const rightStamp = useRef<HTMLDivElement>(null);
   const drag = useRef<{ id: number; x: number; y: number; t: number; axis: 'x' | 'y' | null; dx: number } | null>(null);
   const busy = useRef(false);
-  // Without animation (desktop), a short pause after each answer keeps an accidental double click from answering two cards
+  // Without animation (buttons, keys, desktop), a short pause after each answer keeps an accidental double tap from answering two cards
   const cooldownUntil = useRef(0);
+  // The next card fades in only when this one was dragged out
+  const enterAfterDrag = useRef(false);
   const suppressClick = useRef(false);
   const latest = useRef({ onSwipe, canSwipe, onBlocked, onGesture });
   latest.current = { onSwipe, canSwipe, onBlocked, onGesture };
@@ -64,10 +65,10 @@ export const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(function Sw
     setStamps(dx);
   };
 
-  const bounce = (dir: SwipeDir, reason: string) => {
-    place(0, true);
+  const bounce = (dir: SwipeDir, reason: string, byGesture: boolean) => {
+    place(0, byGesture);
     const node = el.current;
-    if (node && !reducedMotion()) {
+    if (byGesture && node && !reducedMotion()) {
       node.animate?.(
         [{ transform: 'translateX(0)' }, { transform: `translateX(${dir === 'right' ? 10 : -10}px)` }, { transform: 'translateX(0)' }],
         { duration: 240, easing: 'ease-out' }
@@ -79,7 +80,7 @@ export const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(function Sw
   const commit = (dir: SwipeDir, byGesture: boolean) => {
     const allowed = latest.current.canSwipe ? latest.current.canSwipe(dir) : true;
     if (allowed !== true) {
-      bounce(dir, allowed);
+      bounce(dir, allowed, byGesture);
       return;
     }
     busy.current = true;
@@ -91,17 +92,19 @@ export const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(function Sw
       requestAnimationFrame(() => {
         if (busy.current) {
           busy.current = false;
+          enterAfterDrag.current = false;
           place(0, false);
           if (node) node.style.opacity = '';
         }
       });
     };
-    if (!node || reducedMotion()) {
+    if (!byGesture || !node || reducedMotion()) {
       setStamps(0);
       cooldownUntil.current = performance.now() + 200;
       finish();
       return;
     }
+    enterAfterDrag.current = true;
     const width = node.offsetWidth || 360;
     const dx = (dir === 'right' ? 1 : -1) * (width * 1.3 + 80);
     node.style.transition = `transform ${FLY_MS}ms ease-in, opacity ${FLY_MS}ms ease-in`;
@@ -112,15 +115,17 @@ export const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(function Sw
   };
 
   useImperativeHandle(ref, () => ({
-    fly: (dir: SwipeDir) => {
+    answer: (dir: SwipeDir) => {
       if (busy.current || performance.now() < cooldownUntil.current) return;
       commit(dir, false);
     }
   }));
 
-  // A new card: reset and play the enter animation
+  // A new card: reset, and fade it in if the last one was dragged out
   useLayoutEffect(() => {
     const node = el.current;
+    const fadeIn = enterAfterDrag.current;
+    enterAfterDrag.current = false;
     busy.current = false;
     drag.current = null;
     if (!node) return;
@@ -128,13 +133,8 @@ export const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(function Sw
     node.style.transform = '';
     node.style.opacity = '';
     setStamps(0);
-    if (enter !== 'none' && !reducedMotion()) {
-      node.animate?.(
-        enter === 'rewind'
-          ? [{ transform: 'translateX(-70%) rotate(-10deg)', opacity: 0 }, { transform: 'none', opacity: 1 }]
-          : [{ transform: 'scale(0.97)', opacity: 0 }, { transform: 'none', opacity: 1 }],
-        { duration: enter === 'rewind' ? 260 : 180, easing: 'ease-out' }
-      );
+    if (fadeIn && !reducedMotion()) {
+      node.animate?.([{ transform: 'scale(0.97)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 180, easing: 'ease-out' });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cardKey]);

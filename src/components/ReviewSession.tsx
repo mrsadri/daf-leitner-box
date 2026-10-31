@@ -253,18 +253,18 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
       } else if (e.code === 'ArrowLeft' || e.code === 'ArrowRight') {
         // Same directions as swiping: ← didn't know, → knew it / read
         e.preventDefault();
-        swipeRef.current?.fly(e.code === 'ArrowRight' ? 'right' : 'left');
+        swipeRef.current?.answer(e.code === 'ArrowRight' ? 'right' : 'left');
       } else if (e.code === 'Digit1' || e.code === 'Numpad1') {
         if (canGuess && nounsOnly) {
           handleArticleSelect('der');
         } else if (currentCard.type === 'vocab') {
-          swipeRef.current?.fly('left');
+          swipeRef.current?.answer('left');
         }
       } else if (e.code === 'Digit2' || e.code === 'Numpad2') {
         if (canGuess && nounsOnly) {
           handleArticleSelect('die');
         } else {
-          swipeRef.current?.fly('right');
+          swipeRef.current?.answer('right');
         }
       } else if ((e.code === 'Digit3' || e.code === 'Numpad3') && canGuess && nounsOnly) {
         handleArticleSelect('das');
@@ -738,15 +738,15 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
         {/* Answer buttons: round, in swipe order (left = didn't know, right = knew it); fixed at the bottom on phones */}
         <RoundActionBar
           actions={currentCard.type === 'vocab' ? [
-            { id: 'forgot', tone: 'no', icon: <X />, label: t.review.forgot, hint: t.review.forgotHint, buttonRef: forgotRef, onClick: () => swipeRef.current?.fly('left') },
+            { id: 'forgot', tone: 'no', icon: <X />, label: t.review.forgot, hint: t.review.forgotHint, buttonRef: forgotRef, onClick: () => swipeRef.current?.answer('left') },
             {
               id: 'knew', tone: 'yes', icon: <Check />, label: t.review.knew, buttonRef: knewRef,
               hint: articleGuessWrong ? t.review.wrongArticleTitle : perfektLocked ? t.perfekt.locked : t.review.knewHint,
               muted: articleGuessWrong || perfektLocked,
-              onClick: () => swipeRef.current?.fly('right')
+              onClick: () => swipeRef.current?.answer('right')
             }
           ] : [
-            { id: 'read', tone: 'yes', icon: <Check />, label: t.review.readDone, hint: t.review.readDoneHint, onClick: () => swipeRef.current?.fly('right') }
+            { id: 'read', tone: 'yes', icon: <Check />, label: t.review.readDone, hint: t.review.readDoneHint, onClick: () => swipeRef.current?.answer('right') }
           ]}
         />
 

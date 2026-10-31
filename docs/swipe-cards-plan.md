@@ -50,6 +50,7 @@ On phones the bottom bar of the new-words session was too tall and unbalanced:
 
 ## Follow-up (user feedback)
 - **Desktop (mouse/trackpad):** no card motion. Buttons and keys change the card at once. A 200ms pause after each answer keeps an accidental double click from answering two cards.
+- **Phones, buttons and keys:** no card motion either (no fly-out, no bounce, no fade-in, no rewind on "back"). The card changes at once, with the same 200ms pause. Motion is only for a finger drag: the card follows the finger, the stamp fades in, it flies out, and the next card fades in.
 - **Bottom bar:** fixed at the bottom of the screen on every screen size, desktop included.
 - **Perfekt guide:** sits outside the card, below it, collapsed by default ("How is the Perfekt of this verb formed?" ▾). Inside the Perfekt quiz it is collapsed too.
 
