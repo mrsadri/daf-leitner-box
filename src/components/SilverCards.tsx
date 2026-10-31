@@ -5,6 +5,7 @@ import { SILVER_FACTS, SILVER_MAX } from '../data/silverFacts';
 import { SILVER_THRESHOLD } from '../services/silverLogic';
 import { getSilver, onSilverChange } from '../services/silver';
 import { useI18n } from '../i18n/I18nProvider';
+import { Icon3D } from './ui/Icon3D';
 
 const SILVER_FACE = 'bg-gradient-to-br from-slate-100 via-white to-slate-300 dark:from-slate-700 dark:via-slate-800 dark:to-slate-600 border border-slate-300 dark:border-slate-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]';
 
@@ -17,7 +18,7 @@ export const SilverCardFace: React.FC<{ index: number; large?: boolean }> = ({ i
     <div className={`relative rounded-2xl ${SILVER_FACE} ${large ? 'p-5 sm:p-6' : 'p-4'} text-slate-800 dark:text-slate-100 overflow-hidden`}>
       <div className="flex items-center justify-between gap-2 text-[11px] font-bold text-slate-500 dark:text-slate-300 mb-2">
         <span>{t.silver.numberOf(index, SILVER_MAX)}</span>
-        <span aria-hidden="true" className={large ? 'text-3xl' : 'text-xl'}>{fact.emoji}</span>
+        <Icon3D name={fact.icon} size={large ? 56 : 40} />
       </div>
       {/* Direction from the interface language: many Persian facts start with a German word */}
       <p dir={lang === 'en' ? 'ltr' : 'rtl'} lang={lang} className={`${large ? 'text-base' : 'text-sm'} leading-relaxed text-start [overflow-wrap:anywhere]`}>
@@ -71,6 +72,7 @@ export const SilverCardEarned: React.FC<{ index: number; onClose: () => void }> 
     <Modal labelledBy="silver-earned-title" onClose={onClose}>
       <div className="p-5 sm:p-6 space-y-4 overflow-y-auto" data-testid="silver-earned">
         <div className="text-center space-y-1">
+          <Icon3D name="silver-medal" size={72} className="mx-auto" />
           <h3 id="silver-earned-title" className="text-lg font-bold text-slate-900 dark:text-white">{t.silver.earnedTitle}</h3>
           <p className="text-xs text-slate-600 dark:text-slate-400">{t.silver.earnedBody}</p>
         </div>
@@ -133,7 +135,7 @@ export const SilverWidget: React.FC = () => {
     <div className={`rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${SILVER_FACE}`} data-testid="silver-widget">
       <div className="min-w-0 space-y-1.5">
         <div className="flex items-baseline gap-2">
-          <span className="text-sm font-bold text-slate-800 dark:text-slate-100">🥈 {t.silver.widgetTitle}</span>
+          <span className="flex items-center gap-1.5 text-sm font-bold text-slate-800 dark:text-slate-100"><Icon3D name="silver-medal" size={28} />{t.silver.widgetTitle}</span>
           <span className="text-lg font-extrabold font-mono-num text-slate-900 dark:text-white">{t.silver.count(s.total, SILVER_MAX)}</span>
         </div>
         {complete ? (

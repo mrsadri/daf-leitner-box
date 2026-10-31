@@ -13,8 +13,9 @@ import type { SwipeDir } from '../services/swipe';
 import { vibrate } from '../services/haptics';
 import { recordSilverCorrect } from '../services/silver';
 import { SilverCardEarned } from './SilverCards';
+import { Icon3D } from './ui/Icon3D';
 import { PluralInfo } from './PluralInfo';
-import { Volume2, RotateCw, Check, X, Sparkles, ArrowLeft, Trophy, BookOpen, Quote, Edit3 } from 'lucide-react';
+import { Volume2, RotateCw, Check, X, Sparkles, ArrowLeft, BookOpen, Quote, Edit3 } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
 import { De, Auto } from './ui/Text';
 
@@ -318,8 +319,8 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
     return (
       <div className="max-w-xl mx-auto py-12 text-center space-y-6">
         {silverDialog}
-        <div className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-300 text-slate-950 flex items-center justify-center shadow-lg animate-bounce">
-          <Trophy className="w-10 h-10" />
+        <div className="w-24 h-24 mx-auto flex items-center justify-center">
+          <Icon3D name="trophy" size={96} />
         </div>
 
         <div className="space-y-2">

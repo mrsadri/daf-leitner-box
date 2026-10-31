@@ -16,6 +16,7 @@ import { SwipeCard, SwipeCardHandle } from './ui/SwipeCard';
 import { RoundActionBar } from './ui/RoundActionBar';
 import type { SwipeDir } from '../services/swipe';
 import { vibrate } from '../services/haptics';
+import { Icon3D } from './ui/Icon3D';
 
 const BANNER_HIDDEN_KEY = 'daf_new_words_banner_hidden';
 const SWIPE_HINT_KEY = 'daf_swipe_hint_done';
@@ -234,8 +235,8 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
     const finished = addedCount > 0 || hadWordsAtStart;
     return (
       <div className="max-w-xl mx-auto py-16 text-center space-y-6">
-        <div className="w-16 h-16 mx-auto rounded-full bg-emerald-100 dark:bg-emerald-950 flex items-center justify-center text-emerald-600">
-          <CheckCircle2 className="w-8 h-8" />
+        <div className="w-24 h-24 mx-auto flex items-center justify-center">
+          <Icon3D name={finished ? 'trophy' : 'pretzel'} size={96} />
         </div>
         <div className="space-y-2">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white">

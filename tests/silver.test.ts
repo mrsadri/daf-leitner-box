@@ -1,5 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { existsSync } from 'node:fs';
 import { afterCorrectAnswer, mergeServer, emptySilver, rollDay, SILVER_THRESHOLD } from '../src/services/silverLogic.ts';
 import { SILVER_FACTS, SILVER_MAX } from '../src/data/silverFacts.ts';
 
@@ -53,7 +54,8 @@ test('30 facts in both languages', () => {
   assert.equal(new Set(SILVER_FACTS.map(f => f.fa)).size, 30);
   assert.equal(new Set(SILVER_FACTS.map(f => f.en)).size, 30);
   for (const f of SILVER_FACTS) {
-    assert.ok(f.fa.length > 30 && f.en.length > 30 && f.emoji);
+    assert.ok(f.fa.length > 30 && f.en.length > 30 && f.icon);
+    assert.ok(existsSync(new URL(`../public/icons3d/${f.icon}.webp`, import.meta.url)), `icon file for ${f.icon}`);
     assert.doesNotMatch(f.fa, /ستاک/);
   }
 });

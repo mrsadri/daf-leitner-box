@@ -66,17 +66,6 @@
     font-family: inherit;
   }
 
-  /* Red-white-red band: three equal stacked stripes; the white one turns light grey in dark mode */
-  .austria-stripe {
-    height: 6px;
-    background: linear-gradient(to bottom, var(--color-austria) 0 33.34%, #ffffff 33.34% 66.67%, var(--color-austria) 66.67% 100%);
-  }
-  @media (prefers-color-scheme: dark) {
-    .austria-stripe {
-      background: linear-gradient(to bottom, var(--color-austria) 0 33.34%, #e2e8f0 33.34% 66.67%, var(--color-austria) 66.67% 100%);
-    }
-  }
-
   .font-de {
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   }

@@ -499,6 +499,25 @@ export const en: Messages = {
     locked: 'Not unlocked yet'
   },
 
+  metro: {
+    title: 'The DaF kompakt line',
+    subtitle: 'Every station is a lesson of the book. Tap a station to see its words.',
+    you: 'You are here',
+    done: 'complete',
+    partial: 'in progress',
+    none: 'not started',
+    summary: (done: number, total: number) => `${n(done)} of ${n(total)} lessons complete`,
+    current: (l: string) => `Current lesson: ${Number(l)}`,
+    finished: 'Every lesson of the book is in your Leitner box! 🎉',
+    station: (l: string, pct: number, status: string) => `Lesson ${Number(l)}, ${status}, ${n(pct)}% in your Leitner box`,
+    lesson: (l: string) => `Lesson ${Number(l)}`
+  },
+
+  trail: {
+    title: 'From the valley to the summit',
+    caption: 'Every right answer takes a card one stage higher: from Box 0 in the valley to Box 5 on the summit.'
+  },
+
   plural: {
     singularOnly: 'singular only',
     singularOnlyHere: 'singular only (in this sense)',

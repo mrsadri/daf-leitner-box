@@ -503,6 +503,25 @@ export const fa = {
     locked: 'هنوز باز نشده'
   },
 
+  metro: {
+    title: 'مسیر کتاب DaF kompakt',
+    subtitle: 'هر ایستگاه یک درس کتاب است. ایستگاهی را بزنید تا واژه‌هایش را ببینید.',
+    you: 'اینجایید',
+    done: 'کامل',
+    partial: 'در حال یادگیری',
+    none: 'شروع‌نشده',
+    summary: (done: number, total: number) => `${n(done)} درس از ${n(total)} کامل شده`,
+    current: (l: string) => `درس فعلی: ${d(Number(l))}`,
+    finished: 'همه‌ی درس‌های کتاب در لایتنر هستند! 🎉',
+    station: (l: string, pct: number, status: string) => `درس ${d(Number(l))}، ${status}، ${n(pct)}٪ در لایتنر`,
+    lesson: (l: string) => `درس ${d(Number(l))}`
+  },
+
+  trail: {
+    title: 'از دره تا قله',
+    caption: 'هر کارت با هر مرور درست یک منزل بالاتر می‌رود: از خانه ۰ در دره تا خانه ۵ روی قله.'
+  },
+
   plural: {
     singularOnly: 'فقط مفرد',
     singularOnlyHere: 'در این معنی فقط مفرد',

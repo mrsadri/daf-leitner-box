@@ -17,11 +17,9 @@ export const Credit: React.FC<{ className?: string }> = ({ className = '' }) => 
         Unabhängiges, ehrenamtliches Projekt – kein offizielles Angebot des Österreichischen Kulturforums oder der Österreichischen Botschaft.
       </p>
       <p lang={lang} className="opacity-90">{t.app.independence}</p>
+      <p lang="de" dir="ltr" className="font-de">
+        3D-Icons: <a href="https://www.thiings.co" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">thiings.co</a>
+      </p>
     </div>
   );
 };
-
-/** Thin red-white-red band (decoration in the national colours; not the flag, no emblem). */
-export const AustriaStripe: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <div aria-hidden="true" className={`austria-stripe ${className}`} />
-);
