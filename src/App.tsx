@@ -26,6 +26,7 @@ import { fetchUnseenOverdueMoves, markOverdueMovesSeen } from './services/overdu
 import type { OverdueMove } from './services/overdueSummary';
 import { OverdueNotice } from './components/OverdueNotice';
 import { startSilver, refreshSilver } from './services/silver';
+import { resetSharedState } from './services/sharedInsights';
 
 // Where a tapped notification wants to go ("?go=learn" / "?go=review" / "?go=leaderboard"), read before the URL is cleaned up
 const initialGo = new URLSearchParams(window.location.search).get('go');
@@ -237,6 +238,7 @@ function LeitnerApp({ user }: { user: User }) {
     // The next person signing in on this device must not get this user's reminders
     await disablePush().catch(() => undefined);
     await cloudSync.stop();
+    resetSharedState();
     await supabase?.auth.signOut();
   };
 
@@ -341,6 +343,8 @@ function LeitnerApp({ user }: { user: User }) {
             {activeTab === 'reflections' && (
               <ReflectionManager
                 cards={cards}
+                profile={profile}
+                onCardsChanged={refreshState}
                 onAddCard={handleAddCard}
                 onDeleteCard={handleDeleteCard}
                 onUpdateCard={handleUpdateCard}
@@ -352,7 +356,7 @@ function LeitnerApp({ user }: { user: User }) {
               <Leaderboard profile={profile} onOpenSettings={() => setActiveTab('settings')} />
             )}
 
-            {activeTab === 'admin' && profile.isAdmin && <AdminPanel profile={profile} />}
+            {activeTab === 'admin' && profile.isAdmin && <AdminPanel profile={profile} onCardsChanged={refreshState} />}
 
             {activeTab === 'settings' && (
               <SettingsBackupModal

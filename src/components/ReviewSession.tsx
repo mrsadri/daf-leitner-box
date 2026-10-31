@@ -15,6 +15,8 @@ import { recordSilverCorrect } from '../services/silver';
 import { SilverCardEarned } from './SilverCards';
 import { Icon3D } from './ui/Icon3D';
 import { PluralInfo } from './PluralInfo';
+import { useMyInsights, useSharedAuthors } from '../services/sharedInsights';
+import { isSharedCopy } from '../services/shareLogic';
 import { Volume2, RotateCw, Check, X, Sparkles, ArrowLeft, BookOpen, Quote, Edit3 } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
 import { De, Auto } from './ui/Text';
@@ -83,6 +85,12 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
 
   const snapshotCard = remaining[0];
   const currentCard = snapshotCard ? (liveById.get(snapshotCard.id) || snapshotCard) : undefined;
+  // Public insight cards: copies are read-only and show their author; the author's own public card is locked
+  const hasReflections = sessionCards.some(c => c.type === 'reflection');
+  const { liveBySource } = useMyInsights(hasReflections);
+  const sharedAuthors = useSharedAuthors(sessionCards);
+  const reflectionLocked = !!currentCard && currentCard.type === 'reflection' && (isSharedCopy(currentCard) || liveBySource.has(currentCard.id));
+  const reflectionAuthor = currentCard ? sharedAuthors.get(currentCard.id) : undefined;
   const answeredCount = answeredIds.size;
   const sessionTotal = answeredCount + remaining.length;
   const isComplete = !currentCard && answeredCount > 0;
@@ -591,6 +599,11 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
                     <Auto as="h2" className="block text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white leading-relaxed break-words">
                       {currentCard.title}
                     </Auto>
+                    {reflectionAuthor && (
+                      <p className="text-xs font-semibold text-slate-500 dark:text-slate-400" data-testid="review-author">
+                        <Auto>{t.shared.byAuthor(reflectionAuthor)}</Auto>
+                      </p>
+                    )}
                   </div>
                   <p className="text-xs text-slate-600 dark:text-slate-400 max-w-md mx-auto">{t.review.reflectionFrontHint}</p>
                 </div>
@@ -676,13 +689,13 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
                 <div className="space-y-4" onClick={(e) => e.stopPropagation()}>
                   <div className="flex items-center justify-between gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
                     <span className="text-xs text-slate-600 dark:text-slate-400">{t.review.reflectionFull}</span>
-                    <button
+                    {!reflectionLocked && <button
                       onClick={() => setEditingContent(editingContent !== null ? null : (currentCard.content || ''))}
                       className="flex items-center gap-1 text-xs text-indigo-600 dark:text-indigo-400 hover:underline"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
                       <span>{editingContent !== null ? t.common.cancel : t.review.editNote}</span>
-                    </button>
+                    </button>}
                   </div>
 
                   {editingContent !== null ? (

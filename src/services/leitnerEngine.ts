@@ -428,6 +428,18 @@ class LeitnerEngine {
     return added.length;
   }
 
+  /**
+   * Add a card the server has already stored (e.g. a public insight card just added): local state and cache
+   * only, nothing is queued. If the card is already here, the local one is kept.
+   */
+  public insertSyncedCard(card: LeitnerCard): LeitnerCard {
+    const existing = this.cards.find(c => c.id === card.id);
+    if (existing) return existing;
+    this.cards.unshift(card);
+    this.writeCache();
+    return card;
+  }
+
   public deleteCard(cardId: string): boolean {
     const initialLen = this.cards.length;
     this.cards = this.cards.filter(c => c.id !== cardId);

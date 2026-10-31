@@ -4,9 +4,12 @@ import { adminListUsers, adminSetSuspended, adminDeleteUser, AdminUserRow } from
 import { UserProfile } from '../types/leitner';
 import { useI18n } from '../i18n/I18nProvider';
 import { Auto, Ltr } from './ui/Text';
+import { AdminInsights } from './insights/AdminInsights';
 
 interface AdminPanelProps {
   profile: UserProfile;
+  /** Removing a public card may delete the admin's own copy */
+  onCardsChanged?: () => void;
 }
 
 /** Pick the coarsest sensible unit for "x minutes/hours/days ago" */
@@ -86,7 +89,7 @@ const DeleteDialog: React.FC<{
   );
 };
 
-export const AdminPanel: React.FC<AdminPanelProps> = ({ profile }) => {
+export const AdminPanel: React.FC<AdminPanelProps> = ({ profile, onCardsChanged }) => {
   const { t, num, date, relative } = useI18n();
   const formatDate = (iso: string | null) => (iso ? date(iso, { dateStyle: 'medium', timeStyle: 'short' }) : '—');
   const ago = (iso: string | null) => (iso ? relative(...relativeParts(iso)) : '');
@@ -316,6 +319,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ profile }) => {
           </table>
         </div>
       </div>
+
+      <AdminInsights onCardsChanged={onCardsChanged} />
 
       {toDelete && (
         <DeleteDialog
