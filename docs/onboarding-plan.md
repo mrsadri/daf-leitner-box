@@ -52,7 +52,7 @@ When the user isn't signed in, show an onboarding screen that introduces the app
 
 ## Icons
 - **Large versions** (360px) of filing-cabinet, book and trophy for the central objects.
-- **New icons,** downloaded individually from their thiings.co pages: alarm-clock, bell, crown, flame, party-popper.
+- **New icons,** downloaded individually from their thiings.co pages: alarm-clock, bell, flame, party-popper.
 - All listed in `docs/icon-credits.md`.
 
 ## Checklist

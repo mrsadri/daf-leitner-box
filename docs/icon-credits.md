@@ -48,7 +48,6 @@ Rejected during review: palace (flag, looks like a government building), gold me
 | `lightbulb.webp` | Perfekt hint | [https://www.thiings.co/things/lightbulb](https://www.thiings.co/things/lightbulb) | 2026-10-31 |
 | `alarm-clock.webp` | Onboarding, Leitner slide | [https://www.thiings.co/things/alarm-clock](https://www.thiings.co/things/alarm-clock) | 2026-10-31 |
 | `bell.webp` | Onboarding, competition slide | [https://www.thiings.co/things/bell](https://www.thiings.co/things/bell) | 2026-11-01 |
-| `crown.webp` | Onboarding, competition slide | [https://www.thiings.co/things/crown](https://www.thiings.co/things/crown) | 2026-11-01 |
 | `flame.webp` | Onboarding, competition slide (streak) | [https://www.thiings.co/things/flame](https://www.thiings.co/things/flame) | 2026-11-01 |
 | `party-popper.webp` | Onboarding, competition slide (silver cards) | [https://www.thiings.co/things/party-popper](https://www.thiings.co/things/party-popper) | 2026-11-01 |
 | `filing-cabinet-lg.webp`, `book-lg.webp`, `trophy-lg.webp` | Onboarding, central objects (360px versions of the same images) | as above: filing-cabinet, book, trophy | 2026-11-01 |
