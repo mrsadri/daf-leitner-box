@@ -111,11 +111,30 @@ export const en: Messages = {
     }
   },
 
+  onboarding: {
+    carousel: 'About the app',
+    slideLabel: (i: number, total: number) => `Slide ${n(i)} of ${n(total)}`,
+    goTo: (i: number) => `Go to slide ${n(i)}`,
+    next: 'Next',
+    prev: 'Previous',
+    you: 'You',
+    slides: [
+      {
+        title: 'Leitner: the best way to remember',
+        body: "Each card comes back just before you would forget it: after 1, 2, 4 and up to 32 days. Knew it? It moves up a box. Didn't? One box back."
+      },
+      {
+        title: 'From A1 to B1',
+        body: 'Master nouns with their meaning and article (der, die, das), and the Perfekt of verbs, with over 3400 words from the DaF kompakt list, including plurals, examples and pronunciation.'
+      },
+      {
+        title: 'Competitive enough not to fall behind',
+        body: 'Weekly and all-time leaderboards, a heads-up when someone passes you, and a silver card for every day with more than 15 correct answers.'
+      }
+    ]
+  },
+
   login: {
-    intro: 'Practise the DaF kompakt vocabulary with a Leitner box, track your progress and compete with other learners.',
-    featureWords: 'Over 3,400 A1–B1 words with article, plural and examples',
-    featureCloud: 'Progress saved to your account and synced across devices',
-    featureLeaderboard: 'All-time and weekly leaderboards',
     google: 'Sign in with Google',
     failed: (msg: string) => `Sign-in failed: ${msg}`,
     privacy: 'Privacy',

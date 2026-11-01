@@ -124,3 +124,55 @@
 .rotate-y-180 {
   transform: rotateY(180deg);
 }
+
+/* ---------------------------------------------------------------------
+   Onboarding illustrations (signed-out screen). Every layer has three wrappers:
+   position (.ob-l), entrance (.ob-in, plays once when the slide opens) and idle loop (.ob-idle).
+   Inactive slides show the still composition; reduced motion shows only that.
+   --------------------------------------------------------------------- */
+.ob-stage { position: relative; aspect-ratio: 1 / 1; width: min(300px, 78vw, 40dvh); container-type: inline-size; }
+.ob-l { position: absolute; transform: translate(-50%, -50%); }
+.ob-in, .ob-idle { width: 100%; height: 100%; }
+.ob-in { animation: var(--ob-in, ob-pop) 0.7s cubic-bezier(.2, .9, .3, 1.25) var(--d, 0s) both; }
+.ob-idle { animation: var(--ob-idle, none) var(--dur, 4s) ease-in-out calc(var(--d, 0s) + 0.7s) infinite; transform-origin: var(--origin, 50% 50%); }
+.ob-static .ob-in, .ob-static .ob-idle { animation: none; }
+.ob-static .ob-fly { visibility: hidden; }
+
+@keyframes ob-pop { 0% { opacity: 0; transform: scale(.35); } 60% { opacity: 1; transform: scale(1.08); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes ob-rise { 0% { opacity: 0; transform: translateY(28%); } 100% { opacity: 1; transform: none; } }
+@keyframes ob-drop { 0% { opacity: 0; transform: translateY(-120%) rotate(-14deg); } 65% { opacity: 1; transform: translateY(6%) rotate(4deg); } 100% { opacity: 1; transform: none; } }
+@keyframes ob-from-side { 0% { opacity: 0; transform: translateX(var(--from, 60%)); } 100% { opacity: 1; transform: none; } }
+@keyframes ob-grow { 0% { opacity: 0; transform: scale(.2); } 100% { opacity: 1; transform: scale(1); } }
+
+@keyframes ob-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5%); } }
+@keyframes ob-bob { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-8%) rotate(3deg); } }
+@keyframes ob-ring { 0%, 64%, 100% { transform: rotate(0); } 68% { transform: rotate(-16deg); } 72% { transform: rotate(14deg); } 76% { transform: rotate(-12deg); } 80% { transform: rotate(9deg); } 84% { transform: rotate(-5deg); } 88% { transform: rotate(2deg); } }
+@keyframes ob-glow { 0%, 100% { filter: drop-shadow(0 0 0 rgba(250, 204, 21, 0)); } 50% { filter: drop-shadow(0 0 12px rgba(250, 204, 21, .85)); } }
+@keyframes ob-swing { 0%, 100% { transform: rotate(-12deg); } 50% { transform: rotate(12deg); } }
+@keyframes ob-flicker { 0%, 100% { transform: scale(1, 1); } 25% { transform: scale(.95, 1.07); } 50% { transform: scale(1.04, .96); } 75% { transform: scale(.97, 1.04); } }
+@keyframes ob-twinkle { 0%, 100% { opacity: 0; transform: scale(.3) rotate(0); } 50% { opacity: 1; transform: scale(1) rotate(45deg); } }
+@keyframes ob-hop { 0%, 70%, 100% { transform: translateY(0); } 80% { transform: translateY(-14%) rotate(-6deg); } 90% { transform: translateY(0) rotate(3deg); } }
+@keyframes ob-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+
+/* A word card flies in an arc into the drawer, then the next one follows */
+.ob-fly { animation: ob-fly 4.8s cubic-bezier(.45, .05, .55, .95) var(--d, 0s) infinite both; }
+@keyframes ob-fly {
+  0% { opacity: 0; transform: translate(var(--x0), var(--y0)) rotate(-18deg) scale(1); }
+  8% { opacity: 1; }
+  32% { transform: translate(var(--x1), var(--y1)) rotate(10deg) scale(.95); }
+  48% { opacity: 1; transform: translate(0, 0) rotate(0) scale(.55); }
+  56%, 100% { opacity: 0; transform: translate(0, 0) scale(.4); }
+}
+
+/* "You" overtakes: the two leaderboard rows swap places, then back */
+.ob-row-me { animation: ob-me 5s ease-in-out calc(var(--d, 0s) + .7s) infinite both; }
+.ob-row-other { animation: ob-other 5s ease-in-out calc(var(--d, 0s) + .7s) infinite both; }
+@keyframes ob-me { 0%, 30% { transform: translateY(100%); } 42%, 88% { transform: translateY(0); } 100% { transform: translateY(100%); } }
+@keyframes ob-other { 0%, 30% { transform: translateY(-100%); } 42%, 88% { transform: translateY(0); } 100% { transform: translateY(-100%); } }
+.ob-static .ob-row-me, .ob-static .ob-row-other { animation: none; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ob-in, .ob-idle, .ob-row-me, .ob-row-other { animation: none !important; }
+  .ob-row-me, .ob-row-other { transform: none !important; }
+  .ob-fly { visibility: hidden; animation: none !important; }
+}
