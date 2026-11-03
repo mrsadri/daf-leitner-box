@@ -619,7 +619,9 @@ export const en: Messages = {
     howTo: 'Every day you answer more than 15 cards correctly in review, you get a silver card with a fun fact about German.',
     collection: 'My collection',
     collectionTitle: 'My silver cards',
-    locked: 'Not unlocked yet'
+    locked: 'Not unlocked yet',
+    lockedCount: (x: number) => `Not unlocked yet (${n(x)})`,
+    lockedTile: (i: number) => `Card ${n(i)}, not unlocked yet`
   },
 
   metro: {

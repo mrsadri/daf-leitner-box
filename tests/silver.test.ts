@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
-import { afterCorrectAnswer, mergeServer, emptySilver, rollDay, SILVER_THRESHOLD } from '../src/services/silverLogic.ts';
+import { afterCorrectAnswer, mergeServer, emptySilver, rollDay, SILVER_THRESHOLD, collectionSlots } from '../src/services/silverLogic.ts';
 import { SILVER_FACTS, SILVER_MAX } from '../src/data/silverFacts.ts';
 
 const DAY = '2026-11-02';
@@ -58,4 +58,15 @@ test('30 facts in both languages', () => {
     assert.ok(existsSync(new URL(`../public/icons3d/${f.icon}.webp`, import.meta.url)), `icon file for ${f.icon}`);
     assert.doesNotMatch(f.fa, /ستاک/);
   }
+});
+
+test('collection slots: earned first, the rest locked; bad totals clamped', () => {
+  assert.deepEqual(collectionSlots(3, 5), { earned: [1, 2, 3], locked: [4, 5] });
+  assert.deepEqual(collectionSlots(0, 3), { earned: [], locked: [1, 2, 3] });
+  assert.deepEqual(collectionSlots(30, 30).locked, []);
+  assert.equal(collectionSlots(30, 30).earned.length, 30);
+  assert.deepEqual(collectionSlots(99, 3), { earned: [1, 2, 3], locked: [] });
+  assert.deepEqual(collectionSlots(-2, 2), { earned: [], locked: [1, 2] });
+  assert.deepEqual(collectionSlots(NaN, 2), { earned: [], locked: [1, 2] });
+  assert.deepEqual(collectionSlots(2.7, 4), { earned: [1, 2], locked: [3, 4] });
 });
