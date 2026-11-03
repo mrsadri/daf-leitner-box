@@ -50,3 +50,10 @@ export function mergeServer(state: SilverState, server: SilverServerStatus, toda
     total: Math.min(max, Math.max(s.total, server.total))
   };
 }
+
+/** The collection's slots: earned card numbers (shown in full) and locked ones. A bad total is clamped to 0–max. */
+export function collectionSlots(total: number, max: number): { earned: number[]; locked: number[] } {
+  const n = Number.isFinite(total) ? Math.max(0, Math.min(max, Math.floor(total))) : 0;
+  const all = Array.from({ length: max }, (_, i) => i + 1);
+  return { earned: all.slice(0, n), locked: all.slice(n) };
+}

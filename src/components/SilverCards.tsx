@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Lock, X } from 'lucide-react';
 import { SILVER_FACTS, SILVER_MAX } from '../data/silverFacts';
-import { SILVER_THRESHOLD } from '../services/silverLogic';
+import { SILVER_THRESHOLD, collectionSlots } from '../services/silverLogic';
 import { getSilver, onSilverChange } from '../services/silver';
 import { useI18n } from '../i18n/I18nProvider';
 import { Icon3D } from './ui/Icon3D';
@@ -90,31 +90,50 @@ export const SilverCardEarned: React.FC<{ index: number; onClose: () => void }> 
   );
 };
 
-/** All 30 slots: earned cards with their fact, the rest locked. */
+/**
+ * All 30 slots: earned cards in full, then the locked ones as small numbered tiles.
+ * The scroll lives on a plain block wrapper, never on the grid itself: a height-limited grid shrinks rows
+ * whose items clip their overflow (the card face does) down to almost nothing.
+ */
 export const SilverCollection: React.FC<{ total: number; onClose: () => void }> = ({ total, onClose }) => {
   const { t, num } = useI18n();
+  const { earned, locked } = collectionSlots(total, SILVER_MAX);
   return (
     <Modal labelledBy="silver-collection-title" onClose={onClose} wide>
-      <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-start justify-between gap-3">
+      <div className="shrink-0 p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-start justify-between gap-3">
         <div>
           <h3 id="silver-collection-title" className="text-base font-bold text-slate-900 dark:text-white">{t.silver.collectionTitle}</h3>
-          <p className="text-xs text-slate-600 dark:text-slate-400">{t.silver.count(total, SILVER_MAX)} · {t.silver.howTo}</p>
+          <p className="text-xs text-slate-600 dark:text-slate-400">{t.silver.count(earned.length, SILVER_MAX)} · {t.silver.howTo}</p>
         </div>
         <button data-autofocus onClick={onClose} aria-label={t.common.close} className="w-8 h-8 shrink-0 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-500">
           <X className="w-4 h-4" />
         </button>
       </div>
-      <div className="p-4 sm:p-5 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-3" data-testid="silver-collection">
-        {Array.from({ length: SILVER_MAX }, (_, i) => i + 1).map(i =>
-          i <= total ? (
-            <SilverCardFace key={i} index={i} />
-          ) : (
-            <div key={i} className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-4 flex items-center gap-2 text-xs text-slate-400 dark:text-slate-500">
-              <Lock className="w-4 h-4 shrink-0" />
-              <span className="font-mono-num">{num(i)}</span>
-              <span>{t.silver.locked}</span>
-            </div>
-          )
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 sm:p-5 space-y-5" data-testid="silver-collection">
+        {earned.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" data-testid="silver-earned-list">
+            {earned.map(i => <SilverCardFace key={i} index={i} />)}
+          </div>
+        )}
+        {earned.length >= SILVER_MAX && (
+          <p className="text-sm font-bold text-center text-emerald-700 dark:text-emerald-300">{t.silver.complete}</p>
+        )}
+        {locked.length > 0 && (
+          <section className="space-y-2" aria-labelledby="silver-locked-title">
+            <h4 id="silver-locked-title" className="text-xs font-bold text-slate-500 dark:text-slate-400">{t.silver.lockedCount(locked.length)}</h4>
+            <ul className="grid grid-cols-[repeat(auto-fill,minmax(3.25rem,1fr))] gap-2" data-testid="silver-locked-list">
+              {locked.map(i => (
+                <li
+                  key={i}
+                  aria-label={t.silver.lockedTile(i)}
+                  className="h-12 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 flex flex-col items-center justify-center gap-0.5 text-slate-400 dark:text-slate-500"
+                >
+                  <Lock className="w-3.5 h-3.5" aria-hidden="true" />
+                  <span className="font-mono-num text-xs font-semibold" aria-hidden="true">{num(i)}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
         )}
       </div>
     </Modal>
