@@ -21,3 +21,20 @@ client_secret*.json
 # Local files with secrets (e.g. filled-in setup instructions)
 *.local.md
 deno.lock
+
+# Source textbook (large, copyrighted) — never commit
+DaF-Kompakt-Kursbuch_Feralan.com.pdf
+
+# DaF kompakt work: commit only original work (stories, visual bible, image
+# prompts, scripts). Everything derived from or showing the copyrighted
+# textbook stays local.
+DaF-kompakt-work/pages/
+DaF-kompakt-work/ocr/
+DaF-kompakt-work/ocr_vision/
+DaF-kompakt-work/lesseon-summary-screenshots/
+DaF-kompakt-work/DaF-kompakt/Wortschatz/
+DaF-kompakt-work/DaF-kompakt/Grammatik/
+DaF-kompakt-work/DaF-kompakt/Kontext/
+DaF-kompakt-work/scripts/vision_ocr
+Screenshot*.png
+*.zip
