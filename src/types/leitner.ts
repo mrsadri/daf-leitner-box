@@ -108,6 +108,10 @@ export interface AppSettings {
   overdueRuleSeen?: boolean; // The overdue rule was explained once (popup); later popups are shorter
   notifyOvertake?: boolean; // Push when someone passes the user on the leaderboard. Unset = on
   language?: Lang; // Interface language; unset means the default (Persian)
+  // Story dictation (all optional; DEFAULT_SETTINGS stays unchanged, old rows keep working)
+  dictationAudioMode?: 'A' | 'B' | 'C'; // Unset = A (studio voices), see docs/dictation/05-audio.md
+  dictationGrammarOpen?: boolean; // Grammar drawer open or collapsed; unset = open from 1024 px width
+  dictationIntroSeen?: boolean; // The one-time Beta explainer was shown
 }
 
 

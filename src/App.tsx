@@ -239,6 +239,9 @@ function LeitnerApp({ user }: { user: User }) {
     await disablePush().catch(() => undefined);
     await cloudSync.stop();
     resetSharedState();
+    // Story dictation: this user's progress cache, queue and drafts must not stay on the device (loaded lazily, nothing to clear if never used)
+    const uid = profile?.id;
+    if (uid) await import('./services/dictationSync').then(m => m.clearDictationData(uid)).catch(() => undefined);
     await supabase?.auth.signOut();
   };
 

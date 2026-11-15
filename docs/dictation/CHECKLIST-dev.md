@@ -55,13 +55,13 @@ harness (`scripts/test-sql.sh`) or a separate dev Supabase project. After any `v
 
 ## Phase 3: data model, sync, settings, flag (3 days)
 
-- [ ] P3-T1 `supabase/migrations/2026MMDD_story_dictation.sql`: `story_progress`, `story_sentence_progress`, `app_flags`, `dictation_events`, rank function, `save_dictation_progress`, caps, RLS, grants; idempotent; nothing existing altered
-- [ ] P3-T2 `supabase/tests/story_dictation.test.sql` written; `scripts/test-sql.sh` green (migration runs twice, RLS isolation, merge monotonic, idempotent, caps, cascade)
-- [ ] P3-T3 Optional `AppSettings` fields: `dictationAudioMode`, `dictationGrammarOpen`, `dictationIntroSeen` (no change to `DEFAULT_SETTINGS`)
-- [ ] P3-T3 `src/services/dictationSync.ts` (queue, cache, retry, `visibilitychange`, `online`, demo mode, per-user keys, cleared on sign out)
-- [ ] P3-T3 Flag reader (`app_flags.dictation_enabled`, fail open to `DICTATION_ENABLED`) and the admin-only `?dictation=1` preview override
-- [ ] P3-T4 `docs/supabase-dictation-setup.md` written in the style of `docs/supabase-shared-insights-setup.md` (before and after checks, migration URL, bucket steps, flag, monitoring queries, drop script)
-- [ ] Confirm the app still runs with the migration absent (progress local, one notice)
+- [x] P3-T1 `supabase/migrations/2026MMDD_story_dictation.sql`: `story_progress`, `story_sentence_progress`, `app_flags`, `dictation_events`, rank function, `save_dictation_progress`, caps, RLS, grants; idempotent; nothing existing altered
+- [x] P3-T2 `supabase/tests/story_dictation.test.sql` written; `scripts/test-sql.sh` green (migration runs twice, RLS isolation, merge monotonic, idempotent, caps, cascade)
+- [x] P3-T3 Optional `AppSettings` fields: `dictationAudioMode`, `dictationGrammarOpen`, `dictationIntroSeen` (no change to `DEFAULT_SETTINGS`)
+- [x] P3-T3 `src/services/dictationSync.ts` (queue, cache, retry, `visibilitychange`, `online`, demo mode, per-user keys, cleared on sign out)
+- [x] P3-T3 Flag reader (`app_flags.dictation_enabled`, fail open to `DICTATION_ENABLED`) and the admin-only `?dictation=1` preview override
+- [x] P3-T4 `docs/supabase-dictation-setup.md` written in the style of `docs/supabase-shared-insights-setup.md` (before and after checks, migration URL, bucket steps, flag, monitoring queries, drop script)
+- [x] Confirm the app still runs with the migration absent (progress local, one notice) — covered by a unit test of the queue (`MigrationMissingError`); the UI notice itself comes with Phase 5
 
 ## Phase 4: audio generation and media (4 days)
 
