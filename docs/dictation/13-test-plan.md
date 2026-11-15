@@ -97,7 +97,7 @@ go to a table (device, case id, result, issue link); blockers must be zero for r
 - Proofreading: the JSON text equals the story Markdown apart from the bold markers (a diff script proves it), so no
   accidental text change was introduced.
 - Link spot check: 50 random sentences, every tappable word opens the right card.
-- Grammar: each point card read against the book's page (by the owner), with the Persian and English texts reviewed.
+- Grammar: each point card read against the book's page (by the owner), German text only, proofread.
 
 ## 6. Regression and safety checks before release
 

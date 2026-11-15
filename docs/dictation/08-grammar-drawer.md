@@ -30,16 +30,17 @@ Decision recorded in this plan (the owner confirms in Phase 0, Open Question 1):
 ```ts
 interface GrammarCard {
   id: string; block: number; lesson: number; level: 'A1' | 'A2' | 'B1';
-  title: { de: string; fa: string; en: string };       // German title from the book, own translations
-  rule: { fa: string; en: string };                     // short own-words explanation, 2 to 3 lines
-  table?: { head: string[]; rows: string[][] };         // optional, own words; German cells shown dir="ltr"
+  title: string;                                        // German title as in the book
+  rule: string;                                         // short own-words explanation in German, 2 to 3 lines
+  table?: { head: string[]; rows: string[][] };         // optional, own words; all German, shown dir="ltr"
   examples: string[];                                   // sentence ids from the stories, resolved at render time
   related?: string[];                                   // other grammar ids
 }
 ```
 
-Persian and English explanations are new content (the book's grammar page is German); this is a content task per block
-and Open Question 2.
+Decision (owner, 2026-11-15): **German grammar is enough.** Cards are German only, with no Persian or English
+explanations. Only the drawer's own labels ("Grammar", "New in this story", "Also used here") are localized through
+`fa.ts` and `en.ts`. Writing the cards is still a content task per block (short German texts in the owner's words).
 
 ## Linking points to sentences
 
@@ -90,5 +91,5 @@ earlier block and merely occur again are listed in a second, quieter group "Also
 ## Rendering and safety
 
 Cards are structured JSON rendered by React components (no `dangerouslySetInnerHTML`, no Markdown parser in the client).
-German cells and examples use `dir="ltr" lang="de"`; Persian and English explanations follow the interface direction.
+All card content is German (`dir="ltr" lang="de"`); only the drawer's labels follow the interface direction.
 Missing card (id with no card): skipped silently in production and caught by the content validation test in CI.

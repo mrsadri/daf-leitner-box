@@ -25,7 +25,7 @@ Goal: remove the unknowns that would otherwise invalidate later work.
 
 | Task | Detail | Output |
 |---|---|---|
-| P0-T1 | Resolve Open Question 1 (grammar publishing) and Open Question 2 (who writes grammar explanations) | Decision recorded in `14-risks-and-open-questions.md` |
+| P0-T1 | Open Questions 1 and 2 are **decided** (own-words German-only grammar cards); record the final wording in `14-risks-and-open-questions.md` | Done 2026-11-15 |
 | P0-T2 | TTS spike: audition about 20 ElevenLabs voices (and Google Chirp 3 HD) on 10 real sentences, check licence terms, price, `seed` determinism, Austrian-accent availability; pick the cast for stories 1 and 2 | Casting table filled in `voices.json`, provider decision |
 | P0-T3 | Piper spike: list German voices and licences, render the same 10 sentences, reproduce the U+0327 problem, prove the NFC plus `phoneme_id_map` check, test ffmpeg `rubberband` pitch shifts | Spike note, working `test_piper_phonemes.py` |
 | P0-T4 | Create or confirm a **dev** Supabase project (never production); create bucket `story-media` there; test public read, `Cache-Control`, CORS for `fetch` and `<audio>` from `localhost:3000` and the production origin | Written results, bucket settings for the setup doc |
@@ -109,7 +109,7 @@ occurs without a button; skipping changes no card; reduced motion and keyboard-o
 | Task | Detail | Days |
 |---|---|---|
 | P6-T1 | Generate point ids and the card skeleton from the local grammar files (blocks 1 and 2) | 0.5 |
-| P6-T2 | Write the own-words cards (Persian, English) for about 30 points in blocks 1 and 2 | 1.5 (plus owner review 2) |
+| P6-T2 | Write the own-words German cards for about 30 points in blocks 1 and 2 (no Persian or English text) | 1 (plus owner review 1) |
 | P6-T3 | Detectors and candidate links, human confirmation of links for both stories | 1 |
 | P6-T4 | `GrammarDrawer` component, persistence setting, phone sheet and desktop column | included in P5 effort where possible, otherwise 1 |
 

@@ -69,5 +69,6 @@ export interface Story {
   lessons: [number, number];
   contentVersion: string;
   speakersReviewed: boolean;
+  names: string[];               // proper names and protected words (never offered as new cards)
   sequences: Sequence[];
 }

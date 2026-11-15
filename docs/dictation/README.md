@@ -35,13 +35,13 @@ a new story is a content PR plus a media upload.
 
 ### Blocking items to resolve in Phase 0 (details in `14-risks-and-open-questions.md`)
 
-1. **Copyright of grammar text.** `.gitignore` excludes `DaF-kompakt-work/DaF-kompakt/Grammatik/`, `Wortschatz/` and `Kontext/`
-   because they derive from the copyrighted textbook. The grammar drawer must not publish book text by accident. Default
-   in this plan: the repo gets original, own-words grammar cards that reference the book's point titles and lesson
-   numbers; the gitignored files are used only as a local source for linking.
-2. **Illustrations do not exist yet** in the repo (only prompts, `output/image-prompts/S01-image-prompts.md`, ids
+1. **Copyright of grammar text (decided).** `.gitignore` excludes `DaF-kompakt-work/DaF-kompakt/Grammatik/`, `Wortschatz/` and `Kontext/`
+   because they derive from the copyrighted textbook. Decision: the repo gets original, own-words grammar cards in
+   **German only** (no Persian or English explanations) that reference the book's point titles and lesson numbers; the
+   gitignored files are used only as a local source for linking.
+2. **Illustrations do not exist yet (accepted, placeholders)** in the repo (only prompts, `output/image-prompts/S01-image-prompts.md`, ids
    `S01-Q1` to `S02-Q6`). Phase 0 fixes the file naming and format; development can proceed with placeholders.
-3. **Piper German voice inventory and licences** must be confirmed with a one-day spike before Mode B is promised.
+3. **Piper German voice inventory and licences** are confirmed in the Phase 0 spike before Mode B is promised (accepted).
 
 ## Files in this folder
 

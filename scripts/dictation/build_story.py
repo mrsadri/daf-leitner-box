@@ -241,6 +241,7 @@ def build(story_no: str, *, root: Path = REPO, source_dir: Path | None = None, l
         "block": int(story_no),
         "lessons": list(parsed.lessons),
         "speakersReviewed": speakers_reviewed,
+        "names": sorted(names),          # proper names and protected words: never offered as new vocabulary cards
         "sequences": sequences,
     }
     story["contentVersion"] = hashlib.sha256(dump_story(story).encode("utf-8")).hexdigest()[:12]

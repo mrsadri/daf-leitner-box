@@ -1,12 +1,13 @@
 {
-  "_comment": "Characters of the whole series. Ids are stable forever. gender: f|m|c (child) used for pronoun resolution. aliases are matched case-sensitively as whole words, also with a genitive s (Nilufars). Add characters when a story introduces them; the voices go into voices.json.",
+  "_comment": "Characters of the whole series. Ids are stable forever. gender: f|m|c (child) used for pronoun resolution. aliases are matched case-sensitively as whole words, also with a genitive s (Nilufars). Add characters when a story introduces them; the voices go into voices.json. sex: f|m|n for voice casting (gender 'c' marks children for the pronoun rules). age: used by Mode C pitch classes; Sabine, Herr Ebner and Felix have no age in the storyline, the values are placeholders.",
   "characters": [
     {
       "id": "NARRATOR",
       "name": "Erzähler",
       "gender": "n",
       "profile": "adult, neutral, calm, slightly slower",
-      "aliases": []
+      "aliases": [],
+      "sex": "n"
     },
     {
       "id": "NILI",
@@ -18,7 +19,9 @@
         "Frau Karimi",
         "Nilufar",
         "Nili"
-      ]
+      ],
+      "sex": "f",
+      "age": 26
     },
     {
       "id": "LUCIA",
@@ -28,7 +31,9 @@
       "aliases": [
         "Lucía Fernández",
         "Lucía"
-      ]
+      ],
+      "sex": "f",
+      "age": 22
     },
     {
       "id": "JONAS",
@@ -38,7 +43,9 @@
       "aliases": [
         "Jonas Huber",
         "Jonas"
-      ]
+      ],
+      "sex": "m",
+      "age": 29
     },
     {
       "id": "LECHNER",
@@ -49,7 +56,9 @@
         "Brigitte Lechner",
         "Frau Lechner",
         "Lechner"
-      ]
+      ],
+      "sex": "f",
+      "age": 52
     },
     {
       "id": "WAGNER",
@@ -61,7 +70,9 @@
         "Frau Wagner",
         "Monika",
         "Wagner"
-      ]
+      ],
+      "sex": "f",
+      "age": 45
     },
     {
       "id": "KENJI",
@@ -71,7 +82,9 @@
       "aliases": [
         "Kenji Sato",
         "Kenji"
-      ]
+      ],
+      "sex": "m",
+      "age": 31
     },
     {
       "id": "EMILY",
@@ -81,7 +94,9 @@
       "aliases": [
         "Emily Clark",
         "Emily"
-      ]
+      ],
+      "sex": "f",
+      "age": 28
     },
     {
       "id": "PIERRE",
@@ -91,7 +106,9 @@
       "aliases": [
         "Pierre Dubois",
         "Pierre"
-      ]
+      ],
+      "sex": "m",
+      "age": 24
     },
     {
       "id": "MEI",
@@ -101,7 +118,9 @@
       "aliases": [
         "Mei Lin",
         "Mei"
-      ]
+      ],
+      "sex": "f",
+      "age": 27
     },
     {
       "id": "NOVAK",
@@ -112,7 +131,9 @@
         "Ana Novak",
         "Frau Novak",
         "Novak"
-      ]
+      ],
+      "sex": "f",
+      "age": 38
     },
     {
       "id": "KEMAL",
@@ -122,7 +143,9 @@
       "aliases": [
         "Kemal Yıldız",
         "Kemal"
-      ]
+      ],
+      "sex": "m",
+      "age": 34
     },
     {
       "id": "AYSE",
@@ -132,7 +155,9 @@
       "aliases": [
         "Ayşe Yıldız",
         "Ayşe"
-      ]
+      ],
+      "sex": "f",
+      "age": 34
     },
     {
       "id": "CLAUDIA",
@@ -142,7 +167,9 @@
       "aliases": [
         "Claudia Steiner",
         "Claudia"
-      ]
+      ],
+      "sex": "f",
+      "age": 41
     },
     {
       "id": "MARTIN",
@@ -152,7 +179,9 @@
       "aliases": [
         "Martin Steiner",
         "Martin"
-      ]
+      ],
+      "sex": "m",
+      "age": 44
     },
     {
       "id": "PAUL",
@@ -161,7 +190,9 @@
       "profile": "boy, 9",
       "aliases": [
         "Paul"
-      ]
+      ],
+      "sex": "m",
+      "age": 9
     },
     {
       "id": "LENA",
@@ -170,7 +201,9 @@
       "profile": "girl, 6",
       "aliases": [
         "Lena"
-      ]
+      ],
+      "sex": "f",
+      "age": 6
     },
     {
       "id": "HERMINE",
@@ -181,7 +214,9 @@
         "Hermine Steiner",
         "Oma Hermine",
         "Hermine"
-      ]
+      ],
+      "sex": "f",
+      "age": 78
     },
     {
       "id": "PICHLER",
@@ -192,7 +227,9 @@
         "Theresia Pichler",
         "Frau Pichler",
         "Pichler"
-      ]
+      ],
+      "sex": "f",
+      "age": 67
     },
     {
       "id": "SABINE",
@@ -201,7 +238,9 @@
       "profile": "woman, club trainer, energetic",
       "aliases": [
         "Sabine"
-      ]
+      ],
+      "sex": "f",
+      "age": 35
     },
     {
       "id": "EBNER",
@@ -211,7 +250,9 @@
       "aliases": [
         "Herr Ebner",
         "Ebner"
-      ]
+      ],
+      "sex": "m",
+      "age": 55
     },
     {
       "id": "FELIX",
@@ -220,35 +261,45 @@
       "profile": "young man, flatmate",
       "aliases": [
         "Felix"
-      ]
+      ],
+      "sex": "m",
+      "age": 25
     },
     {
       "id": "GUEST_F1",
       "name": "Gast (w) 1",
       "gender": "f",
       "profile": "generic woman, reused across stories",
-      "aliases": []
+      "aliases": [],
+      "sex": "f",
+      "age": 35
     },
     {
       "id": "GUEST_F2",
       "name": "Gast (w) 2",
       "gender": "f",
       "profile": "generic woman, reused across stories",
-      "aliases": []
+      "aliases": [],
+      "sex": "f",
+      "age": 35
     },
     {
       "id": "GUEST_M1",
       "name": "Gast (m) 1",
       "gender": "m",
       "profile": "generic man, reused across stories",
-      "aliases": []
+      "aliases": [],
+      "sex": "m",
+      "age": 35
     },
     {
       "id": "GUEST_M2",
       "name": "Gast (m) 2",
       "gender": "m",
       "profile": "generic man, reused across stories",
-      "aliases": []
+      "aliases": [],
+      "sex": "m",
+      "age": 35
     }
   ],
   "speechVerbs": [

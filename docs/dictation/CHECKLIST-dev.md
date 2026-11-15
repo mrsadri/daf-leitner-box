@@ -13,7 +13,7 @@ harness (`scripts/test-sql.sh`) or a separate dev Supabase project. After any `v
 
 ## Phase 0: decisions and spikes (3 days)
 
-- [ ] P0-T1 Decide grammar publishing (OQ 1) and who writes the grammar explanations (OQ 2)
+- [x] P0-T1 Grammar decisions made: own-words cards, German only (OQ 1 and OQ 2, decided 2026-11-15)
 - [ ] P0-T2 TTS spike: 20 voices auditioned, licence and price read, `seed` determinism checked, provider chosen (OQ 7)
 - [ ] P0-T2 Casting table for the stories 1 and 2 characters written into `content/dictation/voices.json` (modes A, B, C)
 - [ ] P0-T3 Piper spike: German voice list and licences (OQ 4), cedilla reproduced, NFC plus `phoneme_id_map` check proven
@@ -44,14 +44,14 @@ harness (`scripts/test-sql.sh`) or a separate dev Supabase project. After any `v
 
 ## Phase 2: pure logic modules (4 days)
 
-- [ ] P2-T1 `src/services/dictation/normalize.ts` and `tests/dictationNormalize.test.ts`
-- [ ] P2-T2 `compare.ts` with all categories and `CheckResult`; `tests/dictationCompare.test.ts` (table-driven)
-- [ ] P2-T2 Verify: capitalization, commas, `ae/oe/ue/ss`, typos are mistakes; no category prints the correct letters
-- [ ] P2-T3 `submitTrigger.ts` and `tests/dictationTrigger.test.ts` (quote balance, ordinals, abbreviations, `...`, composition)
-- [ ] P2-T4 `moveBack.ts` (`computeMoveBack`) and `leitnerEngine.moveBackOne` (additive change only); `tests/dictationMoveBack.test.ts` incl. the 16-day example
-- [ ] P2-T4 `wordLink.ts` (tap to card resolution, owned card preferred) and `tests/dictationWordLink.test.ts`
-- [ ] P2-T5 `voiceMap.ts`, `fallback.ts`, `progressMerge.ts` and their tests
-- [ ] `npm run lint` and `npm test` green
+- [x] P2-T1 `src/services/dictation/normalize.ts` and `tests/dictationNormalize.test.ts`
+- [x] P2-T2 `compare.ts` with all categories and `CheckResult`; `tests/dictationCompare.test.ts` (table-driven)
+- [x] P2-T2 Verify: capitalization, commas, `ae/oe/ue/ss`, typos are mistakes; no category prints the correct letters
+- [x] P2-T3 `submitTrigger.ts` and `tests/dictationTrigger.test.ts` (quote balance, ordinals, abbreviations, `...`, composition)
+- [x] P2-T4 `moveBack.ts` (`computeMoveBack`) and `leitnerEngine.moveBackOne` (additive change only); `tests/dictationMoveBack.test.ts` incl. the 16-day example
+- [x] P2-T4 `wordLink.ts` (tap to card resolution, owned card preferred) and `tests/dictationWordLink.test.ts`
+- [x] P2-T5 `voiceMap.ts`, `fallback.ts`, `progressMerge.ts` and their tests
+- [x] `npm run lint` and `npm test` green
 
 ## Phase 3: data model, sync, settings, flag (3 days)
 
@@ -94,7 +94,7 @@ harness (`scripts/test-sql.sh`) or a separate dev Supabase project. After any `v
 ## Phase 6: grammar (3 days plus owner review)
 
 - [ ] P6-T1 Point ids and skeleton generated from the local grammar files for blocks 1 and 2
-- [ ] P6-T2 Own-words cards (Persian, English) for about 30 points; owner reviewed (or approved book text per OQ 1)
+- [ ] P6-T2 Own-words German-only cards for about 30 points; owner reviewed (no book text committed)
 - [ ] P6-T3 Detectors, candidate links, human confirmation in the overrides; "New in this story" computed
 - [ ] P6-T4 `GrammarDrawer`: trigger is the last entered sentence, sequence list before the first entry, open or collapsed setting persists across reload and devices, phone sheet and desktop column
 - [ ] Confirm that no textbook-derived file is staged in Git (`git status` shows nothing from `Grammatik/`, `Wortschatz/`, `Kontext/`)

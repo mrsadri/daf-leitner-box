@@ -29,10 +29,10 @@ Everything that cannot be determined from the repository, with the default this 
 
 | # | Question | Default used by this plan | Needed by |
 |---|---|---|---|
-| 1 | May text from the textbook's grammar pages be published in the app, or must the drawer use only own-words cards? (`.gitignore` marks the folders as textbook-derived and local-only) | Own-words cards, no book text committed | Phase 0 |
-| 2 | Who writes the Persian and English explanations for about 30 grammar points in blocks 1 and 2 (the source is German only)? | The owner drafts with Claude's help and reviews every card | Phase 0 |
-| 3 | Illustrations: where are the originals, which exact file names and format (this plan assumes `S01-Q1.png` and 4:3, converted to WebP), and when will the 12 images exist? | Placeholders until they exist | Phase 0, Phase 7 |
-| 4 | Which German Piper voices exist now and what are their licences? (A handful is expected; not verifiable offline) | Mode B shares voices across characters with offsets | Phase 0 |
+| 1 | May text from the textbook's grammar pages be published in the app? | **Decided: no.** Own-words German cards, no book text committed (confirmed by the owner 2026-11-15) | Closed |
+| 2 | Persian and English grammar explanations? | **Decided: not needed, German grammar is enough.** Cards are German only; only drawer labels are localized | Closed |
+| 3 | Illustrations: exact file names and format, and when the 12 images exist | **Accepted:** placeholders until they exist; assumed naming `S01-Q1.png`, 4:3, converted to WebP | Phase 0, Phase 7 |
+| 4 | Which German Piper voices exist now and what are their licences? | **Accepted:** settled in the Phase 0 spike; Mode B shares voices across characters with offsets | Phase 0 |
 | 5 | Is it acceptable that "move back one compartment" lowers the all-time score (sum of boxes) and writes no review event? Confirm: box 0 stays put (due today) and mastered goes to box 5 | Yes to all, as in the nightly overdue rule | Phase 2 |
 | 6 | Persian and English translations of individual sentences do not exist (only situation texts). Do you want them for the card back side or a "show translation" hint? | Not included | After the Beta |
 | 7 | Final TTS provider, budget and licence confirmation for Mode A (ElevenLabs recommended, Google as backup); are Austrian-accented voices wanted if available? | ElevenLabs, standard German voices | Phase 0 |
@@ -42,8 +42,8 @@ Everything that cannot be determined from the repository, with the default this 
 | 11 | Should dictation progress be part of the JSON backup in Settings? | No in v1 | After the Beta |
 | 12 | Should a finished story be re-practicable (restart or a second run)? | Read-only browse, no retyping | After the Beta |
 | 13 | A transcript or "show text on demand" mode for deaf and hard-of-hearing learners? | Not in v1; the text appears after a skip | After the Beta |
-| 14 | Is a new `app_flags` table acceptable for the kill switch, or is a build-time flag enough? | Table plus build-time constant | Phase 3 |
-| 15 | Is a small `dictation_events` table acceptable for Beta monitoring (no text, 60-day pruning)? Alternative: no monitoring beyond the owner's own testing | Yes | Phase 3 |
+| 14 | Is a new `app_flags` table acceptable for the kill switch? | **Approved** by the owner 2026-11-15; table plus build-time constant | Closed |
+| 15 | Is a small `dictation_events` table acceptable for Beta monitoring (no text, 60-day pruning)? | **Approved** by the owner 2026-11-15 | Closed |
 | 16 | Should the three comprehension questions per sequence (`**Fragen**`, with `Lösungen`) become a feature? | Out of scope; data is parsed but unused | After the Beta |
 | 17 | Final wording of the Beta label and the Persian copy (praise messages, hints) | Draft copy written during Phase 5 and reviewed by the owner | Phase 5 |
 | 18 | Do special letters beyond ä ö ü ß (á, í, ş, ı for names like Lucía and Ayşe) need buttons? | No; names are rare in the dictation text; typing them is part of the exercise | Phase 5 |
