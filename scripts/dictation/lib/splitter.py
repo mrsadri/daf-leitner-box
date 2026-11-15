@@ -40,6 +40,9 @@ class Split:
     flags: list[str] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)   # review-report lines ("S10: digit-dot boundary")
     quote_balance: int = 0
+    start: int = 0      # offsets in the (joined) paragraph
+    end: int = 0
+    par: int = 0        # index of the (joined) paragraph in the sequence
 
 
 def _words(text: str) -> int:
@@ -210,11 +213,16 @@ def split_paragraph(par: str, abbr: Abbreviations) -> list[Split]:
     out: list[Split] = []
     start = 0
     for end, notes in cuts:
-        text = par[start:end].strip()
+        chunk = par[start:end]
+        text = chunk.strip()
+        lead = len(chunk) - len(chunk.lstrip())
+        s0 = start + lead
         start = end
         if not text:
             continue
-        out.append(_make_split(text, notes))
+        sp = _make_split(text, notes)
+        sp.start, sp.end = s0, s0 + len(text)
+        out.append(sp)
     return out
 
 
@@ -265,8 +273,10 @@ def split_sequence(paragraphs: list[str], abbr: Abbreviations) -> tuple[list[Spl
     """Split all paragraphs of a sequence. Raises ValueError for S1 violations."""
     joined, notes = join_colon_paragraphs(paragraphs)
     result: list[Split] = []
-    for p in joined:
+    for idx, p in enumerate(joined):
         if not re.search(r"[.!?…][“”‘’»)]*$", p.strip()):
             raise ValueError(f"S1: paragraph does not end with . ! ? or an ellipsis: ...{p[-50:]!r}")
-        result.extend(split_paragraph(p, abbr))
+        for sp in split_paragraph(p, abbr):
+            sp.par = idx
+            result.append(sp)
     return result, notes

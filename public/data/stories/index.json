@@ -1,0 +1,31 @@
+{
+  "stories": [
+    {
+      "block": 1,
+      "contentVersion": "b1c9305077ad",
+      "file": "story-01.json",
+      "id": "story-01",
+      "lessons": [
+        1,
+        3
+      ],
+      "sentences": 352,
+      "sequences": 6,
+      "title": "Neu in Graz"
+    },
+    {
+      "block": 2,
+      "contentVersion": "22ac17519748",
+      "file": "story-02.json",
+      "id": "story-02",
+      "lessons": [
+        4,
+        6
+      ],
+      "sentences": 431,
+      "sequences": 6,
+      "title": "Laufen, suchen, waschen"
+    }
+  ],
+  "version": 1
+}

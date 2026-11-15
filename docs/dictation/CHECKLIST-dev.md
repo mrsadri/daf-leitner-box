@@ -24,20 +24,20 @@ harness (`scripts/test-sql.sh`) or a separate dev Supabase project. After any `v
 
 ## Phase 1: content pipeline (6 days)
 
-- [ ] P1-T1 `scripts/dictation/` skeleton; Markdown parser; bold stripping; normalization; six-sequence validation
-- [ ] P1-T2 Splitter rules S1 to S16 implemented; one `unittest` fixture per rule; golden files for stories 1 and 2
-- [ ] P1-T2 `abbreviations.json` created (Tel., Nr., Dr., Prof., z. B., d. h., usw., bzw., ca., Str., ...)
-- [ ] P1-T3 `content/dictation/cast.json` with aliases for every character in stories 1 and 2
-- [ ] P1-T3 Speaker attribution rules (tag, pronoun, previous narration, turn taking), `segments` for mixed sentences
-- [ ] P1-T3 Review report `build/dictation/story-NN.speakers.md` generated
-- [ ] P1-T4 Stable id lock file algorithm (exact match, similarity pairing at 0.6, new ids, retired ids) with tests for edit, insert, delete, reorder
-- [ ] P1-T5 Vocabulary form index from `public/data/wortschatz-daf-kompakt.csv` (nouns, plurals, verbs, generated present paradigm, adjectives, phrases, clitics)
-- [ ] P1-T5 Separable verb link groups using `scripts/data/verb-splits.json`; duplicate catalog entries ordered by lesson
-- [ ] P1-T5 Coverage report (linked content tokens at least 97 percent) and `inflections.json` for the gaps
-- [ ] P1-T6 `tts_text.py` for ordinals, times, prices, phone numbers, postal codes, abbreviations; `overrides.speech` supported
-- [ ] P1-T7 Publish step writes `public/data/stories/index.json`, `story-01.json`, `story-02.json`, `contentVersion`; output is byte-identical on a second run
-- [ ] P1-T7 CI: add `python3 -m unittest discover scripts/dictation/tests` to `.github/workflows/ci.yml`
-- [ ] P1-T7 `tests/dictationContent.test.ts` added and green
+- [x] P1-T1 `scripts/dictation/` skeleton; Markdown parser; bold stripping; normalization; six-sequence validation
+- [x] P1-T2 Splitter rules S1 to S16 implemented; one `unittest` fixture per rule; golden files for stories 1 and 2
+- [x] P1-T2 `abbreviations.json` created (Tel., Nr., Dr., Prof., z. B., d. h., usw., bzw., ca., Str., ...)
+- [x] P1-T3 `content/dictation/cast.json` with aliases for every character in stories 1 and 2
+- [x] P1-T3 Speaker attribution rules (tag, pronoun, previous narration, turn taking), `segments` for mixed sentences
+- [x] P1-T3 Review report `build/dictation/story-NN.speakers.md` generated
+- [x] P1-T4 Stable id lock file algorithm (exact match, similarity pairing at 0.6, new ids, retired ids) with tests for edit, insert, delete, reorder
+- [x] P1-T5 Vocabulary form index from `public/data/wortschatz-daf-kompakt.csv` (nouns, plurals, verbs, generated present paradigm, adjectives, phrases, clitics)
+- [x] P1-T5 Separable verb link groups (the CSV already holds the split cards of `verb-splits.json`, so the linker reads `trennbar` and the Präsens particle); duplicate catalog entries ordered by lesson
+- [ ] P1-T5 Coverage report (linked content tokens at least 97 percent) and `inflections.json` for the gaps. STATUS: report and file exist; story 1 reaches 96.4 percent and story 2 93.5 percent of content tokens (98.2 and 96.1 percent of the bold target words); the remaining gaps are words the CSV does not contain (Euro, Uhr, Musik, ...), listed in `build/dictation/story-NN.links.md` for the owner to decide
+- [x] P1-T6 `tts_text.py` for ordinals, times, prices, phone numbers, postal codes, abbreviations; `overrides.speech` supported
+- [x] P1-T7 Publish step writes `public/data/stories/index.json`, `story-01.json`, `story-02.json`, `contentVersion`; output is byte-identical on a second run
+- [x] P1-T7 CI: add `python3 -m unittest discover scripts/dictation/tests` to `.github/workflows/ci.yml`
+- [x] P1-T7 `tests/dictationContent.test.ts` added and green
 - [ ] Owner: speaker review for stories 1 and 2 completed, `reviewed` ranges recorded in the overrides files
 - [ ] Owner: split and link reports read, decisions written to overrides
 - [ ] Acceptance: 0 `UNKNOWN` speakers, no unreviewed medium or low rows, content test green, JSON text equals the Markdown text apart from the bold markers (diff script)
