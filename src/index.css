@@ -19,6 +19,54 @@
   --color-indigo-950: #07233a;
   /* Austria accent (red of the flag, often given as Pantone 186 C): decoration only, never for states */
   --color-austria: #c8102e;
+
+  /* Design tokens (src/shared/ui uses only these; see the gallery at ?gallery=1 in dev/demo builds).
+     Colours by role: primary = indigo (above), success = emerald, warning = amber, danger = red, neutral = slate.
+     Corner radii: three sizes only. */
+  --radius-control: 0.75rem;   /* buttons, fields, chips */
+  --radius-card: 1rem;         /* cards and panels */
+  --radius-sheet: 1.5rem;      /* dialogs and bottom sheets */
+  /* Smallest text in the app: 12px (the old 9-11px labels were hard to read on phones) */
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1rem;
+  /* Stories: rounded reading font and titles (SIL OFL, served from public/fonts) */
+  --font-story: 'Nunito', 'Vazirmatn', system-ui, sans-serif;
+  --font-story-title: 'Fredoka', 'Nunito', 'Vazirmatn', system-ui, sans-serif;
+}
+
+/* Colours that switch with the colour scheme on their own (no dark: variant needed) */
+@theme inline {
+  --color-paper: var(--ds-paper);
+  --color-paper-edge: var(--ds-paper-edge);
+  --color-ink: var(--ds-ink);
+  --color-ink-soft: var(--ds-ink-soft);
+  /* Noun gender underlines, matching the der/die/das colours used everywhere else in the app */
+  --color-gender-m: var(--ds-gender-m);
+  --color-gender-f: var(--ds-gender-f);
+  --color-gender-n: var(--ds-gender-n);
+  --color-gender-pl: var(--ds-gender-pl);
+}
+:root {
+  --ds-paper: #fbf5e9;
+  --ds-paper-edge: #eadfc8;
+  --ds-ink: #2b2620;
+  --ds-ink-soft: #5c5348;
+  --ds-gender-m: #2563eb;
+  --ds-gender-f: #dc2626;
+  --ds-gender-n: #16a34a;
+  --ds-gender-pl: #2b2620;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ds-paper: #26211b;
+    --ds-paper-edge: #3a332a;
+    --ds-ink: #f1e8d8;
+    --ds-ink-soft: #c9bda9;
+    --ds-gender-m: #60a5fa;
+    --ds-gender-f: #f87171;
+    --ds-gender-n: #4ade80;
+    --ds-gender-pl: #f1e8d8;
+  }
 }
 
 /* App fonts, served from the app itself (Google Fonts can be slow or blocked in Iran). SIL OFL 1.1, files from
@@ -260,3 +308,16 @@
   .ob-row-me, .ob-row-other { transform: none !important; }
   .ob-fly { visibility: hidden; animation: none !important; }
 }
+
+/* Noun gender underlines in Stories (and the gallery): masculine blue, feminine red, neuter green, plural ink.
+   Offset below the baseline so descenders and umlauts stay readable. */
+.gender-m, .gender-f, .gender-n, .gender-pl {
+  text-decoration-line: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.3em;
+  text-decoration-skip-ink: auto;
+}
+.gender-m { text-decoration-color: var(--color-gender-m); }
+.gender-f { text-decoration-color: var(--color-gender-f); }
+.gender-n { text-decoration-color: var(--color-gender-n); }
+.gender-pl { text-decoration-color: var(--color-gender-pl); }

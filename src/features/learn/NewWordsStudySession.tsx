@@ -10,6 +10,7 @@ import { PerfektQuiz } from '../../shared/vocab/PerfektQuiz';
 import { PluralInfo } from '../../shared/vocab/PluralInfo';
 import { PerfektExplanation } from '../../shared/vocab/PerfektGuide';
 import { Volume2, RotateCw, ArrowLeft, BookOpen, CheckCircle2, Sparkles, X, ChevronLeft, Undo2, Check, RotateCcw, ArrowRight, Hand } from 'lucide-react';
+import { isDialogOpen } from '../../shared/ui/Dialog';
 import { useI18n } from '../../i18n/I18nProvider';
 import { De, Auto } from '../../shared/ui/Text';
 import { SwipeCard, SwipeCardHandle } from '../../shared/ui/SwipeCard';
@@ -172,6 +173,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
   // Keyboard shortcut (Space to flip, Enter to add)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (isDialogOpen()) return; // a dialog is on top: its keys are its own
       if (!currentWord) return;
       const target = e.target as HTMLElement | null;
       if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT')) return;

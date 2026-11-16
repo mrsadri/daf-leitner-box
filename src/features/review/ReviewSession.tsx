@@ -16,6 +16,7 @@ import { SilverCardEarned } from '../silver/SilverCards';
 import { Icon3D } from '../../shared/ui/Icon3D';
 import { PluralInfo } from '../../shared/vocab/PluralInfo';
 import { Volume2, RotateCw, Check, X, Sparkles, ArrowLeft, BookOpen, Quote, Edit3 } from 'lucide-react';
+import { isDialogOpen } from '../../shared/ui/Dialog';
 import { useI18n } from '../../i18n/I18nProvider';
 import { De, Auto } from '../../shared/ui/Text';
 
@@ -235,6 +236,7 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
   // Keyboard shortcuts (Space: flip, 1: wrong, 2: correct; D/E/S guess der/die/das; in noun mode 1/2/3 guess before flipping)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (isDialogOpen()) return; // a dialog is on top: its keys are its own
       if (isComplete || !currentCard) return;
       if (editingContent !== null) return; // Don't trigger shortcuts while editing
       const target = e.target as HTMLElement | null;

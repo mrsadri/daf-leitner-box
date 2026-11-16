@@ -5,7 +5,7 @@
  *
  * Demo mode (src/shared/lib/demo.ts) skips sign-in and Supabase entirely.
  */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase, isSupabaseConfigured } from '../shared/lib/supabase';
 import { isDemoMode, DEMO_USER } from '../shared/lib/demo';
@@ -14,7 +14,14 @@ import { useI18n } from '../i18n/I18nProvider';
 import { FullScreenLoader } from '../shared/ui/FullScreenLoader';
 import { LeitnerApp } from './LeitnerApp';
 
+// Design-system gallery (?gallery=1): development and demo builds only. The condition is written out here so the
+// production build drops the import entirely.
+const Gallery = (import.meta.env.DEV || import.meta.env.MODE === 'demo') && new URLSearchParams(window.location.search).get('gallery') === '1'
+  ? lazy(() => import('../shared/ui/Gallery'))
+  : null;
+
 export default function App() {
+  if (Gallery) return <Suspense fallback={null}><Gallery /></Suspense>;
   if (isDemoMode) return <LeitnerApp user={DEMO_USER} />;
   if (!isSupabaseConfigured) return <SetupRequired />;
   return <AuthGate />;
