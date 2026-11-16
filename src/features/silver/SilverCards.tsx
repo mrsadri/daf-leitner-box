@@ -1,6 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { Lock, X } from 'lucide-react';
+/**
+ * Silver cards: one collectible fact card per day once the day's correct answers pass SILVER_THRESHOLD (silverLogic.ts). The dashboard widget, the
+ * "earned" dialog and the collection. Counting lives in silver.ts / silverLogic.ts.
+ */
+import React, { useEffect, useState } from 'react';
+import { Lock } from 'lucide-react';
+import { Dialog, Button } from '../../shared/ui';
 import { SILVER_FACTS, SILVER_MAX } from './silverFacts';
 import { SILVER_THRESHOLD, collectionSlots } from './silverLogic';
 import { getSilver, onSilverChange } from './silver';
@@ -28,65 +32,21 @@ export const SilverCardFace: React.FC<{ index: number; large?: boolean }> = ({ i
   );
 };
 
-/** Shared modal frame (Esc, click outside, focus kept inside, review shortcuts blocked behind it). */
-const Modal: React.FC<{ labelledBy: string; onClose: () => void; children: React.ReactNode; wide?: boolean }> = ({ labelledBy, onClose, children, wide }) => {
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    ref.current?.querySelector<HTMLElement>('[data-autofocus]')?.focus();
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        onClose();
-      } else if (e.key === 'Tab' && ref.current) {
-        const focusable = ref.current.querySelectorAll<HTMLElement>('button');
-        const first = focusable[0], last = focusable[focusable.length - 1];
-        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last?.focus(); }
-        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first?.focus(); }
-      }
-      e.stopPropagation();
-    };
-    window.addEventListener('keydown', onKey, true);
-    return () => window.removeEventListener('keydown', onKey, true);
-  }, [onClose]);
-  return createPortal(
-    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center sm:p-4 bg-black/50 backdrop-blur-xs" onClick={onClose}>
-      <div
-        ref={ref}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={labelledBy}
-        onClick={e => e.stopPropagation()}
-        className={`bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-t-3xl sm:rounded-3xl w-full ${wide ? 'max-w-3xl' : 'max-w-md'} max-h-[90vh] flex flex-col shadow-2xl pb-[env(safe-area-inset-bottom)]`}
-      >
-        {children}
-      </div>
-    </div>,
-    document.body
-  );
-};
-
 /** Shown the moment a silver card is earned. */
 export const SilverCardEarned: React.FC<{ index: number; onClose: () => void }> = ({ index, onClose }) => {
   const { t } = useI18n();
   return (
-    <Modal labelledBy="silver-earned-title" onClose={onClose}>
-      <div className="p-5 sm:p-6 space-y-4 overflow-y-auto" data-testid="silver-earned">
-        <div className="text-center space-y-1">
-          <Icon3D name="silver-medal" size={72} className="mx-auto" />
-          <h3 id="silver-earned-title" className="text-lg font-bold text-slate-900 dark:text-white">{t.silver.earnedTitle}</h3>
-          <p className="text-xs text-slate-600 dark:text-slate-400">{t.silver.earnedBody}</p>
-        </div>
-        <SilverCardFace index={index} large />
-        {index >= SILVER_MAX && <p className="text-sm font-bold text-center text-emerald-700 dark:text-emerald-300">{t.silver.complete}</p>}
-        <button
-          data-autofocus
-          onClick={onClose}
-          className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold"
-        >
-          {t.silver.continue}
-        </button>
-      </div>
-    </Modal>
+    <Dialog
+      onClose={onClose}
+      size="md"
+      testId="silver-earned"
+      title={<><Icon3D name="silver-medal" size={40} className="-my-1" />{t.silver.earnedTitle}</>}
+      description={t.silver.earnedBody}
+      footer={<Button block data-autofocus onClick={onClose}>{t.silver.continue}</Button>}
+    >
+      <SilverCardFace index={index} large />
+      {index >= SILVER_MAX && <p className="text-sm font-bold text-center text-emerald-700 dark:text-emerald-300">{t.silver.complete}</p>}
+    </Dialog>
   );
 };
 
@@ -99,17 +59,14 @@ export const SilverCollection: React.FC<{ total: number; onClose: () => void }> 
   const { t, num } = useI18n();
   const { earned, locked } = collectionSlots(total, SILVER_MAX);
   return (
-    <Modal labelledBy="silver-collection-title" onClose={onClose} wide>
-      <div className="shrink-0 p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-start justify-between gap-3">
-        <div>
-          <h3 id="silver-collection-title" className="text-base font-bold text-slate-900 dark:text-white">{t.silver.collectionTitle}</h3>
-          <p className="text-xs text-slate-600 dark:text-slate-400">{t.silver.count(earned.length, SILVER_MAX)} · {t.silver.howTo}</p>
-        </div>
-        <button data-autofocus onClick={onClose} aria-label={t.common.close} className="w-8 h-8 shrink-0 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-500">
-          <X className="w-4 h-4" />
-        </button>
-      </div>
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 sm:p-5 space-y-5" data-testid="silver-collection">
+    <Dialog
+      onClose={onClose}
+      size="lg"
+      title={t.silver.collectionTitle}
+      description={<>{t.silver.count(earned.length, SILVER_MAX)} · {t.silver.howTo}</>}
+    >
+      {/* The dialog body is the scroll container: a plain block, so the grid below keeps its natural row heights */}
+      <div className="space-y-5" data-testid="silver-collection">
         {earned.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" data-testid="silver-earned-list">
             {earned.map(i => <SilverCardFace key={i} index={i} />)}
@@ -136,7 +93,7 @@ export const SilverCollection: React.FC<{ total: number; onClose: () => void }> 
           </section>
         )}
       </div>
-    </Modal>
+    </Dialog>
   );
 };
 

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ShieldCheck, RefreshCw, AlertTriangle, Search, PauseCircle, PlayCircle, Trash2, Loader2, X } from 'lucide-react';
+import { ShieldCheck, RefreshCw, AlertTriangle, Search, PauseCircle, PlayCircle, Trash2, Loader2 } from 'lucide-react';
+import { Dialog, Button, fieldClass } from '../../shared/ui';
 import { adminListUsers, adminSetSuspended, adminDeleteUser, AdminUserRow } from '../../core/cloudSync';
 import { UserProfile } from '../../core/types';
 import { useI18n } from '../../i18n/I18nProvider';
@@ -45,45 +46,32 @@ const DeleteDialog: React.FC<{
   const [typed, setTyped] = useState('');
   const expected = row.email || row.display_name;
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4" role="dialog" aria-modal="true">
-      <div className="max-w-md w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 space-y-4">
-        <div className="flex items-start justify-between gap-3">
-          <h2 className="text-base font-bold text-red-700 dark:text-red-400 flex items-center gap-2">
-            <Trash2 className="w-5 h-5 shrink-0" />
-            {t.admin.deleteTitle}
-          </h2>
-          <button onClick={onCancel} disabled={busy} aria-label={t.common.close} className="text-slate-500 hover:text-slate-800 dark:hover:text-slate-200">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-        <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
-          {t.admin.deleteBody(row.display_name)}
-        </p>
-        <label className="block space-y-1.5">
-          <span className="text-xs text-slate-600 dark:text-slate-400">{t.admin.typeToConfirm} <Ltr className="font-mono inline-block">{expected}</Ltr></span>
-          <input
-            value={typed}
-            onChange={e => setTyped(e.target.value)}
-            dir="ltr"
-            autoFocus
-            className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500"
-          />
-        </label>
-        <div className="flex gap-2 justify-end">
-          <button onClick={onCancel} disabled={busy} className="px-4 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200">
-            {t.common.cancel}
-          </button>
-          <button
-            onClick={onConfirm}
-            disabled={busy || typed.trim().toLowerCase() !== expected.toLowerCase()}
-            className="px-4 py-2 rounded-xl text-xs font-semibold bg-red-600 hover:bg-red-700 text-white disabled:opacity-40 flex items-center gap-2"
-          >
-            {busy && <Loader2 className="w-4 h-4 animate-spin" />}
-            {t.admin.deleteForever}
-          </button>
-        </div>
-      </div>
-    </div>
+    <Dialog
+      onClose={onCancel}
+      dismissable={!busy}
+      size="md"
+      placement="center"
+      testId="admin-delete"
+      title={<span className="flex items-center gap-2 text-red-700 dark:text-red-400"><Trash2 className="w-5 h-5 shrink-0" />{t.admin.deleteTitle}</span>}
+      description={t.admin.deleteBody(row.display_name)}
+      footer={<>
+        <Button variant="secondary" onClick={onCancel} disabled={busy}>{t.common.cancel}</Button>
+        <Button variant="danger" onClick={onConfirm} loading={busy} disabled={typed.trim().toLowerCase() !== expected.toLowerCase()}>
+          {t.admin.deleteForever}
+        </Button>
+      </>}
+    >
+      <label className="block space-y-1.5">
+        <span className="text-xs text-slate-600 dark:text-slate-400">{t.admin.typeToConfirm} <Ltr className="font-mono inline-block">{expected}</Ltr></span>
+        <input
+          value={typed}
+          onChange={e => setTyped(e.target.value)}
+          dir="ltr"
+          data-autofocus
+          className={fieldClass}
+        />
+      </label>
+    </Dialog>
   );
 };
 

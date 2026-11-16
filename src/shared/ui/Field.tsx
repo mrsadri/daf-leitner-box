@@ -12,7 +12,11 @@ export const fieldClass = cx(
   'aria-[invalid=true]:border-red-500',
 );
 
-interface Wrap { label: React.ReactNode; hint?: React.ReactNode; error?: React.ReactNode; className?: string }
+interface Wrap {
+  label: React.ReactNode; hint?: React.ReactNode; error?: React.ReactNode;
+  /** Classes for the wrapper (layout); inputClassName goes on the control itself */
+  className?: string; inputClassName?: string;
+}
 
 function useField({ hint, error }: Pick<Wrap, 'hint' | 'error'>) {
   const id = useId();
@@ -26,34 +30,34 @@ const Note: React.FC<{ id?: string; hint?: React.ReactNode; error?: React.ReactN
 const Label: React.FC<{ htmlFor: string; children: React.ReactNode }> = ({ htmlFor, children }) =>
   <label htmlFor={htmlFor} className="block text-xs font-semibold text-slate-700 dark:text-slate-300">{children}</label>;
 
-export const TextField: React.FC<Wrap & React.InputHTMLAttributes<HTMLInputElement>> = ({ label, hint, error, className, ...rest }) => {
+export const TextField: React.FC<Wrap & React.InputHTMLAttributes<HTMLInputElement>> = ({ label, hint, error, className, inputClassName, ...rest }) => {
   const f = useField({ hint, error });
   return (
     <div className={cx('space-y-1.5', className)}>
       <Label htmlFor={f.id}>{label}</Label>
-      <input id={f.id} dir="auto" className={fieldClass} {...f.aria} {...rest} />
+      <input id={f.id} dir="auto" className={cx(fieldClass, inputClassName)} {...f.aria} {...rest} />
       <Note id={f.noteId} hint={hint} error={error} />
     </div>
   );
 };
 
-export const TextArea: React.FC<Wrap & React.TextareaHTMLAttributes<HTMLTextAreaElement>> = ({ label, hint, error, className, rows = 3, ...rest }) => {
+export const TextArea: React.FC<Wrap & React.TextareaHTMLAttributes<HTMLTextAreaElement>> = ({ label, hint, error, className, inputClassName, rows = 3, ...rest }) => {
   const f = useField({ hint, error });
   return (
     <div className={cx('space-y-1.5', className)}>
       <Label htmlFor={f.id}>{label}</Label>
-      <textarea id={f.id} dir="auto" rows={rows} className={cx(fieldClass, 'leading-relaxed')} {...f.aria} {...rest} />
+      <textarea id={f.id} dir="auto" rows={rows} className={cx(fieldClass, 'leading-relaxed', inputClassName)} {...f.aria} {...rest} />
       <Note id={f.noteId} hint={hint} error={error} />
     </div>
   );
 };
 
-export const Select: React.FC<Wrap & React.SelectHTMLAttributes<HTMLSelectElement>> = ({ label, hint, error, className, children, ...rest }) => {
+export const Select: React.FC<Wrap & React.SelectHTMLAttributes<HTMLSelectElement>> = ({ label, hint, error, className, inputClassName, children, ...rest }) => {
   const f = useField({ hint, error });
   return (
     <div className={cx('space-y-1.5', className)}>
       <Label htmlFor={f.id}>{label}</Label>
-      <select id={f.id} className={fieldClass} {...f.aria} {...rest}>{children}</select>
+      <select id={f.id} className={cx(fieldClass, inputClassName)} {...f.aria} {...rest}>{children}</select>
       <Note id={f.noteId} hint={hint} error={error} />
     </div>
   );

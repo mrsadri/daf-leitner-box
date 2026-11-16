@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { LeitnerCard, BOX_CONFIGS } from '../../core/types';
 import { isCardDue, getTodayString, isNounCard } from '../../core/leitnerEngine';
 import { vocabText } from '../../shared/vocab/vocabText';
-import { Play, CheckCircle2, HelpCircle, BookOpen, Target, X } from 'lucide-react';
+import { Play, CheckCircle2, HelpCircle, BookOpen, Target } from 'lucide-react';
+import { Dialog, Button } from '../../shared/ui';
 import { useI18n } from '../../i18n/I18nProvider';
 import { De, Auto } from '../../shared/ui/Text';
 import { InstallBanner } from '../settings/AppInstall';
@@ -254,44 +255,24 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
 
       {/* Cards in a box */}
       {selectedBoxModal !== null && (
-        <div
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-black/50 backdrop-blur-xs"
-          onClick={() => setSelectedBoxModal(null)}
+        <Dialog
+          onClose={() => setSelectedBoxModal(null)}
+          size="lg"
+          testId="box-cards"
+          title={selectedBoxModal === 6 ? t.boxes.mastered : t.dashboard.modalTitleBox(t.boxes.name(selectedBoxModal))}
+          description={selectedBoxModal === 6
+            ? t.dashboard.modalSubtitleArchive
+            : t.dashboard.modalSubtitleBox(BOX_CONFIGS[selectedBoxModal]?.intervalDays ?? 0)}
+          footer={<Button variant="secondary" onClick={() => setSelectedBoxModal(null)}>{t.common.close}</Button>}
         >
-          <div
-            role="dialog"
-            aria-modal="true"
-            onClick={e => e.stopPropagation()}
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-t-2xl sm:rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-xl animate-in fade-in zoom-in-95 duration-150"
-          >
-            <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
-              <div className="min-w-0">
-                <h3 className="font-bold text-base text-slate-900 dark:text-white">
-                  {selectedBoxModal === 6 ? t.boxes.mastered : t.dashboard.modalTitleBox(t.boxes.name(selectedBoxModal))}
-                </h3>
-                <span className="text-xs text-slate-600 dark:text-slate-400">
-                  {selectedBoxModal === 6
-                    ? t.dashboard.modalSubtitleArchive
-                    : t.dashboard.modalSubtitleBox(BOX_CONFIGS[selectedBoxModal]?.intervalDays ?? 0)}
-                </span>
-              </div>
-              <button
-                onClick={() => setSelectedBoxModal(null)}
-                aria-label={t.common.close}
-                className="w-8 h-8 shrink-0 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center text-slate-500"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="p-4 sm:p-5 overflow-y-auto space-y-3 flex-1">
+          <div className="space-y-3">
               {modalCards.length === 0 ? (
                 <div className="py-12 text-center text-slate-600 dark:text-slate-400 text-sm">{t.dashboard.modalEmpty}</div>
               ) : (
                 modalCards.map((card) => (
                   <div
                     key={card.id}
-                    className="p-3.5 bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4"
+                    className="p-3.5 bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 rounded-control flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4"
                   >
                     <div className="space-y-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
@@ -320,18 +301,8 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
                   </div>
                 ))
               )}
-            </div>
-
-            <div className="p-4 border-t border-slate-100 dark:border-slate-800 flex justify-end">
-              <button
-                onClick={() => setSelectedBoxModal(null)}
-                className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-medium"
-              >
-                {t.common.close}
-              </button>
-            </div>
           </div>
-        </div>
+        </Dialog>
       )}
 
     </div>

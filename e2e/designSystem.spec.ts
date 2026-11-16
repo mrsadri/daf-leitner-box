@@ -34,3 +34,16 @@ for (const placement of ['dialog', 'sheet'] as const) {
     expect(await page.evaluate(() => document.body.style.overflow)).toBe('');
   });
 }
+
+test('app dialog: new card opens from the header and closes with Esc', async ({ page }) => {
+  const { openApp } = await import('./helpers');
+  const { errors } = await openApp(page, 'fa');
+  const opener = page.locator('header button[aria-label]').first();
+  await opener.click();
+  const dialog = page.getByTestId('new-card-dialog').getByRole('dialog');
+  await expect(dialog).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(dialog).toHaveCount(0);
+  await expect(opener).toBeFocused();
+  expect(errors).toEqual([]);
+});
