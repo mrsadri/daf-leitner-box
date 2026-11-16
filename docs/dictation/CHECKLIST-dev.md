@@ -76,20 +76,20 @@ harness (`scripts/test-sql.sh`) or a separate dev Supabase project. After any `v
 
 ## Phase 5: UI (9 days)
 
-- [ ] P5-T1 `dictation` tab (`ActiveTab`, Navbar, `App.tsx`), `?go=dictation`, error boundary, paused state, Beta badge, dashboard card
-- [ ] P5-T1 `fa.ts` and `en.ts` keys (labels, hints, 8 or more praise messages each, category names, error states); `npm run lint` passes
-- [ ] P5-T2 Content loader (`cache: 'no-cache'`, `contentVersion` check); story list; story detail with 6 tiles; sequence intro with illustration and placeholder
-- [ ] P5-T3 Playback controller: one unlocked element, token guard, 150 ms debounce, watchdog, prefetch next two sentences into the Cache API
-- [ ] P5-T3 `storySpeaker` for Mode C (`speakAs`, segments, 50 ms gap after `cancel()`), `speechService.speak` unchanged
-- [ ] P5-T3 Fallback chain wiring, source note, circuit breaker, `dictation_events` reporting once per type per sentence per session
-- [ ] P5-T4 `SentenceStage`: textarea attributes (`autocorrect`, `autocapitalize`, `spellcheck` off), umlaut bar (focus kept, insert at cursor, shift toggle), trigger wiring, Check, Enter, Skip, Next rules
-- [ ] P5-T4 Drafts per sentence and hash; history list with replay; sequence summary and story end screens
-- [ ] P5-T5 `FeedbackText` marks per category (shapes and lines, not color only), summary line, praise (no repeat), polite live region
-- [ ] P5-T6 `WordSheet`: base form and card state, Add to my box, Move back one compartment, Undo toast, custom card via `NewCardModal` prefill
-- [ ] P5-T6 Verify in code review: no code path changes a card on typing, Next or Skip
-- [ ] P5-T7 Settings section: mode radios with Test button, speed, grammar default; `dictationIntroSeen` dialog
-- [ ] P5-T7 Responsive layouts (desktop two columns, tablet, phone with sticky umlaut bar and `visualViewport` handling); RTL pass for edge cases R1 to R10
-- [ ] Lazy-load the dictation chunk (`React.lazy`) so the main bundle does not grow
+- [x] P5-T1 `dictation` tab (`ActiveTab`, Navbar, `App.tsx`), `?go=dictation`, error boundary, paused state, Beta badge, dashboard card
+- [x] P5-T1 `fa.ts` and `en.ts` keys (labels, hints, 8 or more praise messages each, category names, error states); `npm run lint` passes
+- [x] P5-T2 Content loader (`cache: 'no-cache'`, `contentVersion` check); story list; story detail with 6 tiles; sequence intro with illustration and placeholder — `no-cache` revalidation yes; no separate contentVersion check (a changed file simply loads fresh)
+- [x] P5-T3 Playback controller: one unlocked element, token guard, 150 ms debounce, watchdog, prefetch next two sentences into the Cache API
+- [x] P5-T3 `storySpeaker` for Mode C (`speakAs`, segments, 50 ms gap after `cancel()`), `speechService.speak` unchanged — lives in `browserSources.ts` (speaks segment by segment, 50 ms after cancel); `speechService.speak` unchanged
+- [ ] P5-T3 Fallback chain wiring, source note, circuit breaker DONE; `dictation_events` reporting NOT done yet (needs the migration in the dev project)
+- [x] P5-T4 `SentenceStage`: textarea attributes (`autocorrect`, `autocapitalize`, `spellcheck` off), umlaut bar (focus kept, insert at cursor, shift toggle), trigger wiring, Check, Enter, Skip, Next rules
+- [x] P5-T4 Drafts per sentence and hash; history list with replay; sequence summary and story end screens
+- [x] P5-T5 `FeedbackText` marks per category (shapes and lines, not color only), summary line, praise (no repeat), polite live region
+- [x] P5-T6 `WordSheet`: base form and card state, Add to my box, Move back one compartment, Undo toast, custom card via `NewCardModal` prefill — the "custom card via NewCardModal prefill" part is simplified: the sheet adds the card directly with `addCard`
+- [x] P5-T6 Verify in code review: no code path changes a card on typing, Next or Skip — only `WordSheet.tsx` calls the engine (`grep leitnerEngine src/components/dictation`)
+- [ ] P5-T7 Settings section: mode radios with Test button, speed, grammar default; `dictationIntroSeen` dialog — Mode radios (B or C) and credit are in; the Test button exists for C; speed reuses the global speech-rate setting; grammar default waits for Phase 6
+- [ ] P5-T7 Responsive layouts (desktop two columns, tablet, phone with sticky umlaut bar and `visualViewport` handling); RTL pass for edge cases R1 to R10 — phone: sticky umlaut bar and `visualViewport` done; Persian and English checked in Chromium (phone and desktop); there is no second column yet (the grammar drawer is Phase 6); the full R1 to R10 pass is for Phase 7
+- [x] Lazy-load the dictation chunk (`React.lazy`) so the main bundle does not grow — chunk 41 kB (12 kB gzip); the main bundle still grew from 346.7 to 371.3 kB (gzip 112.0 to 121.0) because the fa/en strings are in it
 
 ## Phase 6: grammar (3 days plus owner review)
 
