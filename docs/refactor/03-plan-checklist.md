@@ -8,6 +8,27 @@ Date: 2026-11-16. Based on [01-intent.md](01-intent.md) and [02-code-review.md](
 
 Legend: **[DB]** a SQL file for the owner to run in Claude Desktop; nothing is run from here. **[OWNER]** needs the owner. **[DEC]** a decision still open (§10).
 
+
+## Execution status (2026-11-16)
+Commits on `refactor/stories-and-cleanup`, in this order. The order changed from the plan on purpose: code to be deleted was removed first, so it was never moved or restyled.
+
+| Section | Status | Notes |
+|---|---|---|
+| 0 Preparation | ✅ | #27 cherry-picked. Baseline: 64 screenshots, bundle 373.6 kB main + 50.7 kB dictation chunk. |
+| 1 Tooling | ✅ with deviations | `strict` on (0 errors). **oxlint instead of ESLint**: typescript-eslint cannot run on TypeScript 7. Playwright in `e2e/` and in CI. A `--mode demo` build for tests and previews. Fonts served from the app (screenshots identical). |
+| 5.17 Dictation removed | ✅ | Code, audio (21.6 MB), Python pipeline. `moveBack` kept. Old localStorage keys removed at start-up. |
+| 4 Insights | ✅ | Sharing removed. MyCards in the word bank (lesson menu «کارت‌های من»). `shared_…` filtered in the cache and the queue. |
+| 3.1 / 3.2 Folders, App split | ✅ | Two logic files renamed (case clash with a component). `App.tsx` 405 lines → 6 files, the largest 215. |
+| 2 Design system | ✅ mostly | Tokens, components and gallery. All 9 dialogs on `Dialog`. **2.5 partly**: new and migrated screens use `Button` and the fields; older screens still carry their own button classes (follow-up). **2.6**: 12px floor (trail labels 10px on phones, documented). Stray colours are kept where they carry meaning. |
+| 3.3 VocabCardFace | ⏸ deferred | Not done in this PR. The review screen is used by every learner daily; extracting the shared card face deserves its own PR with a screenshot-by-screenshot comparison. |
+| 3.4 Header comments | ✅ | Every file in `src/`. |
+| 5 Stories | ✅ | 60 stories, 180 questions, reader, word sheet, gender underlines, progress, kill switch, e2e in fa/en. Books 3 and 4 also have pictures (commit 8c7f38f). |
+| 6 Database | ✅ (file only) | Clean-up migration, SQL test, owner guide. Not run. |
+| 7 Files | ✅ | Docs deleted. Local work folder out of Git. SVG sources moved to `design/`. |
+| 8 Docs | ✅ | CLAUDE.md, AGENTS.md, architecture.md, README, CONTRIBUTING. |
+| 9 Verification | ✅ | lint, 114 unit tests, 28 Python tests, content check, SQL harness and 20 Playwright tests pass. Main bundle 353.7 kB (−20 kB), Stories chunk 22.7 kB. Upload estimate 12.7 MB, no textbook files. No secrets in the diff. |
+| 10 Release | ⏳ | Waiting for the owner. |
+
 ---
 
 ## 0. Preparation
