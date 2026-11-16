@@ -1,0 +1,32 @@
+{
+ "S10-Q1": [
+  {"q": "Was zeigt das Balkendiagramm?", "options": ["Wie viele Chips die Firma verkauft", "Warum die Fachkräfte nach Deutschland gekommen sind", "Wie viele Leute zurückkehren möchten", "Das Wetter in Dresden"], "answer": 1},
+  {"q": "Was ist laut Nilufar die größte Herausforderung?", "options": ["Das Essen", "Das Wetter", "Die Bürokratie mit vielen Formularen", "Die Arbeit im Reinraum"], "answer": 2},
+  {"q": "Was schreibt Bahram?", "options": ["Er hat ein Visum und fliegt am 2. Mai nach München.", "Er kann nicht kommen.", "Er hat Hermine einen Brief geschickt.", "Er zieht nach Dresden."], "answer": 0}
+ ],
+ "S10-Q2": [
+  {"q": "Was ist das Goldene Dachl?", "options": ["Ein Hotel in Innsbruck", "Eine Seilbahn", "Ein Dach mit 2.657 vergoldeten Schindeln aus Kupfer", "Ein Café neben der Uni"], "answer": 2},
+  {"q": "Was sieht man von der Nordkette?", "options": ["Nur Wolken", "Graz und den Uhrturm", "Den Bodensee", "Die ganze Stadt bis zu den Gletschern und die Sprungschanze"], "answer": 3},
+  {"q": "Wovor hat Bahram Angst?", "options": ["Dass Hermine ihn nicht sehen will oder wütend ist", "Vor dem Fliegen", "Vor den Bergen", "Dass er kein Deutsch mehr kann"], "answer": 0}
+ ],
+ "S10-Q3": [
+  {"q": "Wie begrüßt Hermine Bahram?", "options": ["Sie sagt nichts und geht weg.", "Auf Persisch: „Salam, Bahram. Chetori?“", "Mit „Grüß Gott“", "Sie ist wütend."], "answer": 1},
+  {"q": "Worüber haben Hermine und Bahram 1976 gestritten?", "options": ["Über Musik", "Über das Essen", "Über Politik und die Demokratie", "Über den Birnbaum"], "answer": 2},
+  {"q": "Was macht Jonas am Ende?", "options": ["Er bringt Kuchen.", "Er spielt Gitarre.", "Er ruft Lucía an.", "Er macht ein Foto von Hermine und Bahram vor dem Uhrturm."], "answer": 3}
+ ],
+ "S10-Q4": [
+  {"q": "Was ist der Bundestag?", "options": ["Das Parlament von Deutschland", "Ein Feiertag", "Das Staatsoberhaupt", "Ein Gericht"], "answer": 0},
+  {"q": "Wofür ist die Zweitstimme?", "options": ["Für den Bundespräsidenten", "Für eine Partei; sie bestimmt die Sitzverteilung.", "Für einen Kandidaten im Wahlkreis", "Für das Bundesland"], "answer": 1},
+  {"q": "Warum durfte Nilufar nicht wählen?", "options": ["Sie war krank.", "Sie hat den Wahlzettel verloren.", "Sie ist keine Deutsche; das Wahlrecht haben nur Deutsche.", "Sie war in Graz."], "answer": 2}
+ ],
+ "S10-Q5": [
+  {"q": "Warum sind Deutsch und Persisch „Verwandte“?", "options": ["Beide sind indoeuropäische Sprachen.", "Persisch kommt aus dem Deutschen.", "Beide haben die gleiche Schrift.", "Viele Iraner wohnen in Deutschland."], "answer": 0},
+  {"q": "Welches Wort kommt aus dem Persischen?", "options": ["Fenster", "Mauer", "Jänner", "Basar"], "answer": 3},
+  {"q": "Welche Nachricht hat Nilufar?", "options": ["Sie heiratet Jonas.", "Sie hat eine Stelle an der Universität Graz und kommt im Jänner zurück.", "Sie zieht nach Shiraz.", "Sie bleibt in Dresden."], "answer": 1}
+ ],
+ "S10-Q6": [
+  {"q": "Was ist konkrete Poesie?", "options": ["Ein Gedicht nur mit Lauten", "Ein Lied für Kinder", "Ein Gedicht als Bild: Die Wörter bilden eine Form.", "Ein Text ohne Gefühle"], "answer": 2},
+  {"q": "Wie hat Kemal Deutsch gelernt?", "options": ["Jeden Tag zehn Vokabeln im Vokabelheft", "Nur mit Filmen", "In der Schule in Izmir", "Er hat nie Deutsch gelernt."], "answer": 0},
+  {"q": "Was haben Hermine und Bahram beschlossen?", "options": ["Sie heiraten in Graz.", "Bahram zieht nach Graz.", "Hermine zieht nach Shiraz.", "Im Frühling fahren sie zusammen nach Shiraz, im Herbst kommt Bahram wieder nach Graz."], "answer": 3}
+ ]
+}

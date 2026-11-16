@@ -1,0 +1,32 @@
+{
+ "S06-Q1": [
+  {"q": "Warum ist Nilufar enttäuscht?", "options": ["Sie hat die Prüfung nicht bestanden.", "Ihr Vertrag endet im März und wird nicht verlängert.", "Jonas zieht nach Wien.", "Sie bekommt keine Wohnung."], "answer": 1},
+  {"q": "Was empfiehlt die Berufsberaterin?", "options": ["Eine Banklehre", "Ein Studium in Chemie", "Ein Trainee-Programm", "Eine Stelle als Übersetzerin"], "answer": 2},
+  {"q": "Was braucht Jonas für einen Kredit?", "options": ["Einen Plan für sein Café", "Ein neues Auto", "Eine Wohnung", "Aktien"], "answer": 0}
+ ],
+ "S06-Q2": [
+  {"q": "Was ist eine duale Ausbildung?", "options": ["Man studiert an zwei Universitäten.", "Man lernt zwei Sprachen.", "Man arbeitet in zwei Firmen.", "Man lernt im Betrieb und in der Berufsschule."], "answer": 3},
+  {"q": "Womit beginnt Nilufars Präsentation nach der Begrüßung?", "options": ["Mit einem Überblick über die Gliederung", "Mit ihren Plänen", "Mit einem Witz", "Mit der Zusammenfassung"], "answer": 0},
+  {"q": "Was möchte Nilufar von Frau Kogler wissen?", "options": ["Wie viel sie verdient", "Ob sie ihre Zeugnisse übersetzen muss", "Wo die Firmen sind", "Wann der Kurs beginnt"], "answer": 1}
+ ],
+ "S06-Q3": [
+  {"q": "Was bietet die Schokoladenfabrik für das Praktikum?", "options": ["Ein Zimmer in der Fabrik", "Nur Schokolade", "900 Euro im Monat, Rabatt auf Produkte, Gleitzeit und eine Bescheinigung", "Eine feste Stelle"], "answer": 2},
+  {"q": "Was kommt im Lebenslauf zuerst?", "options": ["Die Hobbys", "Sprachen und EDV-Kenntnisse", "Praktika und Arbeit", "Die persönlichen Daten"], "answer": 3},
+  {"q": "Warum möchte Lucía bei der Firma Krenn arbeiten?", "options": ["Weil die Schokolade gut ist und weil sie Kinder liebt", "Weil die Firma in Graz ist", "Weil sie Chemie studiert", "Weil Nilufar dort arbeitet"], "answer": 0}
+ ],
+ "S06-Q4": [
+  {"q": "Wann und von wem wurde die Firma gegründet?", "options": ["2010 von Maria Krenn", "1952 von Anna und Josef Krenn", "1981 von Herrn Pichler", "1900 von einem Konditor aus Wien"], "answer": 1},
+  {"q": "Was passiert im Wareneingang?", "options": ["Die Schokolade wird verpackt.", "Die Kunden kaufen Schokolade.", "Die Rohstoffe kommen an und werden kontrolliert.", "Die Mitarbeiter essen."], "answer": 2},
+  {"q": "Was ist Lucías Projekt?", "options": ["Die Buchhaltung", "Die Nachtschicht", "Eine neue Maschine", "Das Museum für Kinder, mit Führungen auf Spanisch und Englisch"], "answer": 3}
+ ],
+ "S06-Q5": [
+  {"q": "Wohin möchte Jonas im Urlaub?", "options": ["In die Alpen, zum Wandern und Klettern", "Ans Meer", "Auf eine Kreuzfahrt", "Nach Spanien"], "answer": 0},
+  {"q": "Warum ist der Bodensee perfekt für Nilufar?", "options": ["Er ist billig.", "Sie kann dort segeln.", "Ihr Vorstellungsgespräch in Schaan ist nur 40 Kilometer entfernt.", "Ihre Familie wohnt dort."], "answer": 2},
+  {"q": "Wo wohnen die drei Freunde im Urlaub?", "options": ["Nur in einer Ferienwohnung in Bregenz", "Eine Woche auf dem Campingplatz, dann zwei Nächte im Landgasthof", "In der Pension Seeblick in Lindau", "Im Wohnwagen vom Onkel"], "answer": 1}
+ ],
+ "S06-Q6": [
+  {"q": "Was passiert, als Jonas das Zelt aufbaut?", "options": ["Es geht ganz schnell.", "Das Zelt ist kaputt.", "Lucía baut es allein auf.", "Das Zelt springt immer wieder auf; nach einer Stunde steht es schief."], "answer": 3},
+  {"q": "Was sehen die Freunde in Unteruhldingen?", "options": ["Ein Schloss mit Blumen", "Die Pfahlbauten: Häuser aus der Steinzeit im Wasser", "Das Zeppelin-Museum", "Einen Regenwald"], "answer": 1},
+  {"q": "Welche Nachricht bekommt Nilufar am Freitag?", "options": ["Sie hat die Stelle als Trainee bei der Alpentec.", "Ihr Opa kommt nach Graz.", "Der Gasthof ist voll.", "Die Alpentec sagt ab."], "answer": 0}
+ ]
+}

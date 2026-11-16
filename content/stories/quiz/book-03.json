@@ -1,0 +1,32 @@
+{
+ "S03-Q1": [
+  {"q": "Was kostet eine Tageskarte in Bern?", "options": ["13 Euro für zwei Personen", "13 Franken für eine Person", "30 Franken für eine Person", "Sie ist gratis."], "answer": 1},
+  {"q": "Wie heißt die Straßenbahn in der Schweiz?", "options": ["Die Tram", "Das Velo", "Die Bahn", "Das Tram"], "answer": 3},
+  {"q": "Was hat der Zytglogge-Turm?", "options": ["Eine astronomische Uhr und ein Glockenspiel", "Eine Kuppel mit dem Parlament", "Einen Bärenpark", "Ein Einkaufszentrum"], "answer": 0}
+ ],
+ "S03-Q2": [
+  {"q": "Wer sind Ueli und Regula Brunner?", "options": ["Die Eltern von Jonas", "Ein Ehepaar aus Bern; sie organisieren ein Festival.", "Kellner in einem Restaurant", "Musiker aus Graz"], "answer": 1},
+  {"q": "Was bringt man in der Schweiz zu einer Einladung mit?", "options": ["Nichts", "Würstchen für den Grill", "Blumen, Wein oder Schokolade", "Ein Buch"], "answer": 2},
+  {"q": "Was ist Nilufars Fehler?", "options": ["Sie kommt zu spät.", "Sie isst keine Wurst.", "Sie vergisst die Blumen.", "Der Wein ist von Ueli und Regula selbst."], "answer": 3}
+ ],
+ "S03-Q3": [
+  {"q": "Was möchte Nilufar am Sonntag sehen?", "options": ["Den Bärenpark", "Das Zentrum Paul Klee", "Das Bundeshaus", "Den Zytglogge-Turm"], "answer": 0},
+  {"q": "Wo hat Paul Klee studiert?", "options": ["In Bern", "In Weimar", "In München", "In Düsseldorf"], "answer": 2},
+  {"q": "Was zeigt Nilufars Postkarte?", "options": ["Einen Bären", "Einen Turm, eine Kuppel und einen Mond", "Den Opa Bahram", "Eine Geige"], "answer": 1}
+ ],
+ "S03-Q4": [
+  {"q": "Wann ist das Gasthaus „Zur Linde“ geöffnet?", "options": ["Jeden Tag", "Nur am Wochenende", "Von Montag bis Freitag", "Von Dienstag bis Sonntag"], "answer": 3},
+  {"q": "Wie heißt eine Kartoffel in Österreich?", "options": ["Der Erdapfel", "Der Paradeiser", "Die Semmel", "Der Knödel"], "answer": 0},
+  {"q": "Was bestellt Nilufar, und warum?", "options": ["Ein Schnitzel, sie hat großen Hunger.", "Den Gemüseauflauf, denn sie isst kein Schweinefleisch.", "Lammfleisch, das ist ihr Lieblingsessen.", "Nur eine Suppe, sie ist krank."], "answer": 1}
+ ],
+ "S03-Q5": [
+  {"q": "Wer sagt zur Party ab, und warum?", "options": ["Frau Pichler, sie ist müde.", "Kemal, er muss arbeiten.", "Frau Novak, sie ist am Samstag in Leipzig.", "Mei, sie ist krank."], "answer": 2},
+  {"q": "Was kocht Lucía?", "options": ["Eine Kürbiscremesuppe", "Kuku Sabzi", "Baklava", "Eine Tortilla"], "answer": 3},
+  {"q": "Was passiert mit dem Weinglas?", "options": ["Jonas stößt es um; der Rotwein ist überall.", "Frau Pichler trinkt es aus.", "Es ist ein Geschenk für Lucía.", "Kenji nimmt es mit."], "answer": 0}
+ ],
+ "S03-Q6": [
+  {"q": "Wann lädt Familie Steiner Nilufar und Jonas ein?", "options": ["Zu Silvester, um Mitternacht", "Am Heiligabend, 24. Dezember, um sechs", "Am 5. Januar", "Zu Ostern"], "answer": 1},
+  {"q": "Wer bringt in Österreich die Weihnachtsgeschenke?", "options": ["Der Weihnachtsmann", "Die drei Könige", "Das Christkind", "Der Osterhase"], "answer": 2},
+  {"q": "Was sagt Hermine über den Mann auf dem Foto?", "options": ["„Den Mann kenne ich nicht.“", "„Das ist mein Bruder.“", "„Das Foto ist aus Shiraz.“", "„Den Mann kenne ich. Nach Neujahr erzähle ich alles.“"], "answer": 3}
+ ]
+}

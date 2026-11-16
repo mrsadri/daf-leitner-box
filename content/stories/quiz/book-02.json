@@ -1,0 +1,32 @@
+{
+ "S02-Q1": [
+  {"q": "Was ist Lucías Hobby?", "options": ["Joggen", "Tanzen", "Reiten", "Rudern"], "answer": 1},
+  {"q": "Wie viel bezahlen Erwachsene im Verein?", "options": ["60 Euro im Jahr", "45 Euro im Monat", "120 Euro im Jahr oder zehn Euro im Monat", "80 Euro im Jahr"], "answer": 2},
+  {"q": "Was ist Nilufars Problem beim Training?", "options": ["Sie trägt Straßenschuhe und hat am Dienstag Muskelkater.", "Sie hat keine Zeit.", "Der Verein ist zu teuer.", "Sie mag die Trainerin nicht."], "answer": 0}
+ ],
+ "S02-Q2": [
+  {"q": "Wie ist das Wetter am 11. Oktober?", "options": ["Sonne und zwanzig Grad", "Es regnet.", "Kalt und Schnee", "Elf Grad, keine Sonne, kein Regen"], "answer": 3},
+  {"q": "Was passiert bei Kilometer 15?", "options": ["Lucía läuft allein weiter.", "Jonas stürzt an der Straßenbahnschiene.", "Nilufar trinkt Wasser.", "Ein Profi aus Kenia gewinnt."], "answer": 1},
+  {"q": "Wer hat den Halbmarathon gewonnen?", "options": ["Ein Profi aus Kenia", "Jonas", "Eine Läuferin aus Graz", "Lucía"], "answer": 0}
+ ],
+ "S02-Q3": [
+  {"q": "Warum ist Nilufar im Bett?", "options": ["Sie ist müde vom Laufen.", "Sie hat eine Erkältung.", "Es ist Sonntag.", "Sie hat kein Zimmer."], "answer": 1},
+  {"q": "Wie ist das WG-Zimmer?", "options": ["Groß, hell und mit Balkon", "Modern, in der Altstadt, 890 Euro", "Leer und kalt, 450 Euro, im fünften Stock ohne Lift", "Klein, aber billig: 300 Euro"], "answer": 2},
+  {"q": "Wer hat ein Zimmer frei?", "options": ["Felix", "Jonas’ Mutter", "Eine Maklerin", "Frau Pichler in Lend"], "answer": 3}
+ ],
+ "S02-Q4": [
+  {"q": "Wie viel beträgt die Miete?", "options": ["300 Euro plus Strom", "450 Euro", "890 Euro plus Makler", "40 Euro"], "answer": 0},
+  {"q": "Was kauft Nilufar am Flohmarkt?", "options": ["Einen Kleiderschrank aus Holz", "Ein neues Bett", "Unter anderem einen Küchentisch, zwei Stühle, einen Sessel und eine Matratze", "Eine Lampe aus Sevilla"], "answer": 2},
+  {"q": "Was passiert in der Nacht?", "options": ["Frau Pichler ruft an.", "Die Heizung geht aus, und es ist kalt.", "Lucía bringt eine Lampe.", "Der Sessel ist kaputt."], "answer": 1}
+ ],
+ "S02-Q5": [
+  {"q": "Was kann man im Café Waschsalon machen?", "options": ["Nur waschen", "Kleidung kaufen", "Frühstücken und schlafen", "Waschen, Espresso und Tee trinken und im Internet surfen"], "answer": 3},
+  {"q": "Warum sind Jonas’ T-Shirts rosa?", "options": ["Eine rote Socke von Lucía war in der Maschine.", "Jonas hat das falsche Programm gewählt.", "Die T-Shirts waren schon rosa.", "Das Waschpulver war rot."], "answer": 0},
+  {"q": "Wie ist Nilufars Pullover jetzt?", "options": ["Rosa", "Nass und kalt", "Ganz klein", "Zu groß"], "answer": 2}
+ ],
+ "S02-Q6": [
+  {"q": "Was hat Frau Lechner organisiert?", "options": ["Ein Konzert der Murbuam", "Die Reise nach Bern: Flug, Hotel und Wegbeschreibung", "Einen Einkauf für Jonas", "Eine Party bei Steiners"], "answer": 1},
+  {"q": "Wie ist der Anzug, den Jonas nimmt?", "options": ["Dunkelblau, die Hose ist zu lang", "Schwarz, mit roter Krawatte", "Grau, und er passt", "Braun, aus Leder"], "answer": 2},
+  {"q": "Was ist Jonas’ Traum?", "options": ["Ein eigenes Café mit Musik", "Ein Halbmarathon in Wien", "Ein neuer Anzug", "Eine Reise nach Iran"], "answer": 0}
+ ]
+}

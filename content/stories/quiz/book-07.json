@@ -1,0 +1,32 @@
+{
+ "S07-Q1": [
+  {"q": "Warum fliegt Nilufar nicht direkt nach Liechtenstein?", "options": ["Der Flug ist zu teuer.", "Liechtenstein hat keinen Flughafen.", "Sie hat Angst vor dem Fliegen.", "Der Flughafen in Vaduz ist geschlossen."], "answer": 1},
+  {"q": "Was braucht Nilufar für einen langen Aufenthalt in Liechtenstein?", "options": ["Ein Visum für die Einreise", "Einen Personalausweis von Österreich", "Eine Bewilligung; sie muss sich bei der Gemeinde anmelden.", "Nichts, nur ein Ticket"], "answer": 2},
+  {"q": "Wer ist das Staatsoberhaupt von Liechtenstein?", "options": ["Der Fürst", "Ein Präsident", "Der Landtag", "Die Regierung"], "answer": 0}
+ ],
+ "S07-Q2": [
+  {"q": "Was ist mit Nilufars Koffer passiert?", "options": ["Er wurde gestohlen.", "Er war in Wien und kam einen Tag später, an der Seite beschädigt.", "Er war zu schwer.", "Er ist nie angekommen."], "answer": 1},
+  {"q": "Worum bittet Nilufar die Fluggesellschaft?", "options": ["Um einen neuen Flug", "Um einen neuen Koffer", "Um eine Entschuldigung", "Um die Kosten für die Reparatur und die Kleidung"], "answer": 3},
+  {"q": "Wie ist das Trainee-Programm aufgebaut?", "options": ["Vier Phasen in verschiedenen Abteilungen, mit einem Mentor", "Ein Jahr nur in der Produktion", "Zwei Monate Kurs, dann Prüfung", "Ein Studium an der Universität"], "answer": 0}
+ ],
+ "S07-Q3": [
+  {"q": "Wie ist der Unfall passiert?", "options": ["Jonas ist bei Rot gefahren.", "Jonas ist mit einem Bus zusammengestoßen.", "Ein Autofahrer ist abgebogen, hat nicht geblinkt und Jonas übersehen.", "Jonas ist auf der Straßenbahnschiene gestürzt."], "answer": 2},
+  {"q": "Welche Verletzungen hat Jonas?", "options": ["Ein gebrochenes Bein", "Ein gebrochenes Schlüsselbein, eine Prellung und eine Wunde am Arm", "Nur eine Wunde am Knie", "Eine gebrochene Rippe"], "answer": 1},
+  {"q": "Was sagen die Zeugen?", "options": ["Alle sagen: Jonas ist schuld.", "Niemand hat etwas gesehen.", "Alle sagen das Gleiche.", "Die Aussagen sind verschieden."], "answer": 3}
+ ],
+ "S07-Q4": [
+  {"q": "Was sagt Herr Berger im Krankenhaus?", "options": ["Er entschuldigt sich bei Jonas.", "Jonas ist zu schnell gefahren; er selbst hat nur einen kleinen Fehler gemacht.", "Er bezahlt das Fahrrad.", "Er hat nichts gesehen."], "answer": 1},
+  {"q": "Was schreibt Jonas in der Schadensmeldung?", "options": ["„Ich bin bei Grün geradeaus gefahren. Der Fahrer hat nicht geblinkt.“", "„Ich bin bei Rot gefahren.“", "„Ich hatte keinen Helm.“", "„Mein Auto ist kaputt.“"], "answer": 0},
+  {"q": "Was zeigt das Liniendiagramm?", "options": ["Immer mehr Unfälle mit Fahrrädern", "Die Preise für Fahrräder", "Die Zahl der Verkehrstoten in Österreich ist seit 1970 gesunken.", "Wie viele Leute einen Helm tragen"], "answer": 2}
+ ],
+ "S07-Q5": [
+  {"q": "Was macht Marit in Hamburg?", "options": ["Sie arbeitet am Hafen.", "Sie studiert Medienmanagement.", "Sie ist Schauspielerin.", "Sie ist Kranführerin."], "answer": 1},
+  {"q": "Was ist die Elbphilharmonie?", "options": ["Ein Konzerthaus: unten ein alter Speicher, oben Glas", "Eine alte Kirche", "Ein Schiff", "Die Börse von Hamburg"], "answer": 0},
+  {"q": "Was sucht das Amateurtheater?", "options": ["Einen Regisseur", "Eine Trompeterin", "Einen Kommissar", "Eine Sängerin für ein Kriminalstück"], "answer": 3}
+ ],
+ "S07-Q6": [
+  {"q": "Wer ist im Theaterstück der Täter?", "options": ["Der Kranführer", "Der Börsenmann", "Der Pastor", "Kommissar Löwe"], "answer": 2},
+  {"q": "Welche Rolle spielt Lucía?", "options": ["Eine Sängerin in einem Hafenlokal", "Die Kollegin vom Kommissar", "Eine Pastorin", "Eine Journalistin"], "answer": 0},
+  {"q": "Was ist bei Hermine angekommen?", "options": ["Ein Paket aus Iran", "Ein Brief von Bahram", "Eine Einladung nach Hamburg", "Ihr eigener Brief an Bahram von 1979"], "answer": 3}
+ ]
+}
