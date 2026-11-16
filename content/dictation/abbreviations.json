@@ -1,6 +1,0 @@
-{
-  "_comment": "Abbreviations for the sentence splitter (rules S8). Entries are written without the final period; multi-part ones such as 'z. B' keep their inner period and space. neverFinal: never end a sentence even before an uppercase word.",
-  "abbreviations": ["Tel", "Nr", "Dr", "Prof", "Hr", "Fr", "z. B", "u. a", "usw", "bzw", "ca", "etc", "Str", "ggf", "d. h", "Std", "Min", "Mio", "Jh", "evtl", "inkl", "vgl", "Abb", "Kap", "Lekt", "St"],
-  "neverFinal": ["z. B", "d. h", "Dr", "Nr", "Prof", "Hr", "Fr", "Tel", "Str", "St", "u. a"],
-  "months": ["Januar", "Jänner", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"]
-}

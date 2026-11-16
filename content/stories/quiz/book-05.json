@@ -1,0 +1,32 @@
+{
+ "S05-Q1": [
+  {"q": "Welche Beschwerden hat Hermine?", "options": ["Nur Bauchschmerzen", "Kopfschmerzen, Schmerzen in der Brust, Husten und Fieber", "Ein Problem mit dem Knie", "Sie ist nur müde."], "answer": 1},
+  {"q": "Warum kann Claudia nicht helfen?", "options": ["Sie ist in Salzburg.", "Sie ist selbst krank.", "Sie hat Dienst im Krankenhaus und keine Zeit.", "Sie kennt Hermine nicht."], "answer": 2},
+  {"q": "Gegen welches Medikament hat Hermine eine Allergie?", "options": ["Gegen Penicillin", "Gegen Aspirin", "Gegen Tropfen", "Gegen Kräutertee"], "answer": 0}
+ ],
+ "S05-Q2": [
+  {"q": "Was hat Hermine?", "options": ["Eine Erkältung", "Eine Allergie", "Ein Problem mit dem Magen", "Eine Bronchitis"], "answer": 3},
+  {"q": "Wie oft muss Hermine die Tabletten nehmen?", "options": ["Einmal am Tag", "Drei Mal täglich, zu den Mahlzeiten", "Jeden zweiten Tag", "Nur in der Nacht"], "answer": 1},
+  {"q": "Was sieht Nilufar auf dem Nachttisch?", "options": ["Ein Rezept", "Eine Hühnersuppe", "Ein altes Foto: Hermine, jung, vor einem Turm", "Einen Brief von Bahram"], "answer": 2}
+ ],
+ "S05-Q3": [
+  {"q": "Was hat der Internist gemacht?", "options": ["Ein Röntgenbild von der Lunge", "Eine Operation am Knie", "Akupunktur", "Er hat ein neues Medikament verschrieben."], "answer": 0},
+  {"q": "Was hat Wilhelm Conrad Röntgen entdeckt?", "options": ["Das Penicillin", "Die Strahlen: Man kann in den Körper sehen.", "Das Telefon", "Ein Museum in Remscheid"], "answer": 1},
+  {"q": "Wer ist „H.“?", "options": ["Frau Hofer, eine Nachbarin", "Herr Haas", "Hermines Schwester", "Hermine: Damals hieß sie Hermine Hofer."], "answer": 3}
+ ],
+ "S05-Q4": [
+  {"q": "Wie ist das Wetter in München am Freitag?", "options": ["Sonnig und warm", "Bewölkt, am Nachmittag Gewitter", "Es schneit in der Stadt.", "Nebel den ganzen Tag"], "answer": 1},
+  {"q": "Was gibt es im vierten Stock vom Kaufhaus?", "options": ["Die Damenabteilung", "Handtaschen und Schreibwaren", "Haushaltswaren, Spielwaren, Multimedia und den Schnäppchenmarkt", "Die Sportabteilung"], "answer": 2},
+  {"q": "Was kauft Nilufar?", "options": ["Einen Pullover mit Rollkragen und eine Regenhose", "Einen Daunenmantel", "Eine Jacke aus Leinen", "Ein Malbuch"], "answer": 0}
+ ],
+ "S05-Q5": [
+  {"q": "Was bedeutet „O’zapft is!“?", "options": ["Prost!", "Das Fass ist offen.", "Das Fest ist vorbei.", "Guten Appetit!"], "answer": 1},
+  {"q": "Wie ist das Oktoberfest entstanden?", "options": ["Mit einem Konzert im Jahr 1949", "Mit einem Markt für Pferde", "Mit dem Geburtstag von einem König", "Mit der Hochzeit von Ludwig und Therese im Jahr 1810"], "answer": 3},
+  {"q": "Was ist Sizdah Bedar?", "options": ["Der 13. Tag nach Nouruz: Alle gehen in die Natur und machen ein Picknick.", "Ein Fest mit Bier in Iran", "Das Neujahr in Iran", "Ein Gericht mit Kräutern"], "answer": 0}
+ ],
+ "S05-Q6": [
+  {"q": "Was braucht man für die Autobahn in Österreich?", "options": ["Einen Fahrschein", "Eine Vignette", "Eine Zeitkarte", "Nichts"], "answer": 1},
+  {"q": "Wo schlafen Nilufar und Jonas in Wien?", "options": ["In einem Hotel", "In der Jugendherberge", "Auf einem Campingplatz", "Bei Miriam, über Couchsurfing"], "answer": 3},
+  {"q": "Was findet Nilufar im Archiv?", "options": ["Nur Bahrams Zeugnis", "Ein Foto von Hermine", "Bahrams Zeugnis und einen Brief von Hermine aus dem Jahr 1979", "Einen Fahrplan von 1975"], "answer": 2}
+ ]
+}

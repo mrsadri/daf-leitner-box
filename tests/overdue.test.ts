@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { summarizeOverdueMoves } from '../src/services/overdueSummary.ts';
+import { summarizeOverdueMoves } from '../src/features/dashboard/overdueSummary.ts';
 
 test('groups moves by from → to box, highest first', () => {
   const s = summarizeOverdueMoves([

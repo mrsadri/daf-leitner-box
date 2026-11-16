@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { pickGermanVoice, germanVoices, normalizeLang } from '../src/services/voices.ts';
+import { pickGermanVoice, germanVoices, normalizeLang } from '../src/shared/lib/voices.ts';
 
 const v = (name: string, lang: string, voiceURI = name) => ({ name, lang, voiceURI });
 

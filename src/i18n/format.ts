@@ -1,3 +1,6 @@
+/**
+ * Language helpers: locale, digits and number formatting for fa/en.
+ */
 export type Lang = 'fa' | 'en';
 
 export const LANGS: Lang[] = ['fa', 'en'];

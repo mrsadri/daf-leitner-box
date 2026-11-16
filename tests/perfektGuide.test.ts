@@ -1,8 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { explainPerfekt } from '../src/services/perfektGuide.ts';
-import { parseAccepted } from '../src/services/perfekt.ts';
+import { explainPerfekt } from '../src/shared/vocab/perfektRules.ts';
+import { parseAccepted } from '../src/shared/vocab/perfekt.ts';
 
 /** Minimal RFC 4180 reader (the app's parser imports browser-only modules). */
 function readCsv(path: string): Record<string, string>[] {

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Adds the columns the conjugation popup needs (see docs/conjugation-filter-plan.md), for every verb:
+Adds the columns the conjugation popup needs (plan: docs/conjugation-filter-plan.md in the Git history), for every verb:
 
   Infinitiv    clean infinitive without sich / prepositions / notes: "mitfahren", "freuen", "Ski fahren"
   Präsens      3rd person singular, without the reflexive pronoun: "fährt mit", "stellt vor"

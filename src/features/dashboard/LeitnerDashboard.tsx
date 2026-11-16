@@ -1,0 +1,332 @@
+/**
+ * Dashboard: today's review, new words, Stories entry, the boxes on a mountain trail, lessons on a metro map,
+ * silver cards, and the cards in a box (dialog).
+ */
+import React, { useState } from 'react';
+import { LeitnerCard, BOX_CONFIGS } from '../../core/types';
+import { isCardDue, getTodayString, isNounCard } from '../../core/leitnerEngine';
+import { vocabText } from '../../shared/vocab/vocabText';
+import { Play, CheckCircle2, HelpCircle, BookOpen, Target, BookHeart } from 'lucide-react';
+import { Dialog, Button } from '../../shared/ui';
+import { useI18n } from '../../i18n/I18nProvider';
+import { De, Auto } from '../../shared/ui/Text';
+import { InstallBanner } from '../settings/AppInstall';
+import { SilverWidget } from '../silver/SilverCards';
+import { MetroMap } from './MetroMap';
+import { MountainTrail } from './MountainTrail';
+import { Icon3D, SignHeading } from '../../shared/ui/Icon3D';
+
+interface LeitnerDashboardProps {
+  cards: LeitnerCard[];
+  onStartReview: (boxFilter?: number, nounsOnly?: boolean) => void;
+  onStartNewWordsLearning: () => void;
+  onNavigateToCatalog: () => void;
+  onNavigateToReflections: () => void;
+  onOpenNewCardModal: () => void;
+  onOpenSettings?: () => void;
+  /** Opens Stories (absent while the Stories kill switch is off) */
+  onOpenStories?: () => void;
+  /** Book words (for the metro map of the lessons) */
+  catalog: LeitnerCard[];
+  /** Open the word list filtered to a lesson (tapping a station on the metro map) */
+  onOpenLesson: (lektion: string) => void;
+}
+
+
+export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
+  cards,
+  onStartReview,
+  onStartNewWordsLearning,
+  onOpenSettings,
+  onOpenStories,
+  catalog,
+  onOpenLesson
+}) => {
+  const { t, lang, num, date } = useI18n();
+  const [selectedBoxModal, setSelectedBoxModal] = useState<number | null>(null);
+  const todayStr = getTodayString();
+
+  const dueTodayCards = cards.filter(c => isCardDue(c, todayStr));
+  const dueNounsCards = dueTodayCards.filter(c => isNounCard(c));
+  const masteredCards = cards.filter(c => c.box >= 6);
+  const vocabCards = cards.filter(c => c.type === 'vocab' && c.box < 6);
+  const reflectionCards = cards.filter(c => c.type === 'reflection' && c.box < 6);
+
+
+  const getBoxCards = (boxIndex: number) => cards.filter(c => c.box === boxIndex);
+  const getBoxDueCount = (boxIndex: number) => cards.filter(c => c.box === boxIndex && isCardDue(c, todayStr)).length;
+  const modalCards = selectedBoxModal === null ? [] : cards.filter(c => c.box === selectedBoxModal);
+
+  return (
+    <div className="space-y-8 pb-12">
+      {onOpenSettings && <InstallBanner onShowHow={onOpenSettings} />}
+
+      {onOpenStories && (
+        <button
+          type="button"
+          onClick={onOpenStories}
+          data-testid="dashboard-stories"
+          className="w-full flex items-center gap-4 text-start bg-paper border border-paper-edge rounded-card p-4 hover:border-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 min-h-16"
+        >
+          <BookHeart className="w-8 h-8 text-indigo-600 dark:text-indigo-400 shrink-0" aria-hidden />
+          <span className="min-w-0">
+            <span className="block font-story-title text-xl text-ink">{t.stories.dashboardTitle}</span>
+            <span className="block text-sm text-ink-soft">{t.stories.dashboardBody}</span>
+          </span>
+        </button>
+      )}
+
+      {/* Hero / status */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 lg:p-8 shadow-xs">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="space-y-2 min-w-0">
+            <h1 className="flex items-center gap-2 text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+              <Icon3D name="coffee" size={44} className="-my-2" />
+              {t.dashboard.title}
+            </h1>
+          </div>
+
+          {/* Calls to action */}
+          <div className="flex flex-col sm:flex-row sm:flex-wrap lg:flex-nowrap items-stretch sm:items-center gap-3 shrink-0">
+            {dueTodayCards.length > 0 ? (
+              <button
+                onClick={() => onStartReview()}
+                className="flex items-center justify-center gap-3 px-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 active:scale-98 text-white rounded-xl font-semibold shadow-sm transition-all"
+              >
+                <Play className="w-5 h-5 fill-current rtl:-scale-x-100" />
+                <span>{t.dashboard.startReview}</span>
+                <span className="px-2 py-0.5 bg-indigo-800 text-indigo-100 rounded-md font-mono-num text-xs font-bold">
+                  {num(dueTodayCards.length)}
+                </span>
+              </button>
+            ) : (
+              <div className="flex items-center gap-3 px-5 py-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 rounded-xl text-emerald-800 dark:text-emerald-300 text-sm font-medium">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                <span>{t.dashboard.allDone}</span>
+              </div>
+            )}
+
+            {dueNounsCards.length > 0 && (
+              <button
+                onClick={() => onStartReview(undefined, true)}
+                className="flex items-center justify-center gap-2 px-5 py-3.5 bg-white hover:bg-indigo-50 dark:bg-slate-900 dark:hover:bg-indigo-950/50 border-2 border-indigo-600 dark:border-indigo-400 text-indigo-700 dark:text-indigo-300 active:scale-98 rounded-xl text-xs font-bold transition-all"
+                title={t.dashboard.nounReviewHint}
+              >
+                <Target className="w-4 h-4" />
+                <span>{t.dashboard.nounReview}</span>
+                <span className="px-2 py-0.5 bg-indigo-600 text-white rounded-md font-mono-num font-bold">
+                  {t.common.nouns(dueNounsCards.length)}
+                </span>
+              </button>
+            )}
+
+            <button
+              onClick={onStartNewWordsLearning}
+              className="flex items-center justify-center gap-2 px-4 py-3 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 rounded-xl text-xs font-bold transition-colors shadow-2xs"
+              title={t.dashboard.learnNewHint}
+            >
+              <BookOpen className="w-4 h-4" />
+              <span>{t.dashboard.learnNew}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Key metrics */}
+        <div className="grid grid-cols-2 gap-4 mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 sm:max-w-md">
+          <div>
+            <span className="text-xs text-slate-600 dark:text-slate-400 block">{t.dashboard.dueToday}</span>
+            <span className="text-2xl font-bold font-mono-num text-amber-600 dark:text-amber-400">
+              {num(dueTodayCards.length)}
+            </span>
+            <span className="text-xs text-slate-600 dark:text-slate-400 block">
+              {t.dashboard.dueSplit(dueNounsCards.length, dueTodayCards.length - dueNounsCards.length)}
+            </span>
+          </div>
+
+          <div>
+            <span className="text-xs text-slate-600 dark:text-slate-400 block">{t.dashboard.inRotation}</span>
+            <span className="text-2xl font-bold font-mono-num text-slate-900 dark:text-white">
+              {num(cards.filter(c => c.box < 6).length)}
+            </span>
+            <span className="text-xs text-slate-600 dark:text-slate-400 block">
+              {t.dashboard.rotationSplit(vocabCards.length, reflectionCards.length)}
+            </span>
+          </div>
+
+        </div>
+      </div>
+
+      <SilverWidget />
+
+      {/* The Leitner boxes */}
+      <div>
+        <div className="mb-3 space-y-2">
+          <SignHeading icon="mountain">{t.dashboard.boxesTitle}</SignHeading>
+          <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{t.dashboard.boxesSubtitle}</p>
+        </div>
+
+        {/* Decoration: the boxes as a hiking trail from the valley to the summit */}
+        <div className="mb-4 space-y-1">
+          <MountainTrail />
+          <p className="text-center text-xs text-slate-500 dark:text-slate-400">{t.trail.caption}</p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-3.5">
+          {BOX_CONFIGS.map((box) => {
+            const boxCards = getBoxCards(box.index);
+            const dueCount = getBoxDueCount(box.index);
+            const vocabCount = boxCards.filter(c => c.type === 'vocab').length;
+            const refCount = boxCards.filter(c => c.type === 'reflection').length;
+
+            return (
+              <div
+                key={box.index}
+                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3.5 sm:p-4 flex flex-col justify-between shadow-2xs hover:border-slate-300 dark:hover:border-slate-700 transition-all"
+              >
+                <div>
+                  <div className="flex flex-wrap items-center justify-between gap-1 mb-2">
+                    <span className="text-xs font-bold text-slate-600 dark:text-slate-400">{t.boxes.name(box.index)}</span>
+                  </div>
+
+                  <div className="mb-3">
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-2xl font-extrabold font-mono-num text-slate-900 dark:text-white">{num(boxCards.length)}</span>
+                      <span className="text-xs text-slate-600 dark:text-slate-400">{t.dashboard.cardUnit}</span>
+                    </div>
+                    <span className="text-xs text-slate-600 dark:text-slate-400 block mt-0.5">
+                      {t.dashboard.interval(box.intervalDays)}
+                    </span>
+                  </div>
+
+                </div>
+
+                <div className="space-y-2 pt-2.5 border-t border-slate-100 dark:border-slate-800/80">
+                  <div className="flex flex-wrap items-center justify-between gap-x-2 text-xs text-slate-600 dark:text-slate-400">
+                    <span>{t.dashboard.boxVocab(vocabCount)}</span>
+                    <span>{t.dashboard.boxRefl(refCount)}</span>
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    {dueCount > 0 && (
+                      <button
+                        onClick={() => onStartReview(box.index)}
+                        className="w-full py-1.5 px-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold text-center transition-colors"
+                      >
+                        {t.dashboard.reviewN(dueCount)}
+                      </button>
+                    )}
+                    <button
+                      onClick={() => setSelectedBoxModal(box.index)}
+                      className="w-full py-1.5 px-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-medium transition-colors"
+                      title={t.dashboard.viewHint}
+                    >
+                      {t.dashboard.viewN(boxCards.length)}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* The book as a metro line: one station per lesson */}
+      <MetroMap catalog={catalog} cards={cards} onOpenLesson={onOpenLesson} />
+
+      {/* Mastered archive */}
+      <div className="bg-gradient-to-l rtl:bg-gradient-to-r from-transparent via-emerald-500/5 to-emerald-500/10 border border-emerald-200 dark:border-emerald-800/60 rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+            <CheckCircle2 className="w-6 h-6" />
+          </div>
+          <div className="min-w-0">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">{t.dashboard.archiveTitle}</h3>
+            <p className="text-xs text-slate-600 dark:text-slate-400 max-w-xl leading-relaxed">{t.dashboard.archiveBody}</p>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0">
+          <div className="text-start sm:text-end">
+            <span className="text-2xl font-bold font-mono-num text-emerald-700 dark:text-emerald-300 block">{num(masteredCards.length)}</span>
+            <span className="text-xs text-emerald-800 dark:text-emerald-400">{t.dashboard.archiveUnit}</span>
+          </div>
+          <button
+            onClick={() => setSelectedBoxModal(6)}
+            className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-semibold shadow-xs transition-colors"
+          >
+            {t.dashboard.archiveView}
+          </button>
+        </div>
+      </div>
+
+      {/* Rules */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6">
+        <div className="flex items-center gap-2 mb-3 text-slate-900 dark:text-white font-bold text-sm">
+          <HelpCircle className="w-4 h-4 text-indigo-500" />
+          <span>{t.dashboard.rulesTitle}</span>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs text-slate-600 dark:text-slate-400">
+          {t.dashboard.rules.map(rule => (
+            <div key={rule.title} className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl space-y-1">
+              <span className="font-semibold text-slate-800 dark:text-slate-200 block">{rule.title}</span>
+              <p className="leading-relaxed">{rule.body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Cards in a box */}
+      {selectedBoxModal !== null && (
+        <Dialog
+          onClose={() => setSelectedBoxModal(null)}
+          size="lg"
+          testId="box-cards"
+          title={selectedBoxModal === 6 ? t.boxes.mastered : t.dashboard.modalTitleBox(t.boxes.name(selectedBoxModal))}
+          description={selectedBoxModal === 6
+            ? t.dashboard.modalSubtitleArchive
+            : t.dashboard.modalSubtitleBox(BOX_CONFIGS[selectedBoxModal]?.intervalDays ?? 0)}
+          footer={<Button variant="secondary" onClick={() => setSelectedBoxModal(null)}>{t.common.close}</Button>}
+        >
+          <div className="space-y-3">
+              {modalCards.length === 0 ? (
+                <div className="py-12 text-center text-slate-600 dark:text-slate-400 text-sm">{t.dashboard.modalEmpty}</div>
+              ) : (
+                modalCards.map((card) => (
+                  <div
+                    key={card.id}
+                    className="p-3.5 bg-slate-50 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 rounded-control flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4"
+                  >
+                    <div className="space-y-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        {card.type === 'vocab' ? (
+                          <De className="font-bold text-slate-900 dark:text-white break-words">{card.wort}</De>
+                        ) : (
+                          <>
+                            <span className="text-xs font-semibold px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300">
+                              {t.categories[card.category || 'note']}
+                            </span>
+                            <Auto className="font-bold text-slate-900 dark:text-white">{card.title}</Auto>
+                          </>
+                        )}
+                      </div>
+                      <Auto as="p" className="text-xs text-slate-600 dark:text-slate-400 text-start">
+                        {card.type === 'vocab' ? vocabText(card, lang).meaning : card.content}
+                      </Auto>
+                    </div>
+
+                    <div className="shrink-0 text-xs text-slate-600 dark:text-slate-400 sm:text-end">
+                      {card.box < 6 && <div>{t.dashboard.due(date(`${card.nextReviewDate}T12:00:00`))}</div>}
+                      {isCardDue(card, todayStr) && (
+                        <span className="text-amber-600 dark:text-amber-400 font-semibold block text-xs">{t.dashboard.dueNow}</span>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+          </div>
+        </Dialog>
+      )}
+
+    </div>
+  );
+};

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { swipeStep, keyStep, clampSlide, trackOffset, dragResistance } from '../src/services/onboarding.ts';
+import { swipeStep, keyStep, clampSlide, trackOffset, dragResistance } from '../src/features/onboarding/slideNav.ts';
 
 test('swipe direction follows the language', () => {
   assert.equal(swipeStep('left', false), 1);   // English: swipe left → next

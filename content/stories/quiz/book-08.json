@@ -1,0 +1,32 @@
+{
+ "S08-Q1": [
+  {"q": "Wo hat die Post den Brief gefunden?", "options": ["In Shiraz, bei Bahram", "Bei der Renovierung von einem alten Postamt, hinter einem Apparat", "Im Archiv von der Universität", "Im Postkasten von Hermine"], "answer": 1},
+  {"q": "Was schreibt Hermine 1979 an Bahram?", "options": ["Sie heiratet einen anderen Mann.", "Sie zieht nach Wien.", "Sie hat seit August nichts von ihm gehört und hat Angst um ihn.", "Sie möchte das Foto zurück."], "answer": 2},
+  {"q": "Was schickt Nilufar an ihren Opa?", "options": ["Eine Kopie vom Brief, das Foto und ein Stofftier", "Nur eine Postkarte", "Schokolade und Kaffee", "Den Originalbrief und Geld"], "answer": 0}
+ ],
+ "S08-Q2": [
+  {"q": "Warum ist Nilufar wütend auf die Post?", "options": ["Das Porto ist zu teuer.", "Die Postbotin war unfreundlich.", "Das Paket ist kaputt.", "Das Paket steckt seit Wochen im Zoll, und es gibt keine Garantie."], "answer": 3},
+  {"q": "Was raten die meisten Leute im Internetforum?", "options": ["Geduld haben", "Das Paket zurückschicken", "Ein neues Paket schicken", "Die Polizei rufen"], "answer": 0},
+  {"q": "Wer ist Kafka?", "options": ["Ein Schriftsteller aus Graz", "Eine Hündin aus dem Tierheim", "Frau Haas’ Kater", "Ein Mann aus dem Forum"], "answer": 1}
+ ],
+ "S08-Q3": [
+  {"q": "Was ist der Unterschied zwischen Universität und Fachhochschule?", "options": ["Die Fachhochschule ist teurer.", "An der Universität gibt es keinen Master.", "Die Universität ist eher theoretisch, die Fachhochschule praxisorientiert.", "Es gibt keinen Unterschied."], "answer": 2},
+  {"q": "Was braucht man für die Universität?", "options": ["Einen Meistertitel", "Die allgemeine Hochschulreife: Abitur oder Matura", "Ein Praktikum", "Eine Lehre"], "answer": 1},
+  {"q": "Was hat Lucía entschieden?", "options": ["Sie geht zurück nach Sevilla.", "Sie studiert Informatik.", "Sie macht eine Pause.", "Sie bleibt in Graz und macht den Master in Musik für Kinder."], "answer": 3}
+ ],
+ "S08-Q4": [
+  {"q": "Was war Kemal früher von Beruf?", "options": ["Fernfahrer mit einem Lkw", "Kellner", "Lehrer", "Ingenieur"], "answer": 0},
+  {"q": "Warum hat Jonas sein Studium aufgegeben?", "options": ["Es war zu teuer.", "Er hatte keine Zeit.", "Er war nicht glücklich: nur Theorie.", "Seine Mutter wollte es."], "answer": 2},
+  {"q": "Was ist Hermines Geheimnis?", "options": ["Sie war Ärztin.", "Sie hat Persisch gelernt, um Bahrams Sprache zu verstehen.", "Sie hat Bahram geheiratet.", "Sie war in Iran."], "answer": 1}
+ ],
+ "S08-Q5": [
+  {"q": "Was bekommen die Freiwilligen von der Stiftung?", "options": ["Einen guten Lohn", "Ein Zertifikat für die Universität", "Nichts", "Unterbringung, Essen und ein kleines Taschengeld"], "answer": 3},
+  {"q": "Was sind die zwei Angebote?", "options": ["Ein Biohof im Tal oder eine Alp mit Tieren auf 2.000 Metern", "Ein Hotel oder ein Campingplatz", "Eine Schule oder ein Spital", "Ein Café oder ein Theater"], "answer": 0},
+  {"q": "Was soll man auf die Alp mitbringen?", "options": ["Einen Laptop", "Feste Schuhe, warme Kleidung und Regenkleidung", "Ein Zelt", "Essen für eine Woche"], "answer": 1}
+ ],
+ "S08-Q6": [
+  {"q": "Was macht ein Esel?", "options": ["Er muht.", "Er meckert.", "Er macht „I-a“.", "Er wiehert."], "answer": 2},
+  {"q": "Warum macht Mengia die schwere Arbeit?", "options": ["Sie verdient viel Geld.", "Sie hat keine andere Arbeit.", "Ihre Kinder wollen es.", "Das ist ihre Lebensart; die Umwelt ist ihr wichtig."], "answer": 3},
+  {"q": "Was schreibt Bahram?", "options": ["Er hat den Brief gelesen und möchte Nilufar etwas von 1979 erzählen.", "Er kommt nach Graz.", "Er hat das Paket nicht bekommen.", "Er ist krank."], "answer": 0}
+ ]
+}

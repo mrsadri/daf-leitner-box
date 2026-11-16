@@ -1,0 +1,32 @@
+{
+ "S04-Q1": [
+  {"q": "Warum müssen Nilufar und Lucía eine Wohnung suchen?", "options": ["Frau Pichler verkauft ihr Haus, und Lucías Au-pair-Jahr ist vorbei.", "Die Wohnung von Frau Pichler ist zu teuer.", "Lucía hat ein Kind.", "Nilufar zieht nach Linz."], "answer": 0},
+  {"q": "Was kostet die Wohnung in Geidorf pro Monat?", "options": ["780 Euro mit allem", "890 Euro inklusive Nebenkosten", "930 Euro: 780 Euro Miete und 150 Euro Nebenkosten", "1.200 Euro"], "answer": 2},
+  {"q": "Was sieht Nilufar vom Balkon?", "options": ["Die Mur", "Den Schlossberg mit dem Uhrturm", "Das Kunsthaus", "Einen Park"], "answer": 1}
+ ],
+ "S04-Q2": [
+  {"q": "Was gilt zwischen 22 Uhr und 6 Uhr?", "options": ["Dann kommt der Müll in den Hof.", "Dann ist die Haustür offen.", "Dann ist Ruhe.", "Dann darf man waschen."], "answer": 2},
+  {"q": "Wo hängt der Spiegel am Ende?", "options": ["Im Flur, neben der Tür", "Im Schlafzimmer", "In der Küche", "Im Bad, über dem Waschbecken"], "answer": 3},
+  {"q": "Was sagt Frau Lechner am Telefon?", "options": ["Nilufar hat die Probezeit bestanden und ist ab April Mitarbeiterin.", "Nilufar muss nach Bern fahren.", "Die Praktikantin muss am Montag kommen.", "Das Büro ist geschlossen."], "answer": 0}
+ ],
+ "S04-Q3": [
+  {"q": "Was steht in der WG-Regel Nummer 3?", "options": ["Eine Person kocht, die andere wäscht ab.", "Den Müll bringen wir sofort raus, wenn er voll ist.", "Staubsaugen einmal pro Woche", "Die Haustür schließen wir abends ab."], "answer": 1},
+  {"q": "Was studiert Lucía?", "options": ["Medizin", "Malerei", "Musikpädagogik", "Deutsch"], "answer": 2},
+  {"q": "Wie fühlt sich Lucía manchmal in Graz?", "options": ["Einsam; alles ist fremd.", "Sehr glücklich und nie müde", "Krank, sie möchte nach Hause.", "Verärgert über Nilufar"], "answer": 0}
+ ],
+ "S04-Q4": [
+  {"q": "Was ist „Griaß di“ auf Hochdeutsch?", "options": ["Auf Wiedersehen", "Danke schön", "Alter", "Grüß dich"], "answer": 3},
+  {"q": "Wie oft telefoniert Lucía mit ihrer Familie?", "options": ["Jeden Morgen", "Mindestens dreimal pro Woche", "Einmal im Monat", "Nie, sie schreibt nur E-Mails."], "answer": 1},
+  {"q": "Was ist Nilufars Lieblingsort in Graz?", "options": ["Das Kunsthaus", "Eine Kneipe in Jakomini", "Der Schlossberg", "Der Hauptbahnhof"], "answer": 2}
+ ],
+ "S04-Q5": [
+  {"q": "Warum braucht Lucía ein Konto?", "options": ["Für die Universität und für die Miete, Kaution und Nebenkosten", "Sie möchte eine Kreditkarte.", "Sie möchte Aktien kaufen.", "Ihre Mutter schickt Geld aus Spanien."], "answer": 0},
+  {"q": "Was macht man am Geldautomaten zuerst?", "options": ["Man nimmt das Geld.", "Man wählt den Betrag.", "Man drückt auf „Bestätigen“.", "Man führt die Karte ein."], "answer": 3},
+  {"q": "Was war in Nilufars Portemonnaie?", "options": ["Nur Geld", "Ihr Ausweis, ihre Karte, Geld und das Foto von Opa Bahram", "Die Schlüssel von der Wohnung", "Ein Buch von der Autorin"], "answer": 1}
+ ],
+ "S04-Q6": [
+  {"q": "Wer hat Nilufars Portemonnaie gefunden?", "options": ["Die Polizistin", "Hermine", "Paul Steiner", "Ein Mann mit Hut"], "answer": 2},
+  {"q": "Was steht auf dem kleinen Blatt hinter dem Foto?", "options": ["„Komm am Sonntag um drei. H.“", "„Danke! Du bist ein Held!“", "„Bahram und H., Graz, 1976“", "„Ich komme zurück.“"], "answer": 0},
+  {"q": "Was hat der junge Mann im Märchen in der Tasche?", "options": ["Gold", "Einen Schlüssel", "Eine Brosche", "Eine Pfeife aus Holz und einen Kern von einer Birne"], "answer": 3}
+ ]
+}

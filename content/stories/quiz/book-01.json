@@ -1,0 +1,33 @@
+{
+ "_comment": "Three multiple-choice questions per story, in simple German, based on the 'Fragen' of the source. answer = index of the correct option (0-3). The page is found by the build; add \"para\": N (1-based paragraph) to set it by hand.",
+ "S01-Q1": [
+  {"q": "Woher kommt Nilufar, und wie alt ist sie?", "options": ["Aus Teheran, sie ist zweiundzwanzig.", "Aus Shiraz, sie ist sechsundzwanzig.", "Aus Graz, sie ist sechsundzwanzig.", "Aus Shiraz, sie ist sechzehn."], "answer": 1},
+  {"q": "Wer ist Monika Wagner?", "options": ["Die Direktorin", "Eine Praktikantin", "Die Sekretärin", "Die Lehrerin"], "answer": 2},
+  {"q": "Was braucht Frau Wagner von Nilufar?", "options": ["Adresse, Telefonnummer und E-Mail", "Ein Foto und den Pass", "Kaffee für das Team", "Eine Karte für das Konzert"], "answer": 0}
+ ],
+ "S01-Q2": [
+  {"q": "Wie ist Nilufars Adresse?", "options": ["Annenstraße 14, 8020 Graz", "Griesgasse 18, 8010 Graz", "Geidorf 8, 8020 Graz", "Griesgasse 8, 8020 Graz"], "answer": 3},
+  {"q": "Wer ist Ana Novak, und woher kommt sie?", "options": ["Die Lehrerin, aus Leipzig", "Eine Teilnehmerin, aus Spanien", "Die Sekretärin, aus Wien", "Die Lehrerin, aus Graz"], "answer": 0},
+  {"q": "Was macht Lucía in Graz?", "options": ["Sie ist Studentin.", "Sie ist Lehrerin.", "Sie ist Au-pair bei Familie Steiner.", "Sie arbeitet bei Murklang."], "answer": 2}
+ ],
+ "S01-Q3": [
+  {"q": "Wann ist das Konzert im Stadtpark?", "options": ["Am Freitag, 26. Oktober, um acht", "Am Samstag, 17. Oktober, um sieben", "Am Sonntag, 17. Oktober, um sieben", "Am Samstag, 7. Oktober, um zehn"], "answer": 1},
+  {"q": "Wie heißt Jonas’ Band, und was macht sie?", "options": ["„Die Murbuam“, Jazz", "„Murklang“, Popmusik", "„Die Murbuam“, laute und schnelle Rockmusik", "„Die Grazer“, Chansons"], "answer": 2},
+  {"q": "Was ist am 26. Oktober?", "options": ["Kenjis Geburtstag", "Eine Konferenz in Wien", "Ein Konzert in Salzburg", "Nationalfeiertag: Das Team hat frei."], "answer": 3}
+ ],
+ "S01-Q4": [
+  {"q": "Was machen die drei Freunde am Samstag?", "options": ["Sie besuchen den Markt, den Dom und den Stadtpark.", "Sie fahren nach Wien.", "Sie gehen ins Kino.", "Sie arbeiten im Büro."], "answer": 0},
+  {"q": "Wann möchte Lucía nach Hause fahren?", "options": ["Anfang Juli", "Im März, zu Nouruz", "Vom 20. Dezember bis zum 6. Januar", "Im August"], "answer": 2},
+  {"q": "Was steht hinten auf dem Foto?", "options": ["„Opa Bahram, Shiraz, 1979“", "„Bahram und H., Graz, im Mai 1976“", "„Hallo Mutter, hallo Vater!“", "„H. finden.“"], "answer": 1}
+ ],
+ "S01-Q5": [
+  {"q": "Was muss Lucía am Morgen machen?", "options": ["Einkaufen und kochen", "Die Kinder wecken, Frühstück machen und den Tisch decken", "Paul zur Schule bringen", "Mit Oma Hermine Kaffee trinken"], "answer": 1},
+  {"q": "Wer ist Hermine Steiner?", "options": ["Claudias Mutter", "Die Putzfrau", "Pauls Lehrerin", "Martins Mutter und die Oma von Paul und Lena"], "answer": 3},
+  {"q": "Was zeigt Pauls Grafik?", "options": ["Frauen machen 61 Prozent vom Haushalt, Männer 39 Prozent.", "Männer machen 61 Prozent vom Haushalt.", "Wie viele Verwandte die Familie hat", "Das Wetter in Spanien"], "answer": 0}
+ ],
+ "S01-Q6": [
+  {"q": "Wie viel Käse kauft Lucía?", "options": ["Ein Kilo Bergkäse", "Hundert Gramm Emmentaler", "Ein halbes Pfund Bergkäse und zweihundert Gramm Emmentaler", "Zweihundert Gramm Bergkäse und ein Pfund Emmentaler"], "answer": 2},
+  {"q": "Wer möchte immer Pralinen?", "options": ["Lucía", "Paul", "Claudia", "Oma Hermine"], "answer": 3},
+  {"q": "Was ist Nilufars Problem im November?", "options": ["Sie hat kein Zimmer mehr.", "Sie muss nach Shiraz fahren.", "Sie hat keine Arbeit mehr.", "Sie muss laufen."], "answer": 0}
+ ]
+}

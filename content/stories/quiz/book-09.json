@@ -1,0 +1,32 @@
+{
+ "S09-Q1": [
+  {"q": "Welchen Fehler macht Nilufar bei der Begrüßung?", "options": ["Sie gibt der Vorgesetzten einen Kuss auf die Wange.", "Sie kommt zu spät und sagt nichts.", "Sie gibt niemandem die Hand.", "Sie verbeugt sich wie in Japan."], "answer": 0},
+  {"q": "Worüber spricht man beim Small Talk nicht?", "options": ["Über das Wetter", "Über Geld, Religion und Politik", "Über Urlaub", "Über Sport"], "answer": 1},
+  {"q": "Was schreibt Frau Dr. Marxer in ihrer Antwort?", "options": ["Nilufar muss die Firma verlassen.", "Sie möchte keine E-Mails mehr.", "„Hochachtungsvoll“ ist altmodisch, und sie bietet das Du an.", "Nilufar soll morgen früher kommen."], "answer": 2}
+ ],
+ "S09-Q2": [
+  {"q": "Was ist Nilufars neues Projekt?", "options": ["Ein Buch über Iran", "Ein Deutschkurs an der Uni", "Ein Café in Schaan", "Ein Blog für Deutschlerner: „Keine Panik!“"], "answer": 3},
+  {"q": "Welche Strategie empfiehlt Nilufar?", "options": ["Nie Fehler machen", "Nur allein lernen", "Wörter im Zusammenhang lernen und nicht wörtlich übersetzen", "Nur Grammatik lernen"], "answer": 2},
+  {"q": "Wer schreibt Nilufar eine E-Mail, und warum?", "options": ["Die Firma Elbchip in Dresden: Sie bietet ihr eine Stelle an.", "Ein Leser aus Japan: Er hat einen Fehler gefunden.", "Ihr Opa: Er kommt nach Graz.", "Frau Dr. Marxer: Sie ist verärgert."], "answer": 0}
+ ],
+ "S09-Q3": [
+  {"q": "Was steht im Paragraph über die Arbeitszeit?", "options": ["30 Stunden pro Woche, ohne Kernzeit", "40 Stunden pro Woche, Kernarbeitszeit von 9 bis 15 Uhr", "Arbeit nur am Wochenende", "40 Stunden, nur am Nachmittag"], "answer": 1},
+  {"q": "Was ist Jonas’ Neuigkeit?", "options": ["Er zieht nach Dresden.", "Seine Band hat eine Tournee.", "Er hat eine neue Arbeit bei Elbchip.", "Die Bank hat seinen Kredit genehmigt: Im Dezember eröffnet er das Café Uhrturm."], "answer": 3},
+  {"q": "Warum unterschreibt Nilufar den Vertrag?", "options": ["Sie möchte weg von Jonas.", "In Graz gibt es keine Stelle für sie, und sie will es versuchen.", "Dresden liegt näher an Iran.", "Lucía zieht auch nach Dresden."], "answer": 1}
+ ],
+ "S09-Q4": [
+  {"q": "Was produziert die Firma Elbchip?", "options": ["Mikrochips", "Handys", "Autos", "Glas"], "answer": 0},
+  {"q": "Warum heißt die Region „Silicon Saxony“?", "options": ["Weil dort viel Sand ist", "Weil es dort ein großes Museum gibt", "Weil dort sehr viele Firmen für Mikroelektronik sind", "Weil die Firma aus Amerika kommt"], "answer": 2},
+  {"q": "Was ist Nilufars erste Aufgabe?", "options": ["Chips im Reinraum testen", "Eine Zusammenfassung über Visa und Anträge für neue Mitarbeiter schreiben", "Das Intranet neu bauen", "Eine Führung durch die Altstadt machen"], "answer": 1}
+ ],
+ "S09-Q5": [
+  {"q": "Was ist am 9. November 1989 passiert?", "options": ["Die Mauer wurde gebaut.", "Der Krieg war zu Ende.", "Berlin wurde Hauptstadt von Preußen.", "Die Grenze wurde geöffnet: Die Mauer ist gefallen."], "answer": 3},
+  {"q": "Wie war Berlin nach dem Krieg geteilt?", "options": ["In vier Sektoren: amerikanisch, britisch, französisch und sowjetisch", "In zwei Städte ohne Mauer", "Es war nicht geteilt.", "In drei Teile"], "answer": 0},
+  {"q": "Welche Religionen gibt es laut Sabine in Berlin?", "options": ["Nur das Christentum", "Christentum und Judentum", "Christentum, Judentum, Islam, Buddhismus und Hinduismus", "Keine, Berlin ist nicht religiös."], "answer": 2}
+ ],
+ "S09-Q6": [
+  {"q": "Was gibt es in Kreuzberg?", "options": ["Nur Büros", "Einen türkischen Basar, Galerien, Cafés und bunte Häuser", "Das Brandenburger Tor", "Den Reichstag"], "answer": 1},
+  {"q": "Warum ist Bahram 1979 nicht nach Graz zurückgekommen?", "options": ["Er wollte Hermine nicht mehr sehen.", "Er hat in Wien studiert.", "Er hatte kein Geld für den Flug.", "Sein Vater ist gestorben, er musste für die Familie sorgen, und er durfte nicht mehr ausreisen."], "answer": 3},
+  {"q": "Was sagt Bahram am Ende?", "options": ["„Ich komme nach Österreich.“", "„Ich habe Hermine vergessen.“", "„Schick mir das Foto zurück.“", "„Ich bin zu alt für eine Reise.“"], "answer": 0}
+ ]
+}
