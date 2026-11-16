@@ -740,9 +740,9 @@
    "textHash": "509d34663ebd"
   },
   "s01q3n0124": {
-   "bytes": 3386,
+   "bytes": 6312,
    "key": "30030c625ff8c1ab",
-   "ms": 330,
+   "ms": 696,
    "textHash": "65d6b6ed89a7"
   },
   "s01q3n0125": {
@@ -1250,9 +1250,9 @@
    "textHash": "c0f7acf82d67"
   },
   "s01q4n0209": {
-   "bytes": 3804,
+   "bytes": 4431,
    "key": "e20b8e58174dc96d",
-   "ms": 371,
+   "ms": 451,
    "textHash": "deb928d77890"
   },
   "s01q4n0210": {
@@ -1856,9 +1856,9 @@
    "textHash": "6b04eb3ac5ea"
   },
   "s01q6n0310": {
-   "bytes": 3386,
+   "bytes": 5476,
    "key": "88913d3e58012980",
-   "ms": 330,
+   "ms": 577,
    "textHash": "7a8c41348ad2"
   },
   "s01q6n0311": {

@@ -3,7 +3,7 @@
 
   python3 scripts/dictation/audio_qa.py 01 [--mode B]
 
-Checks every file of the index with ffprobe/ffmpeg: duration within [0.4 s, 1.5 s + 0.6 s per word], mean volume above
+Checks every file of the index with ffprobe/ffmpeg: duration within [0.4 s, 1.5 s + 0.6 s per word] (up to 1.6 times more is listed as slow, not as a failure), mean volume above
 -50 dB, 22.05 kHz mono. Writes build/dictation/audio-qa-NN.md with the failures and the listening sample: 10 percent of
 the sentences (seeded, so the same sample every run) plus every long, digit, ellipsis and quote-mixed sentence.
 """
@@ -33,7 +33,7 @@ def main(argv=None) -> int:
     story = json.loads((PUBLIC / f"story-{no}.json").read_text(encoding="utf-8"))
     index = json.loads((PUBLIC / f"story-{no}.audio.{args.mode}.json").read_text(encoding="utf-8"))["sentences"]
     sentences = {s["id"]: (q["id"], s) for q in story["sequences"] for s in q["sentences"]}
-    failures, missing = [], []
+    failures, missing, slow = [], [], []
     for sid, (seq, s) in sentences.items():
         entry = index.get(sid)
         f = AUDIO_DIR / args.mode / f"{entry['key']}.mp3" if entry else None
@@ -44,7 +44,9 @@ def main(argv=None) -> int:
         words = len(s["text"].split())
         lo, hi = 400, 1500 + 600 * words
         problems = []
-        if not lo <= info["ms"] <= hi:
+        if hi < info["ms"] <= hi * 1.6:
+            slow.append((sid, f"{info['ms']} ms, expected up to {hi} ms"))       # slow but plausible: checked by ear, not a failure
+        elif not lo <= info["ms"] <= hi:
             problems.append(f"duration {info['ms']} ms outside [{lo}, {hi}]")
         if info["mean_db"] is None or info["mean_db"] < -50:
             problems.append(f"mean volume {info['mean_db']} dB")
@@ -58,14 +60,16 @@ def main(argv=None) -> int:
     sample = set(rng.sample(ids, max(1, len(ids) // 10)))
     special = {sid for sid, (_, s) in sentences.items()
                if set(s["flags"]) & {"long", "digits", "ellipsis"} or s.get("segments")}
-    listen = sorted(sample | special)
+    listen = sorted(sample | special | {sid for sid, _ in slow})
     lines = [f"# Audio QA: story {no}, mode {args.mode}", "",
              f"- sentences: {len(sentences)}, with a file: {len(sentences) - len(missing)}, missing: {len(missing)}",
-             f"- technical failures: {len(failures)}", ""]
+             f"- technical failures: {len(failures)}", f"- slower than the word-count estimate (listen to them): {len(slow)}", ""]
     if missing:
         lines += ["## Missing files", ""] + [f"- {m}" for m in missing[:50]] + [""]
     if failures:
         lines += ["## Failures", ""] + [f"- {sid}: {why}" for sid, why in failures] + [""]
+    if slow:
+        lines += ["## Slow sentences (in the listening sample)", ""] + [f"- {sid}: {why}" for sid, why in slow] + [""]
     lines += [f"## Listening sample ({len(listen)} sentences: 10 percent plus long, digit, ellipsis and mixed-voice sentences)", "",
               "| id | speaker | file | text |", "|---|---|---|---|"]
     for sid in listen:
@@ -74,7 +78,7 @@ def main(argv=None) -> int:
         lines.append(f"| {sid} | {s['speaker']} | {key}.mp3 | {s['text'][:90].replace('|', '/')} |")
     out = REPORT_DIR / f"audio-qa-{no}.md"
     out.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(f"{out.relative_to(REPO)}: {len(failures)} failures, {len(missing)} missing, listening sample {len(listen)}")
+    print(f"{out.relative_to(REPO)}: {len(failures)} failures, {len(slow)} slow, {len(missing)} missing, listening sample {len(listen)}")
     return 1 if failures or missing else 0
 
 

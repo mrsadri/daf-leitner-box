@@ -72,6 +72,37 @@ def plan(story: dict, voices: dict, mode: str, only: str | None) -> list[dict]:
     return out
 
 
+# The multi-speaker MLS model sometimes renders very short lines ("Ja.", "Ich!") as near silence (raw peak below 0.01).
+# A synthesis counts as audible from this raw peak and length; otherwise other noise and length settings are tried.
+MIN_PEAK = 0.03
+MIN_SECONDS = 0.3
+RETRIES = ((0.667, 0.8, 1.0), (0.667, 0.8, 1.5), (0.5, 0.5, 1.2), (0.667, 0.8, 0.85), (0.8, 1.0, 1.3))
+
+
+def synthesize_audible(engine, settings: VoiceSettings, text: str, where: str):
+    """Returns (samples, rate, note). Raises RuntimeError when no attempt is audible; silence is never published."""
+    import dataclasses
+    import numpy as np
+
+    def ok(smp, rate) -> bool:
+        a = np.asarray(smp)
+        return len(a) / rate >= MIN_SECONDS and float(np.abs(a).max()) >= MIN_PEAK
+
+    smp, rate = engine.synthesize(settings, text, where=where)
+    if ok(smp, rate):
+        return smp, rate, ""
+    best = (float(np.abs(np.asarray(smp)).max()), smp, rate, "")
+    for ns, nw, ls in RETRIES:
+        alt = dataclasses.replace(settings, noise_scale=ns, noise_w=nw, length_scale=ls)
+        smp2, rate2 = engine.synthesize(alt, text, where=where)
+        if ok(smp2, rate2):
+            return smp2, rate2, f"retried with noise {ns}/{nw}, length {ls}"
+        pk = float(np.abs(np.asarray(smp2)).max())
+        if pk > best[0]:
+            best = (pk, smp2, rate2, "")
+    raise RuntimeError(f"no audible synthesis for {text!r} (best raw peak {best[0]:.3f}); add a speech override or use another voice")
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("story")
@@ -112,7 +143,9 @@ def main(argv: list[str] | None = None) -> int:
                 rate = 22050
                 for n, part in enumerate(item["parts"]):
                     settings = voice_for(voices, args.mode, part["speaker"])
-                    samples, rate = engine.synthesize(settings, part["text"], where=item["id"])
+                    samples, rate, note = synthesize_audible(engine, settings, part["text"], item["id"])
+                    if note:
+                        print(f"  {item['id']} ({part['speaker']}): {note}")
                     wav = Path(tmp) / f"{item['key']}_{n}.wav"
                     audio.write_wav(wav, samples, rate)
                     wavs.append(wav); semis.append(settings.pitch_semitones); tempos.append(settings.tempo)
