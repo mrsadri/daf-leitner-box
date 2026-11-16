@@ -47,3 +47,9 @@ DaF-kompakt-work/DaF-kompakt/output/image-prompts/scenes/*.webp
 dist-e2e
 test-results
 playwright-report
+
+# Local work only (never in Git): the textbook work folder, story-writing prompts and old notes.
+# The story sources the app is built from are in content/stories/source/.
+DaF-kompakt-work/
+000-*.txt
+LOGIC_REVIEW.md

@@ -1,7 +1,7 @@
 /**
  * The 30 silver cards: fun, motivating facts about German and learning it.
  * A day with more than 15 correct vocabulary answers earns the next card in this order.
- * Facts were checked against sources (see docs/silver-cards-plan.md); keep wording careful when editing.
+ * Facts were checked against sources (the plan document is in the Git history); keep wording careful when editing.
  */
 export interface SilverFact {
   /** 3D icon in public/icons3d (thiings.co, see docs/icon-credits.md) */

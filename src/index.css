@@ -3,7 +3,7 @@
 /*
  * Primary colour: traffic blue (inspired by RAL 5017, the blue of information and motorway signs in
  * Austria and Germany). Redefining Tailwind's indigo scale switches every indigo-* class at once.
- * All text pairs used in the app pass WCAG AA (checked in docs/austria-design-plan.md).
+ * All text pairs used in the app pass WCAG AA (checked in docs/austria-design-plan.md, now in the Git history).
  */
 @theme {
   --color-indigo-50: #eef6fb;

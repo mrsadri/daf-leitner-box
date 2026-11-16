@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-One-off data step for the Perfekt quiz (see docs/plural-perfekt-plan.md):
+One-off data step for the Perfekt quiz (plan: docs/plural-perfekt-plan.md in the Git history):
 
 1. Splits multi-verb cards into one card per verb (scripts/data/verb-splits.json).
    The first verb keeps the original row, so its card id daf_<Lektion>_<Nr> and every
