@@ -1,3 +1,6 @@
+/**
+ * An on/off switch (role=switch) with its label.
+ */
 import React from 'react';
 
 interface SwitchProps {

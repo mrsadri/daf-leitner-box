@@ -1,11 +1,11 @@
-import React from 'react';
-import { useI18n } from '../../i18n/I18nProvider';
-
 /**
  * Onboarding illustrations: thiings.co 3D icons and small chips, each a separate animated layer
  * (keyframes in index.css, `.ob-*`). The composition is mirrored for nobody: it reads the same in both languages.
  * Decorative only (aria-hidden); the slide text says everything.
  */
+import React from 'react';
+import { useI18n } from '../../i18n/I18nProvider';
+
 
 interface LayerProps {
   /** Centre of the layer, in % of the stage */

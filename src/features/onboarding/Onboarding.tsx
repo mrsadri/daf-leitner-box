@@ -1,3 +1,6 @@
+/**
+ * Signed-out onboarding carousel (Telegram-style): slides with animated illustrations; swipe, arrows or dots.
+ */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useI18n } from '../../i18n/I18nProvider';

@@ -1,3 +1,6 @@
+/**
+ * Text direction helpers: De (German, always LTR), Auto (direction from the content), Ltr.
+ */
 import React from 'react';
 
 /**

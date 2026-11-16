@@ -1,3 +1,7 @@
+/**
+ * This device's silver-card counter, kept in step with the server (get_silver_status); the dashboard widget and the
+ * review subscribe to changes.
+ */
 import { supabase } from '../../shared/lib/supabase';
 import { isDemoMode } from '../../shared/lib/demo';
 import { getTodayString } from '../../core/leitnerEngine';

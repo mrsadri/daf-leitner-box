@@ -1,3 +1,7 @@
+/**
+ * Today's review: due cards one at a time (article guess, Perfekt check, flip, swipe or buttons: knew it / not yet).
+ * Answers go to the engine; silver cards are counted here. Keyboard shortcuts pause while a dialog is open.
+ */
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { LeitnerCard, BOX_CONFIGS, MASTERED_BOX } from '../../core/types';
 import { leitnerEngine, isNounCard, stripArticleFromWord, getQuizArticle } from '../../core/leitnerEngine';
@@ -279,7 +283,7 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
   });
 
 
-  const kbd = 'px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-[11px] font-mono-num font-bold';
+  const kbd = 'px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-xs font-mono-num font-bold';
 
   // If queue is empty
   if (!currentCard && answeredCount === 0) {
@@ -505,7 +509,7 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
                         <span className="text-xs font-bold text-slate-800 dark:text-slate-200">
                           {t.review.articleQuiz} (<De>der · die · das</De>)
                         </span>
-                        <span className="hidden pointer-fine:inline text-[11px] text-slate-600 dark:text-slate-400">
+                        <span className="hidden pointer-fine:inline text-xs text-slate-600 dark:text-slate-400">
                           {t.review.shortcuts(nounsOnly ? 'D / E / S · 1 / 2 / 3' : 'D / E / S')}
                         </span>
                       </div>
@@ -539,8 +543,8 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
                               className={btnClass}
                             >
                               <De className="text-base">{art}</De>
-                              <span className="text-[10px] font-normal opacity-75 pointer-fine:hidden">{t.articles[art]}</span>
-                              <span className="text-[10px] font-mono-num font-normal opacity-75 hidden pointer-fine:inline">{keyHint}</span>
+                              <span className="text-xs font-normal opacity-75 pointer-fine:hidden">{t.articles[art]}</span>
+                              <span className="text-xs font-mono-num font-normal opacity-75 hidden pointer-fine:inline">{keyHint}</span>
                             </button>
                           );
                         })}

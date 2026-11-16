@@ -1,3 +1,7 @@
+/**
+ * The 30 lessons of DaF kompakt as stations on one metro line, coloured by level, with "you are here"; tapping a
+ * station opens the word bank at that lesson.
+ */
 import React, { useLayoutEffect, useMemo, useRef } from 'react';
 import { MapPin, Check } from 'lucide-react';
 import type { LeitnerCard } from '../../core/types';
@@ -70,14 +74,14 @@ export const MetroMap: React.FC<{ catalog: LeitnerCard[]; cards: LeitnerCard[]; 
                 />
                 {firstOfLevel && (
                   <span
-                    className="absolute top-0 start-1/2 px-1.5 py-0.5 rounded-md text-[10px] font-bold text-white whitespace-nowrap"
+                    className="absolute top-0 start-1/2 px-1.5 py-0.5 rounded-md text-xs font-bold text-white whitespace-nowrap"
                     style={{ background: color }}
                   >
                     {s.niveau}
                   </span>
                 )}
                 {isCurrent && (
-                  <span className="absolute top-6 flex items-center gap-0.5 text-[10px] font-bold text-rose-600 dark:text-rose-400 whitespace-nowrap" aria-hidden="true">
+                  <span className="absolute top-6 flex items-center gap-0.5 text-xs font-bold text-rose-600 dark:text-rose-400 whitespace-nowrap" aria-hidden="true">
                     <MapPin className="w-3 h-3" />
                     {m.you}
                   </span>
@@ -98,7 +102,7 @@ export const MetroMap: React.FC<{ catalog: LeitnerCard[]; cards: LeitnerCard[]; 
                   {s.status === 'done' && <Check className="w-3 h-3 text-white" strokeWidth={3.5} />}
                   {s.status === 'partial' && <span className="w-3 h-3 rounded-full bg-white dark:bg-slate-900" />}
                 </button>
-                <span className={`mt-1.5 text-[11px] font-mono-num ${isCurrent ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400'}`}>
+                <span className={`mt-1.5 text-xs font-mono-num ${isCurrent ? 'font-bold text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400'}`}>
                   {digits(String(Number(s.lektion)))}
                 </span>
               </li>
@@ -108,7 +112,7 @@ export const MetroMap: React.FC<{ catalog: LeitnerCard[]; cards: LeitnerCard[]; 
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-slate-600 dark:text-slate-400">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-600 dark:text-slate-400">
         <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-slate-500" />{m.done}</span>
         <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full" style={{ background: 'conic-gradient(#64748b 180deg, rgb(203 213 225) 0)' }} />{m.partial}</span>
         <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full bg-white shadow-[inset_0_0_0_2px_#64748b]" />{m.none}</span>

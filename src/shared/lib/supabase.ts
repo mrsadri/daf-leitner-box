@@ -1,3 +1,6 @@
+/**
+ * The Supabase client (public URL and anon key from the environment), or null in demo mode or without configuration.
+ */
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { isDemoMode } from './demo';
 

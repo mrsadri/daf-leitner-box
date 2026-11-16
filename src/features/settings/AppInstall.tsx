@@ -1,3 +1,6 @@
+/**
+ * Settings section: install the app on the home screen (per platform) and turn on push reminders.
+ */
 import React, { useEffect, useState } from 'react';
 import { Smartphone, Bell, BellOff, CheckCircle2, AlertTriangle, Loader2, X, Share } from 'lucide-react';
 import { useI18n } from '../../i18n/I18nProvider';
@@ -147,7 +150,7 @@ export const NotificationSection: React.FC<NotificationSectionProps> = ({ notify
               {t.pwa.notifEnable}
             </button>
           )}
-          <span className="text-[11px] text-slate-500 dark:text-slate-400">{t.pwa.notifPerDevice}</span>
+          <span className="text-xs text-slate-500 dark:text-slate-400">{t.pwa.notifPerDevice}</span>
         </div>
       )}
       {status === 'on' && (

@@ -1,3 +1,6 @@
+/**
+ * The top bar: brand, tabs (a bottom bar on phones, the header row from 1280px), new-card button and account.
+ */
 import React from 'react';
 import { Layers, PlayCircle, BookOpen, BookHeart, Settings2, Plus, Trophy, ShieldCheck, LucideIcon } from 'lucide-react';
 import { UserProfile } from '../core/types';
@@ -64,7 +67,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="sm:hidden">{t.app.shortName}</span>
               <span className="hidden sm:inline">{t.app.name}</span>
             </span>
-            <span className="text-[11px] text-slate-600 dark:text-slate-400 whitespace-nowrap hidden sm:block xl:hidden 2xl:block">
+            <span className="text-xs text-slate-600 dark:text-slate-400 whitespace-nowrap hidden sm:block xl:hidden 2xl:block">
               {t.app.tagline}
             </span>
           </div>
@@ -86,7 +89,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <Icon className="w-4 h-4" />
               <span>{t.nav.desktop[id]}</span>
               {id === 'review' && dueTodayCount > 0 && (
-                <span className="px-1.5 text-[11px] font-mono-num font-bold rounded-md bg-amber-500 text-white">
+                <span className="px-1.5 text-xs font-mono-num font-bold rounded-md bg-amber-500 text-white">
                   {num(dueTodayCount)}
                 </span>
               )}
@@ -125,7 +128,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* Mobile navigation */}
       <nav
-        className="xl:hidden grid border-t border-slate-200 dark:border-slate-800 bg-slate-50/95 dark:bg-slate-900/95 px-1 py-1.5 text-[11px] sm:text-xs"
+        className="xl:hidden grid border-t border-slate-200 dark:border-slate-800 bg-slate-50/95 dark:bg-slate-900/95 px-1 py-1.5 text-xs"
         style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
       >
         {tabs.map(({ id, icon: Icon }) => (
@@ -140,7 +143,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span className="relative">
               <Icon className="w-5 h-5" />
               {id === 'review' && dueTodayCount > 0 && (
-                <span className="absolute -top-1.5 -end-3 min-w-4 px-1 text-[9px] leading-4 text-center bg-amber-500 text-white rounded-full font-mono-num">
+                <span className="absolute -top-1.5 -end-3 min-w-4 px-1 text-xs leading-4 text-center bg-amber-500 text-white rounded-full font-mono-num">
                   {num(dueTodayCount)}
                 </span>
               )}

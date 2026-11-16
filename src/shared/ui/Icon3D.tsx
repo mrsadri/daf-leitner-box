@@ -1,3 +1,6 @@
+/**
+ * A 3D icon from public/icons3d (thiings.co, attribution in the footer and docs/icon-credits.md).
+ */
 import React from 'react';
 
 /**

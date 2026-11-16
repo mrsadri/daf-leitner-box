@@ -1,3 +1,6 @@
+/**
+ * Slide navigation for the onboarding carousel. Pure; unit-tested in tests/onboarding.test.ts.
+ */
 import type { SwipeDir } from '../../shared/ui/swipe';
 
 /**

@@ -1,9 +1,9 @@
-import { useCallback, useRef } from 'react';
-
 /**
  * A session's action buttons stay fixed at the bottom of the screen at all times (phones and desktop).
  * Bottom padding clears the home indicator of the installed app.
  */
+import { useCallback, useRef } from 'react';
+
 export const FIXED_ACTION_BAR =
   'fixed inset-x-0 bottom-0 z-20 m-0 ' +
   'ps-[max(1rem,env(safe-area-inset-left))] pe-[max(1rem,env(safe-area-inset-right))] ' +

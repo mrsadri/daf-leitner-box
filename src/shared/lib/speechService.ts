@@ -1,3 +1,6 @@
+/**
+ * Pronunciation with the browser's German voice (Web Speech API): voice choice, rate, and a promise per utterance.
+ */
 import { pickGermanVoice, germanVoices } from './voices';
 
 /**

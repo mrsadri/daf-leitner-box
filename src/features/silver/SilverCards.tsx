@@ -20,7 +20,7 @@ export const SilverCardFace: React.FC<{ index: number; large?: boolean }> = ({ i
   if (!fact) return null;
   return (
     <div className={`relative rounded-2xl ${SILVER_FACE} ${large ? 'p-5 sm:p-6' : 'p-4'} text-slate-800 dark:text-slate-100 overflow-hidden`}>
-      <div className="flex items-center justify-between gap-2 text-[11px] font-bold text-slate-500 dark:text-slate-300 mb-2">
+      <div className="flex items-center justify-between gap-2 text-xs font-bold text-slate-500 dark:text-slate-300 mb-2">
         <span>{t.silver.numberOf(index, SILVER_MAX)}</span>
         <Icon3D name={fact.icon} size={large ? 56 : 40} />
       </div>
@@ -126,7 +126,7 @@ export const SilverWidget: React.FC = () => {
             </div>
           </div>
         )}
-        {s.total === 0 && <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">{t.silver.howTo}</p>}
+        {s.total === 0 && <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">{t.silver.howTo}</p>}
       </div>
       <button
         onClick={() => setOpen(true)}

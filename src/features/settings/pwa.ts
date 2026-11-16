@@ -1,11 +1,11 @@
-import { supabase } from '../../shared/lib/supabase';
-import { isDemoMode } from '../../shared/lib/demo';
-
 /**
  * Installing the app on the home screen (PWA) and push reminders.
  * The server side (subscriptions table, scheduler, sending function) is in
  * supabase/migrations and supabase/functions/send-reminders (see docs/supabase-push-setup.md).
  */
+import { supabase } from '../../shared/lib/supabase';
+import { isDemoMode } from '../../shared/lib/demo';
+
 
 const VAPID_PUBLIC_KEY = (import.meta.env.VITE_VAPID_PUBLIC_KEY as string | undefined) || '';
 

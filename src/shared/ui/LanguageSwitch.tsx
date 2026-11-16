@@ -1,3 +1,6 @@
+/**
+ * The fa/en switch.
+ */
 import React from 'react';
 import { Languages } from 'lucide-react';
 import { useI18n, Lang } from '../../i18n/I18nProvider';

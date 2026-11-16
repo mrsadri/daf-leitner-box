@@ -1,3 +1,6 @@
+/**
+ * Browser entry: removes storage of retired features, starts the PWA helpers, renders the app.
+ */
 import {createRoot} from 'react-dom/client';
 import App from './app/App.tsx';
 import { I18nProvider } from './i18n/I18nProvider';

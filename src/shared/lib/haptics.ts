@@ -1,3 +1,6 @@
+/**
+ * Haptic feedback for swipes (where the browser supports it).
+ */
 import { leitnerEngine } from '../../core/leitnerEngine';
 
 /** A short vibration for a committed swipe (Android; iOS has no web vibration), if haptic feedback is on. */

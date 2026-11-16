@@ -1,3 +1,6 @@
+/**
+ * A card that can be swiped left or right (tilt, stamp, fly-out), used by review and learning; taps flip it.
+ */
 import React, { forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useRef } from 'react';
 import { SwipeDir, lockAxis, releaseDecision, stampOpacity, dragRotation } from './swipe';
 

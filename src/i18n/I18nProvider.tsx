@@ -1,3 +1,7 @@
+/**
+ * Interface language (fa, RTL / en, LTR): React context with t (strings), number and date formatting; the choice is
+ * kept in localStorage and synced to the account settings.
+ */
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { fa, Messages } from './fa';
 import { en } from './en';

@@ -1,3 +1,6 @@
+/**
+ * Leaderboard: all-time and weekly points, the user's own rank, silver cards; users can hide themselves in settings.
+ */
 import React, { useCallback, useEffect, useState } from 'react';
 import { Trophy, RefreshCw, Flame, Crown, Medal, AlertTriangle, EyeOff } from 'lucide-react';
 import { fetchLeaderboard, LeaderboardRow, cloudSync } from '../../core/cloudSync';
@@ -189,7 +192,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ profile, onOpenSetting
                           <Auto className="truncate max-w-[9rem] sm:max-w-[14rem]">{r.display_name}</Auto>
                           {r.is_me && <span className="text-xs text-indigo-600 dark:text-indigo-400 font-medium shrink-0">{t.leaderboard.you}</span>}
                         </span>
-                        <span className="text-[11px] text-slate-500 dark:text-slate-400 block">{t.leaderboard.inBoxes(r.learning)}</span>
+                        <span className="text-xs text-slate-500 dark:text-slate-400 block">{t.leaderboard.inBoxes(r.learning)}</span>
                       </div>
                     </div>
                   </td>

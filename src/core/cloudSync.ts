@@ -1,15 +1,15 @@
-import type { User } from '@supabase/supabase-js';
-import { requireSupabase } from '../shared/lib/supabase';
-import { AppSettings, LeitnerCard, ReviewEvent, UserProfile } from './types';
-import { leitnerEngine, isRemovedSharedCopy, LEGACY_CARDS_KEY, LEGACY_SETTINGS_KEY } from './leitnerEngine';
-import { isDemoMode, buildDemoCards } from '../shared/lib/demo';
-
 /**
  * Cloud persistence for the signed-in user (Supabase is the source of truth).
  *
  * Writes go through a queue that is debounced, retried with backoff and persisted
  * in localStorage, so answers given offline or during a network error are not lost.
  */
+import type { User } from '@supabase/supabase-js';
+import { requireSupabase } from '../shared/lib/supabase';
+import { AppSettings, LeitnerCard, ReviewEvent, UserProfile } from './types';
+import { leitnerEngine, isRemovedSharedCopy, LEGACY_CARDS_KEY, LEGACY_SETTINGS_KEY } from './leitnerEngine';
+import { isDemoMode, buildDemoCards } from '../shared/lib/demo';
+
 
 export type SyncStatus = 'idle' | 'syncing' | 'error' | 'offline';
 

@@ -1,3 +1,7 @@
+/**
+ * Settings: profile and leaderboard visibility, language, sound, speech voice and rate, backups (export/import),
+ * app install and reminders, sign out.
+ */
 import React, { useState, useRef, useEffect } from 'react';
 import { AppSettings, LeitnerCard, UserProfile } from '../../core/types';
 import { leitnerEngine } from '../../core/leitnerEngine';
@@ -310,7 +314,7 @@ export const SettingsBackupModal: React.FC<SettingsBackupModalProps> = ({
               onChange={(e) => onUpdateSettings({ speechRate: parseFloat(e.target.value) })}
               className="w-full accent-indigo-600 cursor-pointer"
             />
-            <div className="flex justify-between text-[11px] text-slate-600 dark:text-slate-400">
+            <div className="flex justify-between text-xs text-slate-600 dark:text-slate-400">
               <span>{t.settings.rateSlow} ({t.settings.rate(0.7)})</span>
               <span>{t.settings.rateNormal} ({t.settings.rate(0.9)})</span>
               <span>{t.settings.rateFast} ({t.settings.rate(1.2)})</span>

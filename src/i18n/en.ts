@@ -1,3 +1,6 @@
+/**
+ * English interface strings. Same shape as fa.ts (the type comes from there); keep the sections in the same order.
+ */
 import { isCustom, type Messages } from './fa';
 import { formatNumber } from './format';
 

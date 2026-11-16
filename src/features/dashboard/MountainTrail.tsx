@@ -1,3 +1,8 @@
+/**
+ * Decoration for the Leitner boxes: a mountain trail from the valley (box 0) to the summit (mastered).
+ * Exception to the 12px text floor: the station labels are 10px on phones, or they overlap on the slope; the
+ * same names are readable in full on the box cards below.
+ */
 import React from 'react';
 import { useI18n } from '../../i18n/I18nProvider';
 import { Icon3D } from '../../shared/ui/Icon3D';
@@ -54,7 +59,7 @@ export const MountainTrail: React.FC = () => {
         <span
           key={s.name}
           lang="de"
-          className="absolute -translate-y-full px-1.5 py-0.5 rounded-md bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-700 text-[9px] sm:text-[11px] font-semibold text-slate-700 dark:text-slate-200 whitespace-nowrap shadow-xs ltr:-translate-x-1/2 rtl:translate-x-1/2"
+          className="absolute -translate-y-full px-1.5 py-0.5 rounded-md bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-700 text-[10px] sm:text-xs font-semibold text-slate-700 dark:text-slate-200 whitespace-nowrap shadow-xs ltr:-translate-x-1/2 rtl:translate-x-1/2"
           style={{ insetInlineStart: `${(s.x / 600) * 100}%`, top: `${((s.y - 8) / 150) * 100}%` }}
         >
           {s.name} · {digits(String(i))}

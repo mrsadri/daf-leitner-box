@@ -1,3 +1,6 @@
+/**
+ * A row of round action buttons with a short label under each (review and learning sessions).
+ */
 import React from 'react';
 import { FIXED_ACTION_BAR, useFixedActionBar } from './mobileActionBar';
 
@@ -55,7 +58,7 @@ export const RoundActionBar: React.FC<{ actions: RoundAction[]; className?: stri
             >
               {a.icon}
             </span>
-            <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 whitespace-nowrap">{a.label}</span>
+            <span className="text-xs font-semibold text-slate-600 dark:text-slate-300 whitespace-nowrap">{a.label}</span>
           </button>
         );
       })}

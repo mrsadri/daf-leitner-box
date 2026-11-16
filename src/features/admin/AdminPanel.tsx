@@ -1,3 +1,6 @@
+/**
+ * Admin screen (owner only): users, last seen, suspend or delete an account (typed confirmation).
+ */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ShieldCheck, RefreshCw, AlertTriangle, Search, PauseCircle, PlayCircle, Trash2, Loader2 } from 'lucide-react';
 import { Dialog, Button, fieldClass } from '../../shared/ui';
@@ -180,7 +183,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ profile }) => {
             { label: t.admin.suspended, value: stats.suspended, cls: 'text-amber-600 dark:text-amber-400' }
           ].map(s => (
             <div key={s.label} className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3">
-              <span className="text-[11px] text-slate-600 dark:text-slate-400 block">{s.label}</span>
+              <span className="text-xs text-slate-600 dark:text-slate-400 block">{s.label}</span>
               <span className={`text-xl font-bold font-mono-num ${s.cls}`}>{num(s.value)}</span>
             </div>
           ))}
@@ -251,33 +254,33 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ profile }) => {
                             <Auto className="truncate">{r.display_name}</Auto>
                             {isMe && <span className="text-xs text-indigo-600 dark:text-indigo-400 font-medium shrink-0">{t.admin.you}</span>}
                             {r.suspended_at && (
-                              <span className="text-[10px] font-semibold shrink-0 px-1.5 py-0.5 rounded bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-200">
+                              <span className="text-xs font-semibold shrink-0 px-1.5 py-0.5 rounded bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-200">
                                 {t.admin.suspendedBadge}
                               </span>
                             )}
                           </span>
-                          <Ltr className="text-[11px] text-slate-500 dark:text-slate-400 block truncate max-w-[14rem] text-start">{r.email}</Ltr>
+                          <Ltr className="text-xs text-slate-500 dark:text-slate-400 block truncate max-w-[14rem] text-start">{r.email}</Ltr>
                         </div>
                       </div>
                     </td>
                     <td className="py-3 px-4 text-xs text-slate-700 dark:text-slate-300 whitespace-nowrap">{formatDate(r.first_seen)}</td>
                     <td className="py-3 px-4 text-xs whitespace-nowrap">
                       <span className="text-slate-700 dark:text-slate-300 block">{formatDate(r.last_seen)}</span>
-                      <span className="text-[11px] text-slate-500 dark:text-slate-400">{ago(r.last_seen)}</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400">{ago(r.last_seen)}</span>
                     </td>
                     <td className="py-3 px-4 text-end font-mono-num text-xs text-slate-700 dark:text-slate-300 whitespace-nowrap hidden md:table-cell">
                       {num(r.cards)} / {num(r.reviews)}
                     </td>
                     <td className="py-3 px-4">
                       {isMe ? (
-                        <span className="text-[11px] text-slate-400 block text-end">—</span>
+                        <span className="text-xs text-slate-400 block text-end">—</span>
                       ) : (
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => toggleSuspend(r)}
                             disabled={busy}
                             title={r.suspended_at ? t.admin.restoreTitle : t.admin.suspend}
-                            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold whitespace-nowrap disabled:opacity-50 ${
+                            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap disabled:opacity-50 ${
                               r.suspended_at
                                 ? 'bg-emerald-100 hover:bg-emerald-200 text-emerald-800 dark:bg-emerald-950 dark:hover:bg-emerald-900 dark:text-emerald-300'
                                 : 'bg-amber-100 hover:bg-amber-200 text-amber-800 dark:bg-amber-950 dark:hover:bg-amber-900 dark:text-amber-300'
@@ -290,7 +293,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ profile }) => {
                             onClick={() => setToDelete(r)}
                             disabled={busy}
                             title={t.admin.deleteForever}
-                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold whitespace-nowrap bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-950 dark:hover:bg-red-900 dark:text-red-300 disabled:opacity-50"
+                            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-950 dark:hover:bg-red-900 dark:text-red-300 disabled:opacity-50"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                             <span className="hidden sm:inline">{t.admin.deleteForever}</span>

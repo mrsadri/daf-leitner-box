@@ -1,3 +1,7 @@
+/**
+ * Learning new words: one card at a time from the next lesson, with article quiz, plural, Perfekt and conjugation;
+ * 'got it' adds the word to box 0. Keyboard shortcuts pause while a dialog is open (isDialogOpen).
+ */
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { LeitnerCard } from '../../core/types';
 import { leitnerEngine, stripArticleFromWord, getQuizArticle, calculateNextReviewDate } from '../../core/leitnerEngine';
@@ -231,7 +235,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
   }, [currentWord, isFlipped, isNoun, currentIndex, flipMode, fullWordDisplay, handleSpeak, addedIds]);
 
 
-  const kbd = 'px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-[11px] font-mono-num font-bold';
+  const kbd = 'px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-xs font-mono-num font-bold';
 
   if (!currentWord) {
     const finished = addedCount > 0 || hadWordsAtStart;
@@ -431,7 +435,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
                           className={btnStyle}
                         >
                           <De className="text-base">{art}</De>
-                          <span className="text-[10px] font-normal opacity-75">{t.articles[art]}</span>
+                          <span className="text-xs font-normal opacity-75">{t.articles[art]}</span>
                         </button>
                       );
                     })}

@@ -1,3 +1,6 @@
+/**
+ * Core data types: a Leitner card (German word or the user's own card), settings, profile, box intervals.
+ */
 import type { Lang } from '../i18n/format';
 
 export type CardType = 'vocab' | 'reflection';

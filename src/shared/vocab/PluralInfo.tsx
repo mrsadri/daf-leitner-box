@@ -1,3 +1,6 @@
+/**
+ * Plural forms of a noun with their dictionary pattern.
+ */
 import React from 'react';
 import type { PluralPart } from './plural';
 import { useI18n } from '../../i18n/I18nProvider';
@@ -17,7 +20,7 @@ export const PluralInfo: React.FC<{ parts: PluralPart[]; compact?: boolean }> = 
             {p.pattern && (
               <De
                 title={t.plural.patternTitle(p.pattern)}
-                className="px-1.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-[11px] font-mono-num font-bold"
+                className="px-1.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-mono-num font-bold"
               >
                 {p.pattern}
               </De>

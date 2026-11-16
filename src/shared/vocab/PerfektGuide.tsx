@@ -1,3 +1,6 @@
+/**
+ * How a verb forms its Perfekt, shown as a hint before answering and an explanation after (beginner boxes).
+ */
 import React, { useState } from 'react';
 import { Lightbulb, ChevronDown, GraduationCap } from 'lucide-react';
 import type { PerfektGuide as Guide, SegmentPart } from './perfektRules';
@@ -57,7 +60,7 @@ export const PerfektHint: React.FC<{ guide: Guide }> = ({ guide }) => {
       <p><span className="font-semibold">{g.formula}</span> <Formula guide={guide} /></p>
       {prefixRule && <p>{prefixRule}</p>}
       {guide.endingEt && <p>{g.endingEt}</p>}
-      <p className="text-[11px] opacity-80">{g.rootNote}</p>
+      <p className="text-xs opacity-80">{g.rootNote}</p>
     </div>
   );
 };
@@ -103,7 +106,7 @@ export const PerfektExplanation: React.FC<{ guide: Guide; className?: string }> 
                   ))
                 : s.text.trim()}
             </span>
-            <span lang={lang} className="text-[10px] text-slate-500 dark:text-slate-400">{g.parts[s.part]}</span>
+            <span lang={lang} className="text-xs text-slate-500 dark:text-slate-400">{g.parts[s.part]}</span>
           </span>
         ))}
       </div>
@@ -114,7 +117,7 @@ export const PerfektExplanation: React.FC<{ guide: Guide; className?: string }> 
       {guide.extraG ? <p>{g.extraG}</p> : guide.stemChanged && <p>{g.stemChanged(guide.infinitiveStem, guide.participleStem)}</p>}
       {guide.alternatives.length > 0 && <p>{g.alternatives(guide.alternatives.join(' / '))}</p>}
       <p><span className="font-semibold">{g.auxTitle}</span> {g.aux[guide.auxReason]}</p>
-      <p className="text-[11px] text-slate-500 dark:text-slate-400">{g.rootNote}</p>
+      <p className="text-xs text-slate-500 dark:text-slate-400">{g.rootNote}</p>
       </div>
       )}
     </div>

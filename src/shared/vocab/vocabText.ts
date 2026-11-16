@@ -1,3 +1,6 @@
+/**
+ * The learner-facing texts of a word card in the interface language (meaning, example, forms, Perfekt, plural).
+ */
 import type { LeitnerCard } from '../../core/types';
 import type { Lang } from '../../i18n/format';
 import { leitnerEngine } from '../../core/leitnerEngine';

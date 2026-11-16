@@ -1,3 +1,6 @@
+/**
+ * Explains once which cards the nightly overdue rule moved back, and why.
+ */
 import React, { useMemo } from 'react';
 import { Dialog, Button } from '../../shared/ui';
 import type { LeitnerCard } from '../../core/types';

@@ -1,3 +1,6 @@
+/**
+ * Conjugation tables (Präsens, Präteritum, Perfekt) for a verb, with irregular parts marked, and the button that opens them.
+ */
 import React, { useRef, useState } from 'react';
 import { Table2 } from 'lucide-react';
 import { Dialog, Badge, type BadgeTone } from '../ui';

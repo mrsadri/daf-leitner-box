@@ -1,3 +1,6 @@
+/**
+ * Persian interface strings (the default language). Its type, Messages, is the contract en.ts must follow.
+ */
 import { formatNumber, localizeDigits } from './format';
 
 const n = (x: number) => formatNumber('fa', x);

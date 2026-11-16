@@ -1,3 +1,8 @@
+/**
+ * The Leitner engine: the user's cards and settings in memory and in a local cache, the word catalogue (CSV),
+ * review rules (box intervals, due dates) and every change to cards. Changes are reported to cloudSync through hooks.
+ * A singleton; no React. Rules: Box n is due 2^n days after its last review; box 6 is the archive (mastered).
+ */
 import { LeitnerCard, AppSettings, MASTERED_BOX, ReviewEvent } from './types';
 import { parseCSV, transformCsvToCards } from './csvParser';
 import { toLocalDateString } from './dates';

@@ -1,3 +1,6 @@
+/**
+ * Signed-out screens: the onboarding with Google sign-in, a missing-configuration notice, and the suspended-account screen.
+ */
 import React, { useState } from 'react';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import { signInWithGoogle } from '../../shared/lib/supabase';

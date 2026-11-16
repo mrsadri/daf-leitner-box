@@ -1,12 +1,12 @@
+/**
+ * Cards the server moved back because they were overdue (supabase/migrations/20261030_overdue_overtake.sql),
+ * not yet explained to the user. Empty when offline or when the database part isn't installed yet.
+ */
 import { supabase } from '../../shared/lib/supabase';
 import { isDemoMode } from '../../shared/lib/demo';
 import { leitnerEngine } from '../../core/leitnerEngine';
 import type { OverdueMove } from './overdueSummary';
 
-/**
- * Cards the server moved back because they were overdue (supabase/migrations/20261030_overdue_overtake.sql),
- * not yet explained to the user. Empty when offline or when the database part isn't installed yet.
- */
 export async function fetchUnseenOverdueMoves(): Promise<OverdueMove[]> {
   if (isDemoMode) return demoMoves();
   if (!supabase) return [];

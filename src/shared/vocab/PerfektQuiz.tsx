@@ -1,3 +1,6 @@
+/**
+ * The Perfekt check on verb cards: type 'hat gelernt' / 'ist gegangen'; tolerant of small typos, strict on haben/sein.
+ */
 import React, { useEffect, useRef, useState } from 'react';
 import { CheckCircle2, XCircle, AlertCircle, PencilLine, Lightbulb } from 'lucide-react';
 import { checkPerfekt, PerfektResult } from './perfekt';
@@ -86,7 +89,7 @@ export const PerfektQuiz: React.FC<PerfektQuizProps> = ({ accepted, onGraded, pr
           <PencilLine className="w-4 h-4 text-indigo-600 shrink-0" />
           {t.perfekt.label}
         </label>
-        <span className="text-[11px] text-slate-500 dark:text-slate-400">{practice ? t.perfekt.practice : t.perfekt.hint}</span>
+        <span className="text-xs text-slate-500 dark:text-slate-400">{practice ? t.perfekt.practice : t.perfekt.hint}</span>
       </div>
 
       <form

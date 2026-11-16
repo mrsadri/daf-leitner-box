@@ -1,6 +1,3 @@
-import { LeitnerCard } from './types';
-import { toLocalDateString } from './dates';
-
 /**
  * RFC 4180 CSV parser (quoted fields may contain commas, quotes and line breaks).
  *
@@ -8,6 +5,9 @@ import { toLocalDateString } from './dates';
  * on commas again, so a quoted field containing a comma (e.g. "October 23, 2026 8:32 PM")
  * became two fields and every following column shifted by one.
  */
+import { LeitnerCard } from './types';
+import { toLocalDateString } from './dates';
+
 export function parseCSV(text: string): Record<string, string>[] {
   const rows: string[][] = [];
   let row: string[] = [];

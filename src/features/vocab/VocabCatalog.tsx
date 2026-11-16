@@ -1,3 +1,7 @@
+/**
+ * The word bank: the book's 3,400 words with filters (lesson, level, word type, in box) and adding words or whole
+ * lessons to box 0. The lesson menu's first entry, «کارت‌های من», shows the user's own cards (MyCards).
+ */
 import React, { useState, useMemo, useEffect } from 'react';
 import { LeitnerCard } from '../../core/types';
 import { speechService } from '../../shared/lib/speechService';
@@ -271,7 +275,7 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
             >
               <div className="min-w-0">
                 {/* Meta */}
-                <div className="flex items-center justify-between gap-2 text-[11px] text-slate-600 dark:text-slate-400 mb-2">
+                <div className="flex items-center justify-between gap-2 text-xs text-slate-600 dark:text-slate-400 mb-2">
                   <label className="dot-list flex flex-wrap items-center gap-x-2 gap-y-0.5 min-w-0">
                     {!active && (
                       <input
@@ -291,7 +295,7 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
                     )}
                   </label>
 
-                  <span className={`shrink-0 text-[11px] ${active ? 'font-medium text-emerald-700 dark:text-emerald-400' : ''}`}>
+                  <span className={`shrink-0 text-xs ${active ? 'font-medium text-emerald-700 dark:text-emerald-400' : ''}`}>
                     {active ? (active.box >= 6 ? t.catalog.mastered : t.catalog.inBoxN(t.boxes.name(active.box))) : t.catalog.ready}
                   </span>
                 </div>
@@ -327,7 +331,7 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
                 <Auto as="p" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mt-1 text-start">{text.meaning}</Auto>
 
                 {(plural.length > 0 || text.formen || text.oesterreich) && (
-                  <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/60 text-[11px] space-y-1 text-slate-500 dark:text-slate-400">
+                  <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800/60 text-xs space-y-1 text-slate-500 dark:text-slate-400">
                     {plural.length > 0 && (
                       <div className="flex items-baseline gap-1.5">
                         <De className="text-slate-400 shrink-0">Plural:</De>

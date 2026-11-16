@@ -1,3 +1,7 @@
+/**
+ * Dashboard: today's review, new words, Stories entry, the boxes on a mountain trail, lessons on a metro map,
+ * silver cards, and the cards in a box (dialog).
+ */
 import React, { useState } from 'react';
 import { LeitnerCard, BOX_CONFIGS } from '../../core/types';
 import { isCardDue, getTodayString, isNounCard } from '../../core/leitnerEngine';
@@ -134,7 +138,7 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
             <span className="text-2xl font-bold font-mono-num text-amber-600 dark:text-amber-400">
               {num(dueTodayCards.length)}
             </span>
-            <span className="text-[11px] text-slate-600 dark:text-slate-400 block">
+            <span className="text-xs text-slate-600 dark:text-slate-400 block">
               {t.dashboard.dueSplit(dueNounsCards.length, dueTodayCards.length - dueNounsCards.length)}
             </span>
           </div>
@@ -144,7 +148,7 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
             <span className="text-2xl font-bold font-mono-num text-slate-900 dark:text-white">
               {num(cards.filter(c => c.box < 6).length)}
             </span>
-            <span className="text-[11px] text-slate-600 dark:text-slate-400 block">
+            <span className="text-xs text-slate-600 dark:text-slate-400 block">
               {t.dashboard.rotationSplit(vocabCards.length, reflectionCards.length)}
             </span>
           </div>
@@ -164,7 +168,7 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
         {/* Decoration: the boxes as a hiking trail from the valley to the summit */}
         <div className="mb-4 space-y-1">
           <MountainTrail />
-          <p className="text-center text-[11px] text-slate-500 dark:text-slate-400">{t.trail.caption}</p>
+          <p className="text-center text-xs text-slate-500 dark:text-slate-400">{t.trail.caption}</p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-3.5">
@@ -189,7 +193,7 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
                       <span className="text-2xl font-extrabold font-mono-num text-slate-900 dark:text-white">{num(boxCards.length)}</span>
                       <span className="text-xs text-slate-600 dark:text-slate-400">{t.dashboard.cardUnit}</span>
                     </div>
-                    <span className="text-[11px] text-slate-600 dark:text-slate-400 block mt-0.5">
+                    <span className="text-xs text-slate-600 dark:text-slate-400 block mt-0.5">
                       {t.dashboard.interval(box.intervalDays)}
                     </span>
                   </div>
@@ -197,7 +201,7 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
                 </div>
 
                 <div className="space-y-2 pt-2.5 border-t border-slate-100 dark:border-slate-800/80">
-                  <div className="flex flex-wrap items-center justify-between gap-x-2 text-[10px] text-slate-600 dark:text-slate-400">
+                  <div className="flex flex-wrap items-center justify-between gap-x-2 text-xs text-slate-600 dark:text-slate-400">
                     <span>{t.dashboard.boxVocab(vocabCount)}</span>
                     <span>{t.dashboard.boxRefl(refCount)}</span>
                   </div>
@@ -206,14 +210,14 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
                     {dueCount > 0 && (
                       <button
                         onClick={() => onStartReview(box.index)}
-                        className="w-full py-1.5 px-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[11px] font-semibold text-center transition-colors"
+                        className="w-full py-1.5 px-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold text-center transition-colors"
                       >
                         {t.dashboard.reviewN(dueCount)}
                       </button>
                     )}
                     <button
                       onClick={() => setSelectedBoxModal(box.index)}
-                      className="w-full py-1.5 px-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-[11px] font-medium transition-colors"
+                      className="w-full py-1.5 px-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-xs font-medium transition-colors"
                       title={t.dashboard.viewHint}
                     >
                       {t.dashboard.viewN(boxCards.length)}
@@ -313,7 +317,7 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
                     <div className="shrink-0 text-xs text-slate-600 dark:text-slate-400 sm:text-end">
                       {card.box < 6 && <div>{t.dashboard.due(date(`${card.nextReviewDate}T12:00:00`))}</div>}
                       {isCardDue(card, todayStr) && (
-                        <span className="text-amber-600 dark:text-amber-400 font-semibold block text-[11px]">{t.dashboard.dueNow}</span>
+                        <span className="text-amber-600 dark:text-amber-400 font-semibold block text-xs">{t.dashboard.dueNow}</span>
                       )}
                     </div>
                   </div>

@@ -1,7 +1,3 @@
-import type { User } from '@supabase/supabase-js';
-import { LeitnerCard } from '../../core/types';
-import { toLocalDateString } from '../../core/dates';
-
 /**
  * Demo mode: skips Google sign-in and Supabase entirely and runs on sample data kept in localStorage.
  *   - development: `VITE_DEMO_MODE=1 npm run dev`
@@ -9,6 +5,10 @@ import { toLocalDateString } from '../../core/dates';
  * A normal production build has MODE 'production' and DEV false, so this is a constant false there and the demo code
  * is tree-shaken out of the deployed app.
  */
+import type { User } from '@supabase/supabase-js';
+import { LeitnerCard } from '../../core/types';
+import { toLocalDateString } from '../../core/dates';
+
 export const isDemoMode = (import.meta.env.DEV && import.meta.env.VITE_DEMO_MODE === '1') || import.meta.env.MODE === 'demo';
 
 export const DEMO_USER = {

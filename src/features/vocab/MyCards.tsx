@@ -137,8 +137,8 @@ export const MyCards: React.FC<MyCardsProps> = ({ cards, onAddCard, onDeleteCard
                 className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 flex flex-col justify-between shadow-2xs hover:border-slate-300 dark:hover:border-slate-700 transition-all space-y-4">
                 <div className="space-y-3 min-w-0">
                   <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
-                    <span className={`px-2 py-0.5 rounded-md text-[11px] font-semibold border ${CATEGORY_COLORS[cat]}`}>{t.categories[cat]}</span>
-                    <div className="dot-list flex items-center gap-2 text-slate-600 dark:text-slate-400 text-[11px]">
+                    <span className={`px-2 py-0.5 rounded-md text-xs font-semibold border ${CATEGORY_COLORS[cat]}`}>{t.categories[cat]}</span>
+                    <div className="dot-list flex items-center gap-2 text-slate-600 dark:text-slate-400 text-xs">
                       <span>{isMastered ? t.reflections.mastered : t.boxes.name(card.box)}</span>
                       {!isMastered && <span>{t.reflections.interval(boxConfig.intervalDays)}</span>}
                     </div>
@@ -176,7 +176,7 @@ export const MyCards: React.FC<MyCardsProps> = ({ cards, onAddCard, onDeleteCard
                   </div>
                 ) : (
                   <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2 text-xs text-slate-600 dark:text-slate-400">
-                    <div className="flex items-center gap-1.5 text-[11px]">
+                    <div className="flex items-center gap-1.5 text-xs">
                       <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                       {!isMastered && <span>{t.reflections.nextDue(date(`${card.nextReviewDate}T12:00:00`))}</span>}
                     </div>
