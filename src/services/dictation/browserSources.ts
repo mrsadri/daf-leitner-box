@@ -123,7 +123,7 @@ export const browserSources: Sources = {
         clearTimeout(timer);
         a.onended = a.onerror = a.onplaying = null;
         if (blobUrl) URL.revokeObjectURL(blobUrl);
-        err ? reject(err) : resolve();
+        if (err) reject(err); else resolve();
       };
       a.onplaying = () => clearTimeout(timer);                       // loaded: the watchdog is only for starting
       a.onended = () => finish();

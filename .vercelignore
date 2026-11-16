@@ -17,3 +17,7 @@ coverage
 *.zip
 Screenshot*.png
 .claude
+dist-e2e
+test-results
+playwright-report
+e2e

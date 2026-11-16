@@ -63,10 +63,10 @@ export function patternOf(singular: string, plural: string): string | null {
 
 /** Split on " / " and " · " outside parentheses ("die Krägen (Südd. / A / CH)" stays one part). */
 function splitParts(s: string): string[] {
-  const shielded = s.replace(/\([^)]*\)/g, m => m.replace(/\//g, '\u0000').replace(/·/g, '\u0001'));
+  const shielded = s.replace(/\([^)]*\)/g, m => m.replace(/\//g, '\uE000').replace(/·/g, '\uE001'));
   return shielded
-    .split(/\s+[\/·]\s+/)
-    .map(p => p.replace(/\u0000/g, '/').replace(/\u0001/g, '·').trim())
+    .split(/\s+[/·]\s+/)
+    .map(p => p.replace(/\uE000/g, '/').replace(/\uE001/g, '·').trim())
     .filter(Boolean);
 }
 

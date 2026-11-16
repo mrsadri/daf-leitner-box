@@ -175,7 +175,7 @@ export const GrammarDrawer: React.FC<Props> = ({ file, storyBlock, sequence, tri
         </button>
       </div>
       {sheetOpen && (
-        <section role="region" aria-label={t.dictation.grammar.title}
+        <section aria-label={t.dictation.grammar.title}
           className="fixed inset-x-0 bottom-0 z-40 max-h-[70vh] overflow-y-auto rounded-t-2xl border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-2xl">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white"><BookOpen className="w-4 h-4 text-indigo-600" aria-hidden />{t.dictation.grammar.title}</h2>

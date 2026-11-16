@@ -3,7 +3,7 @@
  * Pure and synchronous (under a millisecond for 33 words). The result describes WHERE and WHAT KIND of mistake there is,
  * and never contains the correct letters or words: the learner has to find them.
  */
-import { foldToken, normalizeText, tokenize, type Token } from './normalize.ts';
+import { foldToken, tokenize, type Token } from './normalize.ts';
 
 export type Category =
   | 'case' | 'umlaut-substitution' | 'eszett-substitution' | 'punctuation' | 'spacing'

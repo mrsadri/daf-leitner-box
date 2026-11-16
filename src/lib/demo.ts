@@ -3,11 +3,13 @@ import { LeitnerCard } from '../types/leitner';
 import { toLocalDateString } from '../services/dates';
 
 /**
- * Local demo mode for development: skips Google sign-in and Supabase entirely and runs on sample data
- * kept in localStorage. Enabled with `VITE_DEMO_MODE=1 npm run dev`. `import.meta.env.DEV` is false in
- * production builds, so this is always off (and tree-shaken) in the deployed app.
+ * Demo mode: skips Google sign-in and Supabase entirely and runs on sample data kept in localStorage.
+ *   - development: `VITE_DEMO_MODE=1 npm run dev`
+ *   - a demo build (browser tests, review previews): `vite build --mode demo`
+ * A normal production build has MODE 'production' and DEV false, so this is a constant false there and the demo code
+ * is tree-shaken out of the deployed app.
  */
-export const isDemoMode = import.meta.env.DEV && import.meta.env.VITE_DEMO_MODE === '1';
+export const isDemoMode = (import.meta.env.DEV && import.meta.env.VITE_DEMO_MODE === '1') || import.meta.env.MODE === 'demo';
 
 export const DEMO_USER = {
   id: 'demo-user',

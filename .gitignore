@@ -44,3 +44,6 @@ DaF-kompakt-work/DaF-kompakt/output/image-prompts/scenes/*.jpg
 DaF-kompakt-work/DaF-kompakt/output/image-prompts/scenes/*.jpeg
 DaF-kompakt-work/DaF-kompakt/output/image-prompts/scenes/*.png
 DaF-kompakt-work/DaF-kompakt/output/image-prompts/scenes/*.webp
+dist-e2e
+test-results
+playwright-report
