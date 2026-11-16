@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { LeitnerCard, AppSettings, UserProfile } from './types/leitner';
 import { leitnerEngine, getTodayString, isCardDue } from './services/leitnerEngine';
@@ -27,6 +27,11 @@ import type { OverdueMove } from './services/overdueSummary';
 import { OverdueNotice } from './components/OverdueNotice';
 import { startSilver, refreshSilver } from './services/silver';
 import { resetSharedState } from './services/sharedInsights';
+import { DictationBoundary } from './components/dictation/DictationBoundary';
+import type { FlagState } from './services/dictation/flag';
+
+// The dictation feature is a separate chunk: the main bundle does not grow
+const DictationScreen = lazy(() => import('./components/dictation/DictationScreen'));
 
 // Where a tapped notification wants to go ("?go=learn" / "?go=review" / "?go=leaderboard"), read before the URL is cleaned up
 const initialGo = new URLSearchParams(window.location.search).get('go');
@@ -74,6 +79,7 @@ function AuthGate() {
 function LeitnerApp({ user }: { user: User }) {
   const { t, lang, setLang } = useI18n();
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
+  const [dictationFlag, setDictationFlag] = useState<FlagState>({ enabled: false, preview: false });
   // Lesson chosen on the dashboard's metro map; the word list opens with it selected
   const [catalogLektion, setCatalogLektion] = useState<{ lektion: string; key: number } | null>(null);
   const [cards, setCards] = useState<LeitnerCard[]>([]);
@@ -216,6 +222,17 @@ function LeitnerApp({ user }: { user: User }) {
     if (profile && !profile.suspended) refreshPush(lang);
   }, [profile, lang]);
 
+  // Story dictation kill switch (remote flag, build constant as fallback; admins can preview with ?dictation=1)
+  useEffect(() => {
+    if (!profile || profile.suspended) return;
+    let cancelled = false;
+    import('./services/dictationSync')
+      .then(m => m.loadDictationFlag(!!profile.isAdmin))
+      .then(f => { if (!cancelled) setDictationFlag(f); })
+      .catch(() => undefined);
+    return () => { cancelled = true; };
+  }, [profile]);
+
   // Open the screen a tapped reminder points to
   const goHandled = useRef(false);
   useEffect(() => {
@@ -224,6 +241,7 @@ function LeitnerApp({ user }: { user: User }) {
     if (initialGo === 'learn') setIsStudyingNewWords(true);
     else if (initialGo === 'review') handleStartReview();
     else if (initialGo === 'leaderboard') setActiveTab('leaderboard');
+    else if (initialGo === 'dictation') setActiveTab('dictation');
     if (initialGo) window.history.replaceState(null, '', window.location.pathname);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile]);
@@ -270,6 +288,7 @@ function LeitnerApp({ user }: { user: User }) {
         onOpenNewCardModal={() => setIsNewCardModalOpen(true)}
         profile={profile}
         syncStatus={syncStatus}
+        showDictation={dictationFlag.enabled}
       />
 
       {loadedOffline && (
@@ -359,6 +378,22 @@ function LeitnerApp({ user }: { user: User }) {
               <Leaderboard profile={profile} onOpenSettings={() => setActiveTab('settings')} />
             )}
 
+            {activeTab === 'dictation' && (
+              <DictationBoundary>
+                <Suspense fallback={<FullScreenLoader text={t.dictation.loading} />}>
+                  <DictationScreen
+                    profile={profile}
+                    cards={cards}
+                    settings={settings}
+                    flag={dictationFlag}
+                    onUpdateSettings={handleUpdateSettings}
+                    onCardsChanged={refreshState}
+                    onOpenSettings={() => setActiveTab('settings')}
+                  />
+                </Suspense>
+              </DictationBoundary>
+            )}
+
             {activeTab === 'admin' && profile.isAdmin && <AdminPanel profile={profile} onCardsChanged={refreshState} />}
 
             {activeTab === 'settings' && (
@@ -370,6 +405,7 @@ function LeitnerApp({ user }: { user: User }) {
                 profile={profile}
                 onProfileChange={setProfile}
                 onSignOut={handleSignOut}
+                showDictationSettings={dictationFlag.enabled}
               />
             )}
           </>

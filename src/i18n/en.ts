@@ -89,6 +89,7 @@ export const en: Messages = {
     reflections: 'Decisions & motivation',
     leaderboard: 'Leaderboard',
     settings: 'Backup & settings',
+    dictation: 'Dictation',
     admin: 'Users',
     newCard: 'New card',
     desktop: {
@@ -98,6 +99,7 @@ export const en: Messages = {
       reflections: 'Insights',
       leaderboard: 'Leaderboard',
       settings: 'Settings',
+      dictation: 'Dictation',
       admin: 'Users'
     },
     short: {
@@ -107,6 +109,7 @@ export const en: Messages = {
       reflections: 'Insights',
       leaderboard: 'Ranking',
       settings: 'Settings',
+      dictation: 'Dictation',
       admin: 'Users'
     }
   },
@@ -740,5 +743,142 @@ export const en: Messages = {
     modalEmpty: 'No cards in this box.',
     due: (date: string) => `Due: ${date}`,
     dueNow: 'Due today'
+  },
+  dictation: {
+    nav: 'Dictation',
+    navShort: 'Dictation',
+    beta: 'Beta',
+    title: 'Story dictation',
+    subtitle: 'Listen to the story and type each sentence.',
+    intro: {
+      title: 'Welcome to story dictation',
+      points: [
+        'This section is new and still in beta.',
+        'You hear one sentence and type it. Typing the final punctuation checks the sentence.',
+        'Checking is strict: capital letters and commas count. You can fix and resubmit as often as you like.',
+        'Nothing in your boxes changes unless you press a button yourself.',
+        'Audio comes in two ways: natural voices (Piper) or your device voice. Change it in Settings.',
+        'If something looks wrong, send us the sentence id.'
+      ],
+      ok: 'Got it'
+    },
+    home: {
+      empty: 'No stories are published yet.',
+      lessons: (a: number, b: number) => (a === b ? `Lesson ${a}` : `Lessons ${a} to ${b}`),
+      sentences: (x: number) => `${n(x)} sentences`,
+      progress: (done: number, total: number) => `${n(done)} of ${n(total)}`,
+      open: 'Open',
+      continue: 'Continue',
+      completed: 'Finished'
+    },
+    progressLocalOnly: 'Dictation progress is kept on this device for now.',
+    loading: 'Loading…',
+    loadError: "Couldn't load this.",
+    loadErrorOffline: "You're offline.",
+    retry: 'Try again',
+    back: 'Back',
+    paused: 'Story dictation is paused for maintenance and will be back soon. Your progress is kept.',
+    preview: 'Admin preview: this section is not open to others yet.',
+    detail: {
+      sequences: 'Sequences',
+      tile: (done: number, total: number) => `${n(done)} of ${n(total)}`,
+      sequence: (x: number) => `Sequence ${n(x)}`
+    },
+    sequence: {
+      situation: 'Situation',
+      start: 'Start',
+      continue: 'Continue',
+      review: 'Review',
+      noImage: 'Illustration coming soon'
+    },
+    stage: {
+      placeholder: 'Type what you hear',
+      inputLabel: 'Type the sentence you hear',
+      check: 'Check',
+      next: 'Next',
+      skip: "I didn't get it",
+      replay: 'Replay',
+      playing: 'Playing',
+      stopped: 'Stopped',
+      loadingAudio: 'Preparing audio',
+      speaker: (name: string) => `Speaker: ${name}`,
+      narrator: 'Narrator',
+      digitsHint: 'This sentence has numbers: type them as digits 0 to 9.',
+      manualSubmitHint: 'Press Enter or Check to submit.',
+      umlaut: (ch: string) => `Insert ${ch}`,
+      shift: 'Capital letters',
+      history: 'Earlier sentences',
+      replayHistory: 'Play this sentence again',
+      skippedMark: 'skipped',
+      source: { A: 'Studio voice', B: 'Natural voice', C: 'Device voice' },
+      fallbackNote: (used: string) => `The chosen voice was not available; using "${used}".`,
+      audioFailed: 'No audio is available on this device or connection.',
+      audioFailedSkip: 'You can skip this sentence.',
+      openSettings: 'Audio settings',
+      startAudio: 'Tap to start'
+    },
+    feedback: {
+      summary: (total: number, names: string) => `${n(total)} ${total === 1 ? 'mistake' : 'mistakes'}: ${names}`,
+      one: 'One mistake',
+      categories: {
+        case: 'capitalization',
+        'umlaut-substitution': 'ä ö ü instead of ae oe ue',
+        'eszett-substitution': 'ß instead of ss',
+        punctuation: 'punctuation',
+        spacing: 'spacing',
+        'typo-missing-letter': 'missing letter',
+        'typo-extra-letter': 'extra letter',
+        'typo-wrong-letter': 'wrong letter',
+        'typo-swapped-letters': 'swapped letters',
+        'wrong-word': 'wrong word',
+        'missing-word': 'missing word',
+        'extra-word': 'extra word',
+        order: 'word order'
+      },
+      missingHere: 'Something is missing here',
+      markLabel: (cat: string, text: string) => `"${text}": ${cat}`,
+      gapLabel: (cat: string) => `Missing: ${cat}`,
+      tapHint: 'Tap a marked word to see its card.',
+      praise: ['Well done!', 'Spot on!', 'Excellent!', 'Perfect!', 'Very good!', 'Exactly right!', 'Sharp ears!', 'Keep going!', 'Brilliant!']
+    },
+    word: {
+      title: 'Word card',
+      correct: 'Correct form',
+      formOf: (form: string, lemma: string) => `"${form}" is a form of "${lemma}".`,
+      inBox: (box: number) => `In box ${n(box)}`,
+      mastered: 'Mastered',
+      notInBox: 'Not in your box yet.',
+      add: 'Add to my box',
+      addNew: 'Add as a new card',
+      added: 'Added to your box.',
+      moveBack: 'Move back one compartment',
+      moveBackDone: (box: number) => `Moved back to box ${n(box)}.`,
+      atFirst: 'This card is already in the first compartment.',
+      reviewToday: 'Review today',
+      undo: 'Undo',
+      close: 'Close',
+      noCard: 'There is no card for this word in the list.',
+      note: 'No card changes unless you press a button.'
+    },
+    end: {
+      sequenceTitle: 'Sequence finished',
+      sequenceStats: (done: number, total: number) => `${n(done)} of ${n(total)} sentences`,
+      nextSequence: 'Next sequence',
+      backToStory: 'Back to the story',
+      storyTitle: 'Story finished',
+      congrats: 'Congratulations! You finished every sequence.',
+      openNext: 'Next story'
+    },
+    settings: {
+      title: 'Story dictation',
+      mode: 'Voices',
+      modeB: 'Natural voices (Piper)',
+      modeBBody: 'Recordings made with open-source AI voices; the same on every device and available offline after the first play.',
+      modeC: 'Device voice',
+      modeCBody: "Your browser's or phone's own voice; no internet and no download. Quality depends on the device, and it needs a German voice installed.",
+      test: 'Test voice',
+      credit: 'Voices: Piper with the Thorsten and Kerstin models (CC0) and MLS (CC-BY 4.0, OpenSLR 94).',
+      noGermanVoice: 'No German voice found on this device.'
+    }
   }
 };

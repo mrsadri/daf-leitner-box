@@ -108,7 +108,10 @@ function substitutionCost(t: Token, e: Token): number {
   if (ft === fe) return 0;
   if (t.kind !== e.kind) return 2;                           // word versus punctuation: never paired
   if (t.kind === 'punct') return 0.6;
-  const len = Math.max(Array.from(ft).length, Array.from(fe).length);
+  const la = Array.from(ft).length, lb = Array.from(fe).length;
+  const len = Math.max(la, lb);
+  // lengths too different to be a near miss: the distance ratio is at least this, so skip the character DP
+  if (Math.abs(la - lb) / len > 0.5) return 1;
   const ratio = charDiff(ft, fe).distance / len;
   return 0.4 + 0.6 * ratio;
 }

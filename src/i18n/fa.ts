@@ -93,6 +93,7 @@ export const fa = {
     reflections: 'بینش‌ها',
     leaderboard: 'رقابت',
     settings: 'تنظیمات',
+    dictation: 'دیکته',
     admin: 'کاربران',
     newCard: 'کارت جدید',
     desktop: {
@@ -102,6 +103,7 @@ export const fa = {
       reflections: 'بینش‌ها',
       leaderboard: 'رقابت',
       settings: 'تنظیمات',
+      dictation: 'دیکته',
       admin: 'کاربران'
     },
     short: {
@@ -111,6 +113,7 @@ export const fa = {
       reflections: 'بینش‌ها',
       leaderboard: 'رقابت',
       settings: 'تنظیمات',
+      dictation: 'دیکته',
       admin: 'کاربران'
     }
   },
@@ -752,6 +755,143 @@ export const fa = {
     modalEmpty: 'هیچ کارتی در این خانه وجود ندارد.',
     due: (date: string) => `سررسید: ${date}`,
     dueNow: 'آماده مرور برای امروز'
+  },
+  dictation: {
+    nav: 'دیکته',
+    navShort: 'دیکته',
+    beta: 'آزمایشی',
+    title: 'دیکته‌ی داستان',
+    subtitle: 'داستان را گوش بده و جمله‌ها را بنویس.',
+    intro: {
+      title: 'به دیکته‌ی داستان خوش آمدی',
+      points: [
+        'این بخش تازه است و هنوز آزمایشی است.',
+        'هر جمله را می‌شنوی و همان را می‌نویسی. با نوشتن نشانه‌ی پایان جمله، جمله بررسی می‌شود.',
+        'بررسی سخت‌گیرانه است: حرف بزرگ و کوچک و ویرگول هم مهم‌اند. هر چند بار بخواهی می‌توانی دوباره بنویسی.',
+        'هیچ کارتی در جعبه‌ات تغییر نمی‌کند، مگر خودت دکمه‌اش را بزنی.',
+        'صدا با دو روش پخش می‌شود: صدای طبیعی (Piper) یا صدای دستگاه. در تنظیمات می‌توانی عوض کنی.',
+        'اگر مشکلی دیدی، شناسه‌ی جمله را برای ما بفرست.'
+      ],
+      ok: 'متوجه شدم'
+    },
+    home: {
+      empty: 'هنوز داستانی منتشر نشده است.',
+      lessons: (a: number, b: number) => (a === b ? `درس ${d(a)}` : `درس‌های ${d(a)} تا ${d(b)}`),
+      sentences: (x: number) => `${n(x)} جمله`,
+      progress: (done: number, total: number) => `${n(done)} از ${n(total)}`,
+      open: 'باز کردن',
+      continue: 'ادامه',
+      completed: 'تمام شد'
+    },
+    progressLocalOnly: 'پیشرفت دیکته فعلاً فقط روی همین دستگاه ذخیره می‌شود.',
+    loading: 'در حال بارگذاری…',
+    loadError: 'بارگذاری نشد.',
+    loadErrorOffline: 'اتصال اینترنت برقرار نیست.',
+    retry: 'تلاش دوباره',
+    back: 'بازگشت',
+    paused: 'دیکته‌ی داستان فعلاً برای نگهداری متوقف شده است. به‌زودی برمی‌گردد. پیشرفت شما حفظ می‌شود.',
+    preview: 'پیش‌نمایش مدیر: این بخش هنوز برای دیگران باز نیست.',
+    detail: {
+      sequences: 'بخش‌ها',
+      tile: (done: number, total: number) => `${n(done)} از ${n(total)}`,
+      sequence: (x: number) => `بخش ${n(x)}`
+    },
+    sequence: {
+      situation: 'موقعیت',
+      start: 'شروع',
+      continue: 'ادامه',
+      review: 'مرور',
+      noImage: 'تصویر به‌زودی اضافه می‌شود'
+    },
+    stage: {
+      placeholder: 'آنچه می‌شنوی را بنویس',
+      inputLabel: 'جمله‌ای را که می‌شنوی بنویس',
+      check: 'بررسی',
+      next: 'بعدی',
+      skip: 'نشنیدم',
+      replay: 'دوباره پخش',
+      playing: 'در حال پخش',
+      stopped: 'متوقف شد',
+      loadingAudio: 'در حال آماده‌سازی صدا',
+      speaker: (name: string) => `گوینده: ${name}`,
+      narrator: 'راوی',
+      digitsHint: 'این جمله عدد دارد: عددها را با رقم‌های 0 تا 9 بنویس.',
+      manualSubmitHint: 'برای بررسی Enter یا دکمه‌ی بررسی را بزن.',
+      umlaut: (ch: string) => `درج ${ch}`,
+      shift: 'حروف بزرگ',
+      history: 'جمله‌های قبلی',
+      replayHistory: 'پخش دوباره‌ی این جمله',
+      skippedMark: 'رد شده',
+      source: { A: 'صدای استودیو', B: 'صدای طبیعی', C: 'صدای دستگاه' },
+      fallbackNote: (used: string) => `صدای انتخابی در دسترس نبود؛ از «${used}» استفاده شد.`,
+      audioFailed: 'روی این دستگاه یا با این اتصال صدایی در دسترس نیست.',
+      audioFailedSkip: 'می‌توانی این جمله را رد کنی.',
+      openSettings: 'تنظیمات صدا',
+      startAudio: 'برای شروع بزن'
+    },
+    feedback: {
+      summary: (total: number, names: string) => `${n(total)} اشتباه: ${names}`,
+      one: 'یک اشتباه',
+      categories: {
+        case: 'حرف بزرگ و کوچک',
+        'umlaut-substitution': 'ä ö ü به‌جای ae oe ue',
+        'eszett-substitution': 'ß به‌جای ss',
+        punctuation: 'نقطه‌گذاری',
+        spacing: 'فاصله',
+        'typo-missing-letter': 'حرف جاافتاده',
+        'typo-extra-letter': 'حرف اضافه',
+        'typo-wrong-letter': 'حرف اشتباه',
+        'typo-swapped-letters': 'جابه‌جایی حرف‌ها',
+        'wrong-word': 'واژه‌ی اشتباه',
+        'missing-word': 'واژه‌ی جاافتاده',
+        'extra-word': 'واژه‌ی اضافه',
+        order: 'ترتیب واژه‌ها'
+      },
+      missingHere: 'اینجا چیزی جا افتاده',
+      markLabel: (cat: string, text: string) => `«${text}»: ${cat}`,
+      gapLabel: (cat: string) => `جاافتاده: ${cat}`,
+      tapHint: 'روی واژه‌ی علامت‌خورده بزن تا کارتش را ببینی.',
+      praise: ['آفرین!', 'درست نوشتی!', 'عالی بود!', 'بی‌نقص!', 'خیلی خوب!', 'دقیق و درست!', 'گوش‌هات تیزند!', 'همین‌طور ادامه بده!', 'کار درخشان!']
+    },
+    word: {
+      title: 'کارت واژه',
+      correct: 'شکل درست',
+      formOf: (form: string, lemma: string) => `«${form}» شکلی از «${lemma}» است.`,
+      inBox: (box: number) => `در خانه‌ی ${n(box)}`,
+      mastered: 'تثبیت‌شده',
+      notInBox: 'هنوز در جعبه‌ی تو نیست.',
+      add: 'افزودن به جعبه‌ی من',
+      addNew: 'افزودن به‌عنوان کارت جدید',
+      added: 'به جعبه اضافه شد.',
+      moveBack: 'یک خانه عقب‌تر',
+      moveBackDone: (box: number) => `به خانه‌ی ${n(box)} برگشت.`,
+      atFirst: 'این کارت در خانه‌ی اول است.',
+      reviewToday: 'امروز مرور کن',
+      undo: 'برگرداندن',
+      close: 'بستن',
+      noCard: 'برای این واژه کارتی در فهرست نیست.',
+      note: 'هیچ کارتی بدون دکمه‌ی خودت تغییر نمی‌کند.'
+    },
+    end: {
+      sequenceTitle: 'این بخش تمام شد',
+      sequenceStats: (done: number, total: number) => `${n(done)} از ${n(total)} جمله`,
+      nextSequence: 'بخش بعدی',
+      backToStory: 'بازگشت به داستان',
+      storyTitle: 'داستان تمام شد',
+      congrats: 'تبریک! همه‌ی بخش‌ها را گذراندی.',
+      openNext: 'داستان بعدی'
+    },
+    settings: {
+      title: 'دیکته‌ی داستان',
+      mode: 'صدای گویندگان',
+      modeB: 'صدای طبیعی (Piper)',
+      modeBBody: 'صداهای ضبط‌شده با هوش مصنوعی متن‌باز؛ روی همه‌ی دستگاه‌ها یکسان است و آفلاین هم کار می‌کند (پس از یک بار پخش).',
+      modeC: 'صدای دستگاه',
+      modeCBody: 'صدای خود مرورگر یا گوشی؛ بدون اینترنت و بدون دانلود. کیفیت به دستگاه بستگی دارد و باید صدای آلمانی نصب باشد.',
+      test: 'آزمایش صدا',
+      credit: 'صداها: Piper با مدل‌های Thorsten و Kerstin (CC0) و MLS (CC-BY 4.0، OpenSLR 94).',
+      noGermanVoice: 'روی این دستگاه صدای آلمانی پیدا نشد.'
+    }
   }
 };
 

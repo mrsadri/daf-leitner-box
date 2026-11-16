@@ -7,3 +7,11 @@
  * Admins can preview the feature with ?dictation=1 whatever this value is.
  */
 export const DICTATION_ENABLED = false;
+
+/**
+ * Base URL of the public Supabase Storage bucket `story-media` (audio and illustrations), no trailing slash.
+ * Production/dev builds set VITE_STORY_MEDIA_BASE, for example
+ * https://<project-ref>.supabase.co/storage/v1/object/public/story-media
+ * Without it the app asks the dev server, which serves build/dictation/ at /story-media (see vite.config.ts).
+ */
+export const STORY_MEDIA_BASE: string = ((import.meta.env.VITE_STORY_MEDIA_BASE as string | undefined) || '/story-media').replace(/\/$/, '');
