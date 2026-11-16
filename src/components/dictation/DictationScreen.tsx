@@ -36,7 +36,7 @@ const Spinner: React.FC<{ text: string }> = ({ text }) => (
 );
 
 const Placeholder: React.FC<{ title: string; note: string }> = ({ title, note }) => (
-  <div className="aspect-[4/3] w-full rounded-2xl bg-slate-100 dark:bg-slate-800 flex flex-col items-center justify-center gap-2 text-slate-500 dark:text-slate-400 p-4 text-center">
+  <div className="aspect-[4/3] w-full max-w-[480px] rounded-2xl bg-slate-100 dark:bg-slate-800 flex flex-col items-center justify-center gap-2 text-slate-500 dark:text-slate-400 p-4 text-center">
     <ImageOff className="w-8 h-8" aria-hidden />
     <span className="font-semibold">{title}</span>
     <span className="text-xs">{note}</span>
@@ -177,7 +177,7 @@ export const DictationScreen: React.FC<Props> = ({ profile, cards, settings, fla
         {back({ name: 'detail', entry: view.entry })}
         <h1 className="text-xl font-bold mb-3 text-slate-900 dark:text-white"><span dir="ltr" lang="de">{seq.title}</span></h1>
         {seq.image
-          ? <img src={`${STORY_MEDIA_BASE}/${seq.image.key}.webp`} alt={alt} width={seq.image.w} height={seq.image.h} className="w-full aspect-[4/3] rounded-2xl object-cover" />
+          ? <img src={`${STORY_MEDIA_BASE}/${seq.image.key}.webp`} alt={alt} width={seq.image.w} height={seq.image.h} className="w-full max-w-[480px] aspect-[4/3] rounded-2xl object-cover" />
           : <Placeholder title={seq.title} note={t.dictation.sequence.noImage} />}
         <h2 className="mt-5 text-sm font-semibold text-slate-500 dark:text-slate-400">{t.dictation.sequence.situation}</h2>
         <p className="mt-1 text-slate-800 dark:text-slate-200 leading-7">{text}</p>

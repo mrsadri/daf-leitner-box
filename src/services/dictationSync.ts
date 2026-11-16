@@ -10,7 +10,7 @@ import {
   type StorySummary, type Transport,
 } from './dictation/syncCore';
 import { mergeAll, type SentenceProgress } from './dictation/progressMerge';
-import { parseFlagValue, previewRequested, resolveFlag, type FlagState } from './dictation/flag';
+import { parseFlagValue, resolveFlag, type FlagState } from './dictation/flag';
 
 const PAGE = 1000;
 const DEMO_KEY = 'daf_dictation_demo';
@@ -105,7 +105,8 @@ export async function fetchRemoteFlag(): Promise<boolean | null> {
   }
 }
 
-export async function loadDictationFlag(isAdmin: boolean): Promise<FlagState> {
+/** `previewParam`: ?dictation=1 was in the URL when the page loaded (App reads it before the URL is cleaned). */
+export async function loadDictationFlag(isAdmin: boolean, previewParam: boolean): Promise<FlagState> {
   const remote = await fetchRemoteFlag();
-  return resolveFlag({ remote, build: DICTATION_ENABLED, isAdmin, previewParam: previewRequested(window.location.search) });
+  return resolveFlag({ remote, build: DICTATION_ENABLED, isAdmin, previewParam });
 }

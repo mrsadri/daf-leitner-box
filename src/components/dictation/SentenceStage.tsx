@@ -46,7 +46,7 @@ const nowIso = () => new Date().toISOString();
 export const SentenceStage: React.FC<Props> = ({
   story, sequence, startIndex, userId, queue, settings, cards, indexes, onCardsChanged, onOpenAudioSettings, onSequenceDone, onExit
 }) => {
-  const { t, lang } = useI18n();
+  const { t, lang, num } = useI18n();
   const sentences = sequence.sentences;
   const [index, setIndex] = useState(Math.min(startIndex, sentences.length - 1));
   const sentence: Sentence = sentences[index];
@@ -109,6 +109,15 @@ export const SentenceStage: React.FC<Props> = ({
       setFailedCount(c => c + 1);
     }
   }, [mode, settings.speechRate, indexes, story.id, save, row]);
+
+  // keep the input visible when the on-screen keyboard opens (visualViewport shrinks)
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    const onResize = () => textRef.current?.scrollIntoView({ block: 'nearest' });
+    vv.addEventListener('resize', onResize);
+    return () => vv.removeEventListener('resize', onResize);
+  }, []);
 
   useEffect(() => audioController.onState((st) => { setPlayState(st); }), []);
   useEffect(() => () => audioController.stop(), []);
@@ -217,7 +226,7 @@ export const SentenceStage: React.FC<Props> = ({
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-2 text-sm text-slate-600 dark:text-slate-300">
         <button type="button" onClick={() => { audioController.stop(); void queue.flush(); onExit(); }} className="min-h-11 px-2 -mx-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">{t.dictation.back}</button>
-        <span className="font-mono-num" aria-hidden>{index + 1} / {sentences.length}</span>
+        <span className="font-mono-num" aria-hidden>{num(index + 1)} / {num(sentences.length)}</span>
       </div>
 
       {finished.length > 0 && (
@@ -275,7 +284,10 @@ export const SentenceStage: React.FC<Props> = ({
           placeholder={t.dictation.stage.placeholder}
           className="w-full resize-none rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-950 px-3 py-2 text-lg leading-8 text-start text-slate-900 dark:text-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
         />
-        <UmlautBar onInsert={insertChar} />
+        {/* phones: the bar sticks to the bottom of the visible area, directly above the keyboard */}
+        <div className="sticky bottom-0 z-10 -mx-4 px-4 py-2 bg-white/95 dark:bg-slate-900/95 sm:static sm:mx-0 sm:p-0 sm:bg-transparent sm:dark:bg-transparent">
+          <UmlautBar onInsert={insertChar} />
+        </div>
         {hint && <p className="text-xs text-slate-500 dark:text-slate-400">{hint}</p>}
 
         {phase === 'mistakes' && result && (

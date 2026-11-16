@@ -35,6 +35,8 @@ const DictationScreen = lazy(() => import('./components/dictation/DictationScree
 
 // Where a tapped notification wants to go ("?go=learn" / "?go=review" / "?go=leaderboard"), read before the URL is cleaned up
 const initialGo = new URLSearchParams(window.location.search).get('go');
+// ?dictation=1 previews story dictation for admins; read now because the URL is cleaned right after sign-in
+const dictationPreview = new URLSearchParams(window.location.search).get('dictation') === '1';
 
 const PRESENCE_INTERVAL_MS = 5 * 60 * 1000;
 
@@ -227,7 +229,7 @@ function LeitnerApp({ user }: { user: User }) {
     if (!profile || profile.suspended) return;
     let cancelled = false;
     import('./services/dictationSync')
-      .then(m => m.loadDictationFlag(!!profile.isAdmin))
+      .then(m => m.loadDictationFlag(!!profile.isAdmin, dictationPreview))
       .then(f => { if (!cancelled) setDictationFlag(f); })
       .catch(() => undefined);
     return () => { cancelled = true; };
@@ -323,6 +325,7 @@ function LeitnerApp({ user }: { user: User }) {
                   setActiveTab('catalog');
                 }}
                 onNavigateToReflections={() => setActiveTab('reflections')}
+                onOpenDictation={dictationFlag.enabled ? () => setActiveTab('dictation') : undefined}
                 onOpenNewCardModal={() => setIsNewCardModalOpen(true)}
                 onOpenSettings={() => {
                   setActiveTab('settings');
