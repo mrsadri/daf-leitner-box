@@ -14,19 +14,20 @@ Thanks for helping! Contributions in **English or Persian (فارسی)** are wel
    For login, sync and the leaderboard you need your **own** Supabase project — follow the setup steps in the [README](README.md). Never use someone else's production keys.
 3. Before opening a PR:
    ```bash
-   npm run lint    # TypeScript check
+   npm run lint    # TypeScript (strict) + oxlint
    npm test        # unit + data tests
+   npm run e2e     # browser tests on a demo build
    npm run build
    ```
 
 ## Guidelines
 
 - Keep PRs small and focused; describe *why* in the PR description.
-- Match the existing code style (React function components, TypeScript, Tailwind).
+- Match the existing code style (React function components, TypeScript, Tailwind). Read [CLAUDE.md](CLAUDE.md) for the folder map and rules. Build UI from `src/shared/ui` (every modal is a `<Dialog>`); see all components at `?gallery=1` in demo mode.
 - The UI is bilingual (Persian RTL / English LTR). Add every new string to both [src/i18n/fa.ts](src/i18n/fa.ts) and [src/i18n/en.ts](src/i18n/en.ts) (TypeScript fails if a key is missing). Wrap German text in `<De>`, user-written text in `<Auto>`, and use logical Tailwind classes (`ms-`, `pe-`, `text-start`, `start-`) instead of `ml-`, `pr-`, `text-left`, `right-`.
 - For UI work without a database, run `VITE_DEMO_MODE=1 npm run dev` (dev-only demo mode with sample data).
 - Changes to the Leitner rules (box intervals, demotion on wrong answers, scoring) change how people learn — please open an issue to discuss first.
-- Database changes go in [supabase/schema.sql](supabase/schema.sql) and must stay **idempotent** (safe to run again) and keep RLS on every table.
+- Database changes go in a new file in [supabase/migrations](supabase/migrations), must stay **idempotent** (safe to run again), keep RLS on every table, and come with a test in `supabase/tests` (`bash scripts/test-sql.sh`).
 - Vocabulary fixes (typos, translations) in `public/data/wortschatz-daf-kompakt.csv` are very welcome; the `Englisch`, `Beispiel_en`, `Formen_en` and `Österreich_en` columns hold the English versions. Each verb card has exactly one verb and a `Perfekt` column (accepted answers separated by ` | `); the conjugation columns (`Infinitiv`, `Präsens`, `Präteritum`, `Reflexiv`) come from `scripts/build-conjugation-data.py`. `npm test` checks both. Keep the column order and don't change `Lektion`/`Nr` of existing words, because card IDs depend on them.
 
 ## Reporting bugs / ideas

@@ -3,15 +3,15 @@
 [![CI](https://github.com/mrsadri/daf-leitner-box/actions/workflows/ci.yml/badge.svg)](https://github.com/mrsadri/daf-leitner-box/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> **English:** An open-source Leitner-box web app for learning the German vocabulary of the *DaF kompakt* course (A1–B1, 3,420 words) with Persian and English translations and a Persian or English interface, plus personal reflection cards. Google sign-in, cross-device sync and a leaderboard via Supabase. Live: https://daf-leitner-box.vercel.app · Contributions welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
+> **English:** An open-source Leitner-box web app for learning the German vocabulary of the *DaF kompakt* course (A1–B1, 3,420 words) with Persian and English translations and a Persian or English interface, plus personal decision and motivation cards and **Stories**: 60 short graded stories in simple German with a quiz, where every word can be tapped and added to the box. Google sign-in, cross-device sync and a leaderboard via Supabase. Live: https://daf-leitner-box.vercel.app · Contributions welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
-جعبه لایتنر برای واژگان کتاب **DaF kompakt (A1–B1، ۳۰ درس، ۳۴۲۰ واژه)** به‌همراه کارت‌های تصمیم و انگیزه. رابط کاربری فارسی و انگلیسی دارد و معنی واژه‌ها به هر دو زبان موجود است.
+جعبه لایتنر برای واژگان کتاب **DaF kompakt (A1–B1، ۳۰ درس، ۳۴۲۰ واژه)** به‌همراه کارت‌های تصمیم و انگیزه (در بانک واژگان، «کارت‌های من») و **داستان‌ها**: ۶۰ داستان کوتاه به آلمانی ساده با سه سؤال در آخر هر داستان؛ روی هر واژه می‌شود زد، معنی‌اش را دید و آن را به جعبه اضافه کرد. رابط کاربری فارسی و انگلیسی دارد و معنی واژه‌ها به هر دو زبان موجود است.
 هر کاربر با حساب گوگل وارد می‌شود، پیشرفتش در حساب خودش ذخیره و بین دستگاه‌ها همگام می‌شود، و در **جدول رقابت** (کلی و هفتگی) با بقیه مقایسه می‌شود.
 
 - فرانت‌اند: React 19 + Vite + Tailwind (اپ استاتیک، روی Vercel)
 - ورود، دیتابیس و جدول رقابت: [Supabase](https://supabase.com) (Google OAuth + Postgres + Row Level Security)
 
-فهرست اشکالات منطقی پیدا‌شده و وضعیت رفع هرکدام در [LOGIC_REVIEW.md](LOGIC_REVIEW.md) آمده است.
+راهنمای کار با کد (برای انسان و ابزارهای هوش مصنوعی): [CLAUDE.md](CLAUDE.md) · معماری: [docs/architecture.md](docs/architecture.md)
 
 ---
 
@@ -72,9 +72,9 @@ cp .env.example .env.local   # و مقادیر Supabase را وارد کنید
 npm run dev                  # http://localhost:3000
 ```
 
-بررسی تایپ‌ها: `npm run lint` · ساخت نسخه نهایی: `npm run build`
+بررسی کد: `npm run lint` (TypeScript و oxlint) · تست‌ها: `npm test` و `npm run e2e` (Playwright) · ساخت نسخه نهایی: `npm run build`
 
-**حالت دمو (بدون Supabase):** با `VITE_DEMO_MODE=1 npm run dev` (یا گذاشتن `VITE_DEMO_MODE=1` در `.env.development.local`) اپ بدون ورود و بدون اتصال به دیتابیس با داده‌ی نمونه اجرا می‌شود و همه‌چیز فقط در localStorage همان مرورگر می‌ماند. این حالت فقط در `npm run dev` کار می‌کند و در بیلد production وجود ندارد؛ برای توسعه‌ی رابط کاربری کنار دیتابیس واقعی کاربران امن است.
+**حالت دمو (بدون Supabase):** با `VITE_DEMO_MODE=1 npm run dev` (یا گذاشتن `VITE_DEMO_MODE=1` در `.env.development.local`) اپ بدون ورود و بدون اتصال به دیتابیس با داده‌ی نمونه اجرا می‌شود و همه‌چیز فقط در localStorage همان مرورگر می‌ماند. این حالت در `npm run dev` و در بیلد `vite build --mode demo` (برای تست‌های مرورگر و پیش‌نمایش) کار می‌کند و در بیلد production وجود ندارد؛ برای توسعه‌ی رابط کاربری کنار دیتابیس واقعی کاربران امن است.
 
 ### زبان‌ها و ترجمه
 
@@ -85,11 +85,17 @@ npm run dev                  # http://localhost:3000
 
 ### آزمون Perfekt و الگوی جمع
 
-- ستون `Perfekt` پاسخ‌های قابل قبول هر فعل را دارد (چند پاسخ با ` | ` جدا می‌شوند، مثل `ist gerudert | hat gerudert`). در مرور، کاربر Perfekt را تایپ می‌کند و فقط با پاسخ درست کارت به خانه‌ی بعد می‌رود. منطق بررسی در [src/services/perfekt.ts](src/services/perfekt.ts) است.
+- ستون `Perfekt` پاسخ‌های قابل قبول هر فعل را دارد (چند پاسخ با ` | ` جدا می‌شوند، مثل `ist gerudert | hat gerudert`). در مرور، کاربر Perfekt را تایپ می‌کند و فقط با پاسخ درست کارت به خانه‌ی بعد می‌رود. منطق بررسی در [src/shared/vocab/perfekt.ts](src/shared/vocab/perfekt.ts) است.
 - این ستون و تقسیم کارت‌های چندفعلی با [scripts/build-verb-data.py](scripts/build-verb-data.py) ساخته می‌شوند (داده‌ها در `scripts/data/`؛ اجرای دوباره بی‌خطر است). در تقسیم، کارت موجود شناسه‌اش را نگه می‌دارد تا پیشرفت کاربران از بین نرود.
-- الگوی جمع («der Name, -n») در [src/services/plural.ts](src/services/plural.ts) از روی ستون `Plural` محاسبه می‌شود.
-- **صرف فعل:** پاپ‌آپ Präsens / Präteritum / Perfekt با حروف بی‌قاعده‌ی قرمز. موتور صرف در [src/services/conjugation.ts](src/services/conjugation.ts) است و ستون‌های `Infinitiv`، `Präsens`، `Präteritum` و `Reflexiv` با [scripts/build-conjugation-data.py](scripts/build-conjugation-data.py) ساخته می‌شوند (موارد خاص در `scripts/data/conjugation-overrides.json`). تست داده بررسی می‌کند که جدول هر ۷۴۸ فعل با داده‌ها بخواند.
-- تست‌ها: `npm test` (بدون وابستگی اضافه، با test runner خود Node).
+- الگوی جمع («der Name, -n») در [src/shared/vocab/plural.ts](src/shared/vocab/plural.ts) از روی ستون `Plural` محاسبه می‌شود.
+- **صرف فعل:** پاپ‌آپ Präsens / Präteritum / Perfekt با حروف بی‌قاعده‌ی قرمز. موتور صرف در [src/shared/vocab/conjugation.ts](src/shared/vocab/conjugation.ts) است و ستون‌های `Infinitiv`، `Präsens`، `Präteritum` و `Reflexiv` با [scripts/build-conjugation-data.py](scripts/build-conjugation-data.py) ساخته می‌شوند (موارد خاص در `scripts/data/conjugation-overrides.json`). تست داده بررسی می‌کند که جدول هر ۷۴۸ فعل با داده‌ها بخواند.
+- تست‌ها: `npm test` (با test runner خود Node) و `npm run e2e` (Playwright روی بیلد دمو).
+
+### داستان‌ها
+
+- متن داستان‌ها در `content/stories/source/story-NN.md` و سؤال‌ها در `content/stories/quiz/book-NN.json` است. با `python3 scripts/stories/build_stories.py` فایل‌های `public/data/stories/` ساخته می‌شوند (صفحه‌بندی، اتصال واژه‌ها به کارت‌ها، خط زیر اسم‌ها بر اساس جنسیت). CI بررسی می‌کند که این فایل‌ها به‌روز باشند.
+- تصویر داستان‌ها با `scripts/stories/prepare_images.py` به WebP تبدیل می‌شود؛ فایل‌های اصلی در Git نیستند.
+- پیشرفت هر داستان در جدول `story_progress` ذخیره می‌شود. با `app_flags.stories_enabled` می‌شود داستان‌ها را بدون انتشار دوباره خاموش کرد.
 
 ---
 
@@ -100,6 +106,7 @@ npm run dev                  # http://localhost:3000
 | `profiles` | نام نمایشی، آواتار، نمایش در جدول رقابت، تنظیمات (صدا، سرعت تلفظ و…) |
 | `cards` | کارت‌های هر کاربر: خانه لایتنر، تاریخ مرور بعدی، شمارنده‌ها و محتوای کارت |
 | `review_events` | ثبت هر پاسخ (برای امتیاز هفتگی و روزهای پیاپی) |
+| `story_progress` | پیشرفت هر کاربر در هر داستان |
 
 - هر کاربر فقط داده‌های خودش را می‌خواند و می‌نویسد (RLS).
 - جدول رقابت از تابع `get_leaderboard` می‌آید که فقط اعداد تجمیعی و نام نمایشی را برمی‌گرداند؛ محتوای کارت‌ها (از جمله تصمیم‌ها و انگیزه‌ها) هیچ‌وقت دیده نمی‌شود.
