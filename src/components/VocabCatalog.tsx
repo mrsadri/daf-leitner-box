@@ -9,16 +9,22 @@ import { PluralInfo } from './PluralInfo';
 import { Search, Volume2, Plus, Check } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
 import { De, Auto } from './ui/Text';
+import { MyCards } from './MyCards';
 
 const PAGE_LIMIT = 100;
+/** The lesson menu's first entry: the user's own insight cards instead of a lesson's words */
+export const MY_CARDS = 'mine';
 
 interface VocabCatalogProps {
   catalogWords: LeitnerCard[];
   activeCards: LeitnerCard[];
   onAddWordToLeitner: (word: LeitnerCard) => void;
   onBatchAddWords: (words: LeitnerCard[]) => void;
-  /** Open with this lesson selected (from the metro map on the dashboard) */
+  /** Open with this lesson selected (from the metro map on the dashboard), or MY_CARDS */
   initialLektion?: string;
+  onAddCard: (card: Partial<LeitnerCard>) => void;
+  onDeleteCard: (id: string) => void;
+  onUpdateCard: (id: string, updates: Partial<LeitnerCard>) => void;
 }
 
 export const VocabCatalog: React.FC<VocabCatalogProps> = ({
@@ -26,7 +32,10 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
   activeCards,
   onAddWordToLeitner,
   onBatchAddWords,
-  initialLektion
+  initialLektion,
+  onAddCard,
+  onDeleteCard,
+  onUpdateCard
 }) => {
   const { t, lang } = useI18n();
   const [searchQuery, setSearchQuery] = useState('');
@@ -35,6 +44,7 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
   const [selectedWortart, setSelectedWortart] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'not_in_box' | 'in_box'>('all');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const showMine = selectedLektion === MY_CARDS;
 
   // Map of active cards for O(1) lookup
   const activeCardMap = useMemo(() => {
@@ -148,7 +158,7 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
             <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">{t.catalog.subtitle}</p>
           </div>
 
-          {selectedLektion !== 'all' && (
+          {selectedLektion !== 'all' && !showMine && (
             <button
               onClick={handleAddEntireLesson}
               className="flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-xs shrink-0 transition-colors"
@@ -160,7 +170,7 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 mt-6 pt-6 border-t border-slate-100 dark:border-slate-800">
-          <div className="relative sm:col-span-2">
+          {!showMine && <div className="relative sm:col-span-2">
             <Search className="w-4 h-4 absolute start-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             <input
               type="search"
@@ -171,15 +181,17 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
               onChange={(e) => setSearchQuery(e.target.value)}
               className={`${field} ps-9`}
             />
-          </div>
+          </div>}
 
-          <select value={selectedLektion} onChange={(e) => setSelectedLektion(e.target.value)} className={field}>
+          <select value={selectedLektion} onChange={(e) => setSelectedLektion(e.target.value)} className={field} aria-label={t.catalog.lessonFilter} data-testid="lesson-filter">
+            <option value={MY_CARDS}>{t.catalog.myCards}</option>
             <option value="all">{t.catalog.allLessons}</option>
             {lektionen.map(l => (
               <option key={l} value={l}>{t.common.lesson(l)}</option>
             ))}
           </select>
 
+          {!showMine && <>
           <select value={selectedNiveau} onChange={(e) => setSelectedNiveau(e.target.value)} className={field}>
             <option value="all">{t.catalog.allLevels}</option>
             {['A1', 'A2', 'B1'].map(lv => (
@@ -199,6 +211,7 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
             <option value="not_in_box">{t.catalog.notInBox}</option>
             <option value="in_box">{t.catalog.inBox}</option>
           </select>
+          </>}
         </div>
 
         {selectedIds.size > 0 && (
@@ -222,6 +235,9 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
         )}
       </div>
 
+      {showMine ? (
+        <MyCards cards={activeCards} onAddCard={onAddCard} onDeleteCard={onDeleteCard} onUpdateCard={onUpdateCard} />
+      ) : (<>
       {/* Results header */}
       <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600 dark:text-slate-400 px-1">
         <span>{t.catalog.showing(filteredWords.length, catalogWords.length)}</span>
@@ -362,6 +378,7 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
       {filteredWords.length > PAGE_LIMIT && (
         <div className="text-center py-4 text-xs text-slate-600 dark:text-slate-400">{t.catalog.moreHint(PAGE_LIMIT)}</div>
       )}
+      </>)}
 
     </div>
   );

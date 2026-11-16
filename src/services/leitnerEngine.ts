@@ -2,6 +2,8 @@ import { LeitnerCard, AppSettings, MASTERED_BOX, ReviewEvent } from '../types/le
 import { parseCSV, transformCsvToCards } from './csvParser';
 import { toLocalDateString } from './dates';
 import { computeMoveBack } from './moveBack';
+import { isRemovedSharedCopy } from './sharedCopies';
+export { isRemovedSharedCopy };
 
 export { toLocalDateString };
 
@@ -171,7 +173,7 @@ class LeitnerEngine {
   public hydrate(userId: string, cards: LeitnerCard[], settings: Partial<AppSettings> | null) {
     this.userId = userId;
     // Only in memory and the local cache: nothing is sent to the server until a card is answered
-    this.cards = cards.map(c => this.withCatalogContent(c));
+    this.cards = cards.filter(c => !isRemovedSharedCopy(c)).map(c => this.withCatalogContent(c));
     this.settings = { ...DEFAULT_SETTINGS, ...(settings || {}) };
     this.writeCache();
   }
@@ -189,7 +191,10 @@ class LeitnerEngine {
     try {
       const cards = JSON.parse(raw);
       const settingsRaw = safeGet(settingsKey(userId));
-      return { cards: Array.isArray(cards) ? cards : [], settings: settingsRaw ? JSON.parse(settingsRaw) : null };
+      return {
+        cards: Array.isArray(cards) ? cards.filter((c: LeitnerCard) => c && !isRemovedSharedCopy(c)) : [],
+        settings: settingsRaw ? JSON.parse(settingsRaw) : null
+      };
     } catch {
       return null;
     }
@@ -427,18 +432,6 @@ class LeitnerEngine {
 
     if (added.length > 0) this.persist(added);
     return added.length;
-  }
-
-  /**
-   * Add a card the server has already stored (e.g. a public insight card just added): local state and cache
-   * only, nothing is queued. If the card is already here, the local one is kept.
-   */
-  public insertSyncedCard(card: LeitnerCard): LeitnerCard {
-    const existing = this.cards.find(c => c.id === card.id);
-    if (existing) return existing;
-    this.cards.unshift(card);
-    this.writeCache();
-    return card;
   }
 
   public deleteCard(cardId: string): boolean {

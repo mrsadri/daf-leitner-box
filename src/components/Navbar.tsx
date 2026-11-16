@@ -1,10 +1,10 @@
 import React from 'react';
-import { Layers, PlayCircle, BookOpen, Sparkles, Settings2, Plus, Trophy, ShieldCheck, LucideIcon } from 'lucide-react';
+import { Layers, PlayCircle, BookOpen, Settings2, Plus, Trophy, ShieldCheck, LucideIcon } from 'lucide-react';
 import { UserProfile } from '../types/leitner';
 import type { SyncStatus } from '../services/cloudSync';
 import { useI18n } from '../i18n/I18nProvider';
 
-export type ActiveTab = 'dashboard' | 'review' | 'catalog' | 'reflections' | 'leaderboard' | 'settings' | 'admin';
+export type ActiveTab = 'dashboard' | 'review' | 'catalog' | 'leaderboard' | 'settings' | 'admin';
 
 interface NavbarProps {
   activeTab: ActiveTab;
@@ -26,7 +26,6 @@ const TABS: { id: ActiveTab; icon: LucideIcon }[] = [
   { id: 'dashboard', icon: Layers },
   { id: 'review', icon: PlayCircle },
   { id: 'catalog', icon: BookOpen },
-  { id: 'reflections', icon: Sparkles },
   { id: 'leaderboard', icon: Trophy },
   { id: 'settings', icon: Settings2 },
   { id: 'admin', icon: ShieldCheck }

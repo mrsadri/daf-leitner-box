@@ -1,7 +1,7 @@
 import type { User } from '@supabase/supabase-js';
 import { requireSupabase } from '../lib/supabase';
 import { AppSettings, LeitnerCard, ReviewEvent, UserProfile } from '../types/leitner';
-import { leitnerEngine, LEGACY_CARDS_KEY, LEGACY_SETTINGS_KEY } from './leitnerEngine';
+import { leitnerEngine, isRemovedSharedCopy, LEGACY_CARDS_KEY, LEGACY_SETTINGS_KEY } from './leitnerEngine';
 import { isDemoMode, buildDemoCards } from '../lib/demo';
 
 /**
@@ -135,7 +135,11 @@ class CloudSync {
   private loadQueue(userId: string): PersistedQueue | null {
     try {
       const raw = localStorage.getItem(queueKey(userId));
-      return raw ? (JSON.parse(raw) as PersistedQueue) : null;
+      if (!raw) return null;
+      const q = JSON.parse(raw) as PersistedQueue;
+      // Queued changes to removed shared-insight copies are dropped, not sent back
+      if (q.upserts) q.upserts = Object.fromEntries(Object.entries(q.upserts).filter(([id]) => !isRemovedSharedCopy({ id })));
+      return q;
     } catch {
       return null;
     }
@@ -148,7 +152,7 @@ class CloudSync {
   }
 
   public queueUpserts(cards: LeitnerCard[]) {
-    cards.forEach(c => {
+    cards.filter(c => !isRemovedSharedCopy(c)).forEach(c => {
       this.upserts.set(c.id, c);
       this.deletes.delete(c.id);
     });

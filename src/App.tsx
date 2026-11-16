@@ -9,8 +9,7 @@ import { isDemoMode, DEMO_USER } from './lib/demo';
 import { Navbar, ActiveTab } from './components/Navbar';
 import { LeitnerDashboard } from './components/LeitnerDashboard';
 import { ReviewSession } from './components/ReviewSession';
-import { VocabCatalog } from './components/VocabCatalog';
-import { ReflectionManager } from './components/ReflectionManager';
+import { VocabCatalog, MY_CARDS } from './components/VocabCatalog';
 import { SettingsBackupModal } from './components/SettingsBackupModal';
 import { NewCardModal } from './components/NewCardModal';
 import { NewWordsStudySession } from './components/NewWordsStudySession';
@@ -26,7 +25,6 @@ import { fetchUnseenOverdueMoves, markOverdueMovesSeen } from './services/overdu
 import type { OverdueMove } from './services/overdueSummary';
 import { OverdueNotice } from './components/OverdueNotice';
 import { startSilver, refreshSilver } from './services/silver';
-import { resetSharedState } from './services/sharedInsights';
 
 // Where a tapped notification wants to go ("?go=learn" / "?go=review" / "?go=leaderboard"), read before the URL is cleaned up
 const initialGo = new URLSearchParams(window.location.search).get('go');
@@ -238,7 +236,6 @@ function LeitnerApp({ user }: { user: User }) {
     // The next person signing in on this device must not get this user's reminders
     await disablePush().catch(() => undefined);
     await cloudSync.stop();
-    resetSharedState();
     await supabase?.auth.signOut();
   };
 
@@ -300,7 +297,10 @@ function LeitnerApp({ user }: { user: User }) {
                   setCatalogLektion({ lektion, key: Date.now() });
                   setActiveTab('catalog');
                 }}
-                onNavigateToReflections={() => setActiveTab('reflections')}
+                onNavigateToReflections={() => {
+                  setCatalogLektion({ lektion: MY_CARDS, key: Date.now() });
+                  setActiveTab('catalog');
+                }}
                 onOpenNewCardModal={() => setIsNewCardModalOpen(true)}
                 onOpenSettings={() => {
                   setActiveTab('settings');
@@ -337,18 +337,9 @@ function LeitnerApp({ user }: { user: User }) {
                 activeCards={cards}
                 onAddWordToLeitner={handleAddCard}
                 onBatchAddWords={handleBatchAddWords}
-              />
-            )}
-
-            {activeTab === 'reflections' && (
-              <ReflectionManager
-                cards={cards}
-                profile={profile}
-                onCardsChanged={refreshState}
                 onAddCard={handleAddCard}
                 onDeleteCard={handleDeleteCard}
                 onUpdateCard={handleUpdateCard}
-                onStartReview={() => handleStartReview()}
               />
             )}
 
@@ -357,7 +348,7 @@ function LeitnerApp({ user }: { user: User }) {
             )}
 
 
-            {activeTab === 'admin' && profile.isAdmin && <AdminPanel profile={profile} onCardsChanged={refreshState} />}
+            {activeTab === 'admin' && profile.isAdmin && <AdminPanel profile={profile} />}
 
             {activeTab === 'settings' && (
               <SettingsBackupModal
