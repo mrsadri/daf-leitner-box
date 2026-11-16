@@ -4,7 +4,7 @@
  * Data and changes come from useLeitnerData; start-up side effects from useSessionEffects. Screens get plain
  * props and callbacks, so each one can be read on its own. Deep links (?go=…) come from push notifications.
  */
-import React, { useEffect, useRef, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import type { User } from '@supabase/supabase-js';
 import { WifiOff } from 'lucide-react';
 import { getTodayString, isCardDue } from '../core/leitnerEngine';
@@ -30,8 +30,13 @@ import { disablePush } from '../features/settings/pwa';
 import { AdminPanel } from '../features/admin/AdminPanel';
 import { SuspendedScreen } from '../features/auth/LoginScreen';
 import { refreshSilver } from '../features/silver/silver';
+import { storiesEnabled } from '../features/stories/flag';
 
-// Where a tapped notification wants to go ("?go=learn" / "?go=review" / "?go=leaderboard"), read before the URL is cleaned up
+// Stories are a separate chunk (the reader and its content load only when opened)
+const StoriesScreen = lazy(() => import('../features/stories/StoriesScreen'));
+
+// Where a tapped notification wants to go ("?go=learn" / "review" / "leaderboard" / "stories"; "dictation" is the old
+// name of Stories), read before the URL is cleaned up
 const initialGo = new URLSearchParams(window.location.search).get('go');
 
 export function LeitnerApp({ user }: { user: User }) {
@@ -46,6 +51,15 @@ export function LeitnerApp({ user }: { user: User }) {
   const [review, setReview] = useState<{ box?: number; nounsOnly: boolean; key: number }>({ nounsOnly: false, key: 0 });
   const [isStudyingNewWords, setIsStudyingNewWords] = useState(false);
   const [overdueMoves, setOverdueMoves] = useState<OverdueMove[]>([]);
+  const [showStories, setShowStories] = useState(true);
+
+  // Stories kill switch (app_flags.stories_enabled; missing or unreadable = on)
+  useEffect(() => {
+    if (!ready) return;
+    let cancelled = false;
+    storiesEnabled().then(on => { if (!cancelled) setShowStories(on); });
+    return () => { cancelled = true; };
+  }, [ready]);
 
   // Cards the nightly overdue rule moved back: explain them once (fresh server data is loaded by now)
   useEffect(() => {
@@ -80,6 +94,7 @@ export function LeitnerApp({ user }: { user: User }) {
     if (initialGo === 'learn') setIsStudyingNewWords(true);
     else if (initialGo === 'review') startReview();
     else if (initialGo === 'leaderboard') setActiveTab('leaderboard');
+    else if (initialGo === 'stories' || initialGo === 'dictation') setActiveTab('stories');
     if (initialGo) window.history.replaceState(null, '', window.location.pathname);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile]);
@@ -113,6 +128,7 @@ export function LeitnerApp({ user }: { user: User }) {
         onOpenNewCardModal={() => setIsNewCardModalOpen(true)}
         profile={profile}
         syncStatus={syncStatus}
+        showStories={showStories}
       />
 
       {loadedOffline && (
@@ -141,6 +157,7 @@ export function LeitnerApp({ user }: { user: User }) {
                 onNavigateToCatalog={() => setActiveTab('catalog')}
                 onOpenLesson={openWordBank}
                 onNavigateToReflections={() => openWordBank(MY_CARDS)}
+                onOpenStories={showStories ? () => setActiveTab('stories') : undefined}
                 onOpenNewCardModal={() => setIsNewCardModalOpen(true)}
                 onOpenSettings={() => {
                   setActiveTab('settings');
@@ -173,6 +190,12 @@ export function LeitnerApp({ user }: { user: User }) {
                 onDeleteCard={actions.deleteCard}
                 onUpdateCard={actions.updateCard}
               />
+            )}
+
+            {activeTab === 'stories' && showStories && (
+              <Suspense fallback={<FullScreenLoader text={t.stories.loading} />}>
+                <StoriesScreen userId={user.id} cards={cards} onCardsChanged={refresh} onAddCard={actions.addCard} />
+              </Suspense>
             )}
 
             {activeTab === 'leaderboard' && (

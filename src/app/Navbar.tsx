@@ -1,14 +1,16 @@
 import React from 'react';
-import { Layers, PlayCircle, BookOpen, Settings2, Plus, Trophy, ShieldCheck, LucideIcon } from 'lucide-react';
+import { Layers, PlayCircle, BookOpen, BookHeart, Settings2, Plus, Trophy, ShieldCheck, LucideIcon } from 'lucide-react';
 import { UserProfile } from '../core/types';
 import type { SyncStatus } from '../core/cloudSync';
 import { useI18n } from '../i18n/I18nProvider';
 
-export type ActiveTab = 'dashboard' | 'review' | 'catalog' | 'leaderboard' | 'settings' | 'admin';
+export type ActiveTab = 'dashboard' | 'review' | 'catalog' | 'stories' | 'leaderboard' | 'settings' | 'admin';
 
 interface NavbarProps {
   activeTab: ActiveTab;
   onTabChange: (tab: ActiveTab) => void;
+  /** Stories are on (remote kill switch app_flags.stories_enabled) */
+  showStories?: boolean;
   dueTodayCount: number;
   onOpenNewCardModal: () => void;
   profile: UserProfile;
@@ -26,6 +28,7 @@ const TABS: { id: ActiveTab; icon: LucideIcon }[] = [
   { id: 'dashboard', icon: Layers },
   { id: 'review', icon: PlayCircle },
   { id: 'catalog', icon: BookOpen },
+  { id: 'stories', icon: BookHeart },
   { id: 'leaderboard', icon: Trophy },
   { id: 'settings', icon: Settings2 },
   { id: 'admin', icon: ShieldCheck }
@@ -37,11 +40,12 @@ export const Navbar: React.FC<NavbarProps> = ({
   dueTodayCount,
   onOpenNewCardModal,
   profile,
-  syncStatus
+  syncStatus,
+  showStories = true
 }) => {
   const { t, num } = useI18n();
   const syncText = t.sync[syncStatus];
-  const tabs = TABS.filter(tab => (tab.id !== 'admin' || profile.isAdmin));
+  const tabs = TABS.filter(tab => (tab.id !== 'admin' || profile.isAdmin) && (tab.id !== 'stories' || showStories));
 
   return (
     <header className="sticky top-0 z-30 pt-[env(safe-area-inset-top)] bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">

@@ -321,3 +321,13 @@
 .gender-f { text-decoration-color: var(--color-gender-f); }
 .gender-n { text-decoration-color: var(--color-gender-n); }
 .gender-pl { text-decoration-color: var(--color-gender-pl); }
+
+/* Stories: a short page turn. With "reduce motion" there is only a quick fade. */
+@keyframes story-in-next { from { opacity: 0; transform: translateX(2.5rem) rotateY(-8deg); } to { opacity: 1; transform: none; } }
+@keyframes story-in-prev { from { opacity: 0; transform: translateX(-2.5rem) rotateY(8deg); } to { opacity: 1; transform: none; } }
+@keyframes story-fade { from { opacity: 0; } to { opacity: 1; } }
+.story-turn-next { animation: story-in-next 0.32s cubic-bezier(.2, .8, .3, 1) both; transform-origin: left center; }
+.story-turn-prev { animation: story-in-prev 0.32s cubic-bezier(.2, .8, .3, 1) both; transform-origin: right center; }
+@media (prefers-reduced-motion: reduce) {
+  .story-turn-next, .story-turn-prev { animation: story-fade 0.15s ease-out both; }
+}
