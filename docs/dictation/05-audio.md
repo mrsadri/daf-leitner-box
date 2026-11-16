@@ -1,5 +1,18 @@
 # 05. Audio architecture
 
+> **Decision of 2026-11-15 (owner):** no paid TTS and no API key. Two modes are offered: **B, natural voices made with
+> Piper (default)** and **C, the device voice**. Mode A (paid provider) stays described below as a possible later
+> addition, but nothing in the code needs it: the fallback chain skips a mode that has no audio index. Settings lets the
+> learner choose B or C. Piper runs on the owner's Mac (`pip install piper-tts numpy` in a venv, `brew install espeak-ng`),
+> the models come from huggingface.co/rhasspy/piper-voices into `build/dictation/piper-voices/` (not committed).
+> Voices: `thorsten` (CC0) narrates, `kerstin` (CC0) is Ana Novak, the other characters are speakers of the MLS German model
+> (CC-BY 4.0, OpenSLR 94: credit shown in Settings), chosen by `scripts/dictation/cast_voices.py` from the quick, clean
+> speakers by pitch. `pavoque` is excluded (CC BY-NC-SA). The casting is a proposal made without listening: edit single
+> entries in `content/dictation/voices.json`; only that character's files are generated again.
+> Facts learned in the spike: the PyPI wheel `piper-tts` 1.8 has the espeak data path of its build machine compiled in, so
+> the system espeak-ng data is passed explicitly; the cedilla bug is real (`c` + U+0327 for the ich-sound) and is fixed by
+> `lib/phoneme_fix.py`; this ffmpeg has no `rubberband`, so pitch shifts use `asetrate` plus `atempo`.
+
 Three modes, chosen by the learner in Settings, stored as `dictationAudioMode: 'A' | 'B' | 'C'` in `profiles.settings`
 (synced across devices, absent for existing users, default `A`).
 

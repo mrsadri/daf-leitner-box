@@ -31,6 +31,8 @@ SOURCE = REPO / "DaF-kompakt-work" / "DaF-kompakt" / "output"
 PUBLIC = REPO / "public" / "data" / "stories"
 REPORTS = REPO / "build" / "dictation"
 CONF_RANK = {"high": 0, "medium": 1, "low": 2}
+# Mode B (Piper) needs a voice per character; Mode C is computed on the device; Mode A (paid TTS) is not used.
+REQUIRED_VOICE_MODES = ("B",)
 
 
 class BuildError(Exception):
@@ -218,7 +220,7 @@ def build(story_no: str, *, root: Path = REPO, source_dir: Path | None = None, l
                 errors.append(f"{s['id']}: speaker UNKNOWN: {s['text'][:60]}")
             elif spk not in cast_ids:
                 errors.append(f"{s['id']}: speaker {spk} is not in cast.json")
-            elif voices is not None and not all(spk in voices.get(m, {}) for m in ("A", "B", "C")):
+            elif voices is not None and not all(spk in voices.get(m, {}) for m in REQUIRED_VOICE_MODES):
                 errors.append(f"{s['id']}: speaker {spk} missing in voices.json for a mode")
         if f["confidence"] in ("medium", "low") and s["id"] not in covered:
             unreviewed.append(s["id"])

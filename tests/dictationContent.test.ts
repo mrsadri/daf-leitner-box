@@ -130,3 +130,31 @@ test('the id lock file knows every published sentence id', () => {
     for (const q of story.sequences) for (const s of q.sentences) assert.ok(known.has(s.id), s.id);
   }
 });
+
+test('every sentence has an audio file key in the Piper (B) index, and the index has no stray ids', () => {
+  for (const { story } of stories) {
+    const idx = JSON.parse(read(`public/data/stories/${story.id}.audio.B.json`)) as { mode: string; sentences: Record<string, { key: string; ms: number; bytes: number; textHash: string }> };
+    assert.equal(idx.mode, 'B');
+    const ids = new Set<string>();
+    for (const q of story.sequences) {
+      for (const s of q.sentences) {
+        ids.add(s.id);
+        const e = idx.sentences[s.id];
+        assert.ok(e, `${s.id}: no audio key`);
+        assert.match(e.key, /^[0-9a-f]{16}$/);
+        assert.ok(e.ms > 300 && e.bytes > 1000, `${s.id}: implausible file`);
+        assert.equal(e.textHash, s.hash, `${s.id}: audio was made for other text, run gen_audio.py`);
+      }
+    }
+    for (const id of Object.keys(idx.sentences)) assert.ok(ids.has(id), `index has retired id ${id}`);
+  }
+});
+
+test('no API key, service-role key or provider secret appears in the committed content or code', () => {
+  const files = ['src/config.ts', 'content/dictation/voices.json', 'scripts/dictation/gen_audio.py', 'scripts/dictation/upload_media.py'];
+  for (const f of files) {
+    const text = read(f);
+    assert.ok(!/eyJ[A-Za-z0-9_-]{20,}/.test(text), `${f}: looks like a JWT`);
+    assert.ok(!/sk_[a-z0-9]{20,}/i.test(text), `${f}: looks like an API key`);
+  }
+});

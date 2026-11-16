@@ -1,0 +1,2118 @@
+{
+ "mode": "B",
+ "sentences": {
+  "s01q1n0001": {
+   "bytes": 16761,
+   "key": "05b076d2806a15f1",
+   "ms": 2003,
+   "textHash": "d9d786b01e02"
+  },
+  "s01q1n0002": {
+   "bytes": 18851,
+   "key": "bd2538e5a656bde4",
+   "ms": 2249,
+   "textHash": "1b01fc1e9ff5"
+  },
+  "s01q1n0003": {
+   "bytes": 25956,
+   "key": "06b3bd869f65ffd6",
+   "ms": 3139,
+   "textHash": "a3883a22348b"
+  },
+  "s01q1n0004": {
+   "bytes": 27628,
+   "key": "317bfc4685574d6b",
+   "ms": 3346,
+   "textHash": "c47f8bccfa8f"
+  },
+  "s01q1n0005": {
+   "bytes": 21985,
+   "key": "d95d865bdfc3be43",
+   "ms": 2643,
+   "textHash": "a61101c35ab2"
+  },
+  "s01q1n0006": {
+   "bytes": 20523,
+   "key": "8bf32afdf7b90964",
+   "ms": 2467,
+   "textHash": "0be344d1090c"
+  },
+  "s01q1n0007": {
+   "bytes": 22821,
+   "key": "05383f35a8d36715",
+   "ms": 2747,
+   "textHash": "d096aa40b7f9"
+  },
+  "s01q1n0008": {
+   "bytes": 54377,
+   "key": "db515a0666bb7e94",
+   "ms": 6713,
+   "textHash": "229218716e17"
+  },
+  "s01q1n0009": {
+   "bytes": 18015,
+   "key": "f647db1bdf9ac487",
+   "ms": 2151,
+   "textHash": "a704f7f353e5"
+  },
+  "s01q1n0010": {
+   "bytes": 10909,
+   "key": "1b23ffcc35c7b553",
+   "ms": 1262,
+   "textHash": "412800b5a512"
+  },
+  "s01q1n0011": {
+   "bytes": 9238,
+   "key": "7dda3943eefc0c4d",
+   "ms": 1068,
+   "textHash": "db95815390d0"
+  },
+  "s01q1n0012": {
+   "bytes": 13626,
+   "key": "b896c6b7bb1a2412",
+   "ms": 1599,
+   "textHash": "e47b9ae5720f"
+  },
+  "s01q1n0013": {
+   "bytes": 39331,
+   "key": "3266ac782892f4c6",
+   "ms": 4830,
+   "textHash": "eb7fd914f437"
+  },
+  "s01q1n0014": {
+   "bytes": 64408,
+   "key": "fab8227802f88523",
+   "ms": 7959,
+   "textHash": "5cc4ede76e0c"
+  },
+  "s01q1n0015": {
+   "bytes": 25120,
+   "key": "368d5fac9b6fa453",
+   "ms": 3047,
+   "textHash": "674900ee7bd6"
+  },
+  "s01q1n0016": {
+   "bytes": 10492,
+   "key": "b383681359d77393",
+   "ms": 1204,
+   "textHash": "e659e36690de"
+  },
+  "s01q1n0017": {
+   "bytes": 29091,
+   "key": "7becb80fd738b5d2",
+   "ms": 3532,
+   "textHash": "c28ca65a14d9"
+  },
+  "s01q1n0018": {
+   "bytes": 20314,
+   "key": "3b3933e836cd6e2c",
+   "ms": 2432,
+   "textHash": "aa6e22744b69"
+  },
+  "s01q1n0019": {
+   "bytes": 31598,
+   "key": "c91193e23d07d7f8",
+   "ms": 3854,
+   "textHash": "6ddbc9f76988"
+  },
+  "s01q1n0020": {
+   "bytes": 51243,
+   "key": "6e5ad493a5f6aeb5",
+   "ms": 6303,
+   "textHash": "c3ccae689e16"
+  },
+  "s01q1n0021": {
+   "bytes": 16970,
+   "key": "fe516c52b05a48b6",
+   "ms": 2035,
+   "textHash": "a47e502df2da"
+  },
+  "s01q1n0022": {
+   "bytes": 15089,
+   "key": "9d7f92f92d502651",
+   "ms": 1786,
+   "textHash": "c26d62f41ffd"
+  },
+  "s01q1n0023": {
+   "bytes": 15298,
+   "key": "88112126c9164ebf",
+   "ms": 1806,
+   "textHash": "64c322e75104"
+  },
+  "s01q1n0024": {
+   "bytes": 14462,
+   "key": "91fa0ff5938ed867",
+   "ms": 1715,
+   "textHash": "552d2b8daeb1"
+  },
+  "s01q1n0025": {
+   "bytes": 14462,
+   "key": "1712e5d4e034a0e9",
+   "ms": 1701,
+   "textHash": "c67dba3d2e2f"
+  },
+  "s01q1n0026": {
+   "bytes": 18851,
+   "key": "bb816618607161c0",
+   "ms": 2259,
+   "textHash": "5f0634b2bb1e"
+  },
+  "s01q1n0027": {
+   "bytes": 15507,
+   "key": "baaa169ca04d3926",
+   "ms": 1835,
+   "textHash": "1489fd1a8182"
+  },
+  "s01q1n0028": {
+   "bytes": 15089,
+   "key": "f41a5eeecc69f0cf",
+   "ms": 1779,
+   "textHash": "cf93c23cc096"
+  },
+  "s01q1n0029": {
+   "bytes": 13835,
+   "key": "e658b1b0943c4b78",
+   "ms": 1629,
+   "textHash": "052e6513fe21"
+  },
+  "s01q1n0030": {
+   "bytes": 16552,
+   "key": "67e0c332e66ddd65",
+   "ms": 1961,
+   "textHash": "2c77eef1410f"
+  },
+  "s01q1n0031": {
+   "bytes": 15089,
+   "key": "8894fefda2cd796c",
+   "ms": 1801,
+   "textHash": "bffc2f3a409f"
+  },
+  "s01q1n0032": {
+   "bytes": 23448,
+   "key": "d633012f47a58694",
+   "ms": 2838,
+   "textHash": "c1ef52fa265a"
+  },
+  "s01q1n0033": {
+   "bytes": 77156,
+   "key": "fff7a8722847e8b6",
+   "ms": 9537,
+   "textHash": "97a9da59931b"
+  },
+  "s01q1n0034": {
+   "bytes": 31598,
+   "key": "9a038b88f97a75ef",
+   "ms": 3842,
+   "textHash": "79733125ce11"
+  },
+  "s01q1n0035": {
+   "bytes": 25329,
+   "key": "7964ca43da56e1cd",
+   "ms": 3058,
+   "textHash": "b49da8d3416a"
+  },
+  "s01q1n0036": {
+   "bytes": 55004,
+   "key": "cb7af5eab93c4b43",
+   "ms": 6780,
+   "textHash": "e51daf94ca17"
+  },
+  "s01q1n0037": {
+   "bytes": 21358,
+   "key": "f289d05963a1568e",
+   "ms": 2564,
+   "textHash": "059ff969309d"
+  },
+  "s01q1n0038": {
+   "bytes": 22821,
+   "key": "35184d0d157c1e43",
+   "ms": 2747,
+   "textHash": "966d64e8acb2"
+  },
+  "s01q1n0039": {
+   "bytes": 9656,
+   "key": "3e3e8f84f72df257",
+   "ms": 1104,
+   "textHash": "8b03e6e2beeb"
+  },
+  "s01q1n0040": {
+   "bytes": 43510,
+   "key": "e807e2dd71ba3966",
+   "ms": 5334,
+   "textHash": "bf3fe51571d2"
+  },
+  "s01q1n0041": {
+   "bytes": 18224,
+   "key": "705f63e4c1eda151",
+   "ms": 2177,
+   "textHash": "575fb52c9211"
+  },
+  "s01q1n0042": {
+   "bytes": 17806,
+   "key": "6bbefe44e711e237",
+   "ms": 2119,
+   "textHash": "adc3aa85b4a1"
+  },
+  "s01q1n0043": {
+   "bytes": 47272,
+   "key": "10faa2e231158a8e",
+   "ms": 5813,
+   "textHash": "65e3dbfaaf5f"
+  },
+  "s01q1n0044": {
+   "bytes": 27210,
+   "key": "14dda6b3814dbdd2",
+   "ms": 3314,
+   "textHash": "0b5617383ec9"
+  },
+  "s01q1n0045": {
+   "bytes": 15716,
+   "key": "957d7aceda53ad16",
+   "ms": 1868,
+   "textHash": "a9fdbc201070"
+  },
+  "s01q1n0046": {
+   "bytes": 29091,
+   "key": "63191344d74552cc",
+   "ms": 3540,
+   "textHash": "fe4c4f9b2170"
+  },
+  "s01q1n0047": {
+   "bytes": 14462,
+   "key": "29d8d4c4b9ce95f9",
+   "ms": 1722,
+   "textHash": "53ecc5e6e6ac"
+  },
+  "s01q1n0048": {
+   "bytes": 20732,
+   "key": "0b39e568456f94a7",
+   "ms": 2490,
+   "textHash": "762e9c457070"
+  },
+  "s01q1n0049": {
+   "bytes": 10074,
+   "key": "908ee7289da4f1e3",
+   "ms": 1153,
+   "textHash": "b9fc81e714c2"
+  },
+  "s01q1n0050": {
+   "bytes": 16970,
+   "key": "dabf9ec6957ea6c3",
+   "ms": 2029,
+   "textHash": "366d1018ae83"
+  },
+  "s01q2n0051": {
+   "bytes": 10492,
+   "key": "fb16aedd69f88f63",
+   "ms": 1213,
+   "textHash": "d16129acf440"
+  },
+  "s01q2n0052": {
+   "bytes": 23030,
+   "key": "2ec6d2690da042bc",
+   "ms": 2794,
+   "textHash": "ee74faf118dc"
+  },
+  "s01q2n0053": {
+   "bytes": 15507,
+   "key": "ac08ba6d3e84a452",
+   "ms": 1835,
+   "textHash": "2103a5ac7698"
+  },
+  "s01q2n0054": {
+   "bytes": 15507,
+   "key": "e6624467ac96c9fe",
+   "ms": 1844,
+   "textHash": "5d299cb6964f"
+  },
+  "s01q2n0055": {
+   "bytes": 23657,
+   "key": "fada86d9cd39d296",
+   "ms": 2872,
+   "textHash": "dd9458f31440"
+  },
+  "s01q2n0056": {
+   "bytes": 35360,
+   "key": "759ea3c3c6918aab",
+   "ms": 4332,
+   "textHash": "f22e26399745"
+  },
+  "s01q2n0057": {
+   "bytes": 33061,
+   "key": "61d309b010906b79",
+   "ms": 4032,
+   "textHash": "3ab17bb08804"
+  },
+  "s01q2n0058": {
+   "bytes": 15298,
+   "key": "381d43b1452199c1",
+   "ms": 1818,
+   "textHash": "2cdb315958ef"
+  },
+  "s01q2n0059": {
+   "bytes": 30972,
+   "key": "ec4fa0d194fa4cb3",
+   "ms": 3782,
+   "textHash": "5224a1d91d1b"
+  },
+  "s01q2n0060": {
+   "bytes": 28882,
+   "key": "0e21217d3ab02754",
+   "ms": 3512,
+   "textHash": "84653be40a63"
+  },
+  "s01q2n0061": {
+   "bytes": 12999,
+   "key": "e0153d5ae1deb47a",
+   "ms": 1524,
+   "textHash": "621a12594224"
+  },
+  "s01q2n0062": {
+   "bytes": 16134,
+   "key": "918a8bd7068eaaf7",
+   "ms": 1915,
+   "textHash": "b295fe328ed5"
+  },
+  "s01q2n0063": {
+   "bytes": 9447,
+   "key": "8dda353fb281476a",
+   "ms": 1080,
+   "textHash": "cc6a1e3efd99"
+  },
+  "s01q2n0064": {
+   "bytes": 23239,
+   "key": "f28794a944494a16",
+   "ms": 2821,
+   "textHash": "585617be450e"
+  },
+  "s01q2n0065": {
+   "bytes": 25329,
+   "key": "275b44cdad8c396d",
+   "ms": 3069,
+   "textHash": "d7d99ad41da8"
+  },
+  "s01q2n0066": {
+   "bytes": 17179,
+   "key": "c27f3446c865f3bf",
+   "ms": 2041,
+   "textHash": "7f06c48d4245"
+  },
+  "s01q2n0067": {
+   "bytes": 46227,
+   "key": "c3df4f97f800602b",
+   "ms": 5684,
+   "textHash": "4ae661eab615"
+  },
+  "s01q2n0068": {
+   "bytes": 62318,
+   "key": "2afccc6db5c6682b",
+   "ms": 7701,
+   "textHash": "b55da4c0d93f"
+  },
+  "s01q2n0069": {
+   "bytes": 17179,
+   "key": "10ce988e13f9dfb3",
+   "ms": 2041,
+   "textHash": "cbcecccae64b"
+  },
+  "s01q2n0070": {
+   "bytes": 25747,
+   "key": "4cebd5ed76d2516d",
+   "ms": 3128,
+   "textHash": "ee1b30d1f203"
+  },
+  "s01q2n0071": {
+   "bytes": 8193,
+   "key": "fd7a0b5b7e6f0bea",
+   "ms": 922,
+   "textHash": "16ae42f9cccd"
+  },
+  "s01q2n0072": {
+   "bytes": 5894,
+   "key": "649cf7c3052060ca",
+   "ms": 642,
+   "textHash": "95e4d0c8651d"
+  },
+  "s01q2n0073": {
+   "bytes": 18015,
+   "key": "24d27ba120cb6ad3",
+   "ms": 2148,
+   "textHash": "b80b9235e5b8"
+  },
+  "s01q2n0074": {
+   "bytes": 11954,
+   "key": "b0bc6aeff22f69ba",
+   "ms": 1409,
+   "textHash": "5866dfdae511"
+  },
+  "s01q2n0075": {
+   "bytes": 6939,
+   "key": "78333919f004ce7e",
+   "ms": 769,
+   "textHash": "e7274aae06d9"
+  },
+  "s01q2n0076": {
+   "bytes": 15089,
+   "key": "a37b5e0f66f45f67",
+   "ms": 1796,
+   "textHash": "719739a15c36"
+  },
+  "s01q2n0077": {
+   "bytes": 35360,
+   "key": "5ecb873f33a7ea27",
+   "ms": 4319,
+   "textHash": "940fc4400435"
+  },
+  "s01q2n0078": {
+   "bytes": 36405,
+   "key": "cedb8b5ffbd4c749",
+   "ms": 4453,
+   "textHash": "1e508b3ce8ce"
+  },
+  "s01q2n0079": {
+   "bytes": 15298,
+   "key": "ed069fda419bc8c3",
+   "ms": 1812,
+   "textHash": "0c4f294740d1"
+  },
+  "s01q2n0080": {
+   "bytes": 45809,
+   "key": "41623071b9235fde",
+   "ms": 5629,
+   "textHash": "8c8e128f3349"
+  },
+  "s01q2n0081": {
+   "bytes": 22612,
+   "key": "b55b0880edfaa6ba",
+   "ms": 2734,
+   "textHash": "62b06e11d1de"
+  },
+  "s01q2n0082": {
+   "bytes": 19269,
+   "key": "a514b3c46469bd61",
+   "ms": 2315,
+   "textHash": "86a1ebc5ec98"
+  },
+  "s01q2n0083": {
+   "bytes": 30136,
+   "key": "9471202fe456ee3a",
+   "ms": 3675,
+   "textHash": "acd3d0a4e151"
+  },
+  "s01q2n0084": {
+   "bytes": 16761,
+   "key": "56a24cfd6bad30f2",
+   "ms": 1999,
+   "textHash": "19d899c95e0f"
+  },
+  "s01q2n0085": {
+   "bytes": 16970,
+   "key": "d7198bbc05688e63",
+   "ms": 2021,
+   "textHash": "e02c6b18d974"
+  },
+  "s01q2n0086": {
+   "bytes": 26165,
+   "key": "c04380e96666cb25",
+   "ms": 3177,
+   "textHash": "25263763fad8"
+  },
+  "s01q2n0087": {
+   "bytes": 79246,
+   "key": "60e1eb101969f961",
+   "ms": 9798,
+   "textHash": "0b04c5e7ef71"
+  },
+  "s01q2n0088": {
+   "bytes": 29091,
+   "key": "7b48fdeedec1be5a",
+   "ms": 3553,
+   "textHash": "a3a7bc55fc2e"
+  },
+  "s01q2n0089": {
+   "bytes": 15298,
+   "key": "cedbc8a57330c23c",
+   "ms": 1821,
+   "textHash": "0290a7c50f70"
+  },
+  "s01q2n0090": {
+   "bytes": 47899,
+   "key": "a914d0cd869c31a5",
+   "ms": 5892,
+   "textHash": "ccd4d4a26c08"
+  },
+  "s01q2n0091": {
+   "bytes": 48108,
+   "key": "4aad4750671c26ba",
+   "ms": 5908,
+   "textHash": "d95296b327e9"
+  },
+  "s01q2n0092": {
+   "bytes": 49153,
+   "key": "e2841bebd34e8475",
+   "ms": 6043,
+   "textHash": "b6dc4fcff7d0"
+  },
+  "s01q2n0093": {
+   "bytes": 19896,
+   "key": "d07e20129108b990",
+   "ms": 2392,
+   "textHash": "83940b05654d"
+  },
+  "s01q2n0094": {
+   "bytes": 18224,
+   "key": "5eaef7a80fa1f111",
+   "ms": 2170,
+   "textHash": "db9d64468a31"
+  },
+  "s01q2n0095": {
+   "bytes": 21567,
+   "key": "6a8c99cd34e2adc5",
+   "ms": 2591,
+   "textHash": "d185a8285ef1"
+  },
+  "s01q2n0096": {
+   "bytes": 12163,
+   "key": "a09214946c177b17",
+   "ms": 1429,
+   "textHash": "31864f63745c"
+  },
+  "s01q2n0097": {
+   "bytes": 17806,
+   "key": "e37849ae6bd61cc5",
+   "ms": 2135,
+   "textHash": "88078c01ac20"
+  },
+  "s01q2n0098": {
+   "bytes": 26165,
+   "key": "7c4afc6f5153acb4",
+   "ms": 3187,
+   "textHash": "2aab3281e159"
+  },
+  "s01q2n0099": {
+   "bytes": 19060,
+   "key": "00c32a99e21b1f85",
+   "ms": 2276,
+   "textHash": "1c2e95e24cb9"
+  },
+  "s01q2n0100": {
+   "bytes": 22612,
+   "key": "efe31f8688302e35",
+   "ms": 2741,
+   "textHash": "279dc9049ebe"
+  },
+  "s01q2n0101": {
+   "bytes": 28046,
+   "key": "1e0aede18c118e62",
+   "ms": 3408,
+   "textHash": "7dda30430dd7"
+  },
+  "s01q2n0102": {
+   "bytes": 35987,
+   "key": "cd48855cc3b857a4",
+   "ms": 4395,
+   "textHash": "e47631594423"
+  },
+  "s01q2n0103": {
+   "bytes": 29927,
+   "key": "55dbd41d24d6b69a",
+   "ms": 3642,
+   "textHash": "6b97e4cd1ae7"
+  },
+  "s01q2n0104": {
+   "bytes": 24284,
+   "key": "cc9258680bf6a9cb",
+   "ms": 2947,
+   "textHash": "a3cb9c438d80"
+  },
+  "s01q2n0105": {
+   "bytes": 19896,
+   "key": "41d2b3a2d8f6e890",
+   "ms": 2391,
+   "textHash": "522878147271"
+  },
+  "s01q2n0106": {
+   "bytes": 16552,
+   "key": "64da1a38c26f1804",
+   "ms": 1967,
+   "textHash": "ea227daf7f13"
+  },
+  "s01q2n0107": {
+   "bytes": 18851,
+   "key": "44e1f0c8bd94dfa7",
+   "ms": 2249,
+   "textHash": "065a97fc99f6"
+  },
+  "s01q2n0108": {
+   "bytes": 14044,
+   "key": "e395b8d901811a0a",
+   "ms": 1650,
+   "textHash": "a46aeda2cc44"
+  },
+  "s01q2n0109": {
+   "bytes": 27001,
+   "key": "993d92cbe47d0de3",
+   "ms": 3268,
+   "textHash": "7ad9b1265cde"
+  },
+  "s01q2n0110": {
+   "bytes": 27628,
+   "key": "0e7df553f8b25211",
+   "ms": 3354,
+   "textHash": "588cd9cbe368"
+  },
+  "s01q2n0111": {
+   "bytes": 16134,
+   "key": "a12cfedda156a998",
+   "ms": 1914,
+   "textHash": "bd9039a56819"
+  },
+  "s01q2n0112": {
+   "bytes": 49989,
+   "key": "b8cc68fd6890eacf",
+   "ms": 6157,
+   "textHash": "60dd4e972b54"
+  },
+  "s01q2n0113": {
+   "bytes": 58975,
+   "key": "fd0587e12f554eaf",
+   "ms": 7273,
+   "textHash": "4ab75649844a"
+  },
+  "s01q2n0114": {
+   "bytes": 9447,
+   "key": "bfebed93301a1c1c",
+   "ms": 1080,
+   "textHash": "80ba42b3da92"
+  },
+  "s01q2n0115": {
+   "bytes": 11536,
+   "key": "2806fe8032c82408",
+   "ms": 1346,
+   "textHash": "7849bd97e715"
+  },
+  "s01q3n0116": {
+   "bytes": 14253,
+   "key": "7877d1992347377c",
+   "ms": 1676,
+   "textHash": "f7630816bdf3"
+  },
+  "s01q3n0117": {
+   "bytes": 10700,
+   "key": "d01e77df03892513",
+   "ms": 1250,
+   "textHash": "d73746c9d211"
+  },
+  "s01q3n0118": {
+   "bytes": 33479,
+   "key": "cfb19abce2c0eecf",
+   "ms": 4088,
+   "textHash": "e78f266a05f7"
+  },
+  "s01q3n0119": {
+   "bytes": 25956,
+   "key": "031dd60f0ba930b6",
+   "ms": 3142,
+   "textHash": "a4316f6a8f28"
+  },
+  "s01q3n0120": {
+   "bytes": 23030,
+   "key": "01e7d8840d0a380d",
+   "ms": 2786,
+   "textHash": "120dc0023ae8"
+  },
+  "s01q3n0121": {
+   "bytes": 8402,
+   "key": "910d168bb375a917",
+   "ms": 944,
+   "textHash": "0b7769daed06"
+  },
+  "s01q3n0122": {
+   "bytes": 21776,
+   "key": "bea1954c8e4fc6c2",
+   "ms": 2638,
+   "textHash": "ac59acddd276"
+  },
+  "s01q3n0123": {
+   "bytes": 28046,
+   "key": "ff3623e08de2a2b8",
+   "ms": 3406,
+   "textHash": "509d34663ebd"
+  },
+  "s01q3n0124": {
+   "bytes": 3386,
+   "key": "30030c625ff8c1ab",
+   "ms": 330,
+   "textHash": "65d6b6ed89a7"
+  },
+  "s01q3n0125": {
+   "bytes": 24284,
+   "key": "0e9481b21dca4fc4",
+   "ms": 2945,
+   "textHash": "35169efcab29"
+  },
+  "s01q3n0126": {
+   "bytes": 35569,
+   "key": "766a8ab5b954b2ce",
+   "ms": 4343,
+   "textHash": "781819abd634"
+  },
+  "s01q3n0127": {
+   "bytes": 32643,
+   "key": "e759116fcc877759",
+   "ms": 3978,
+   "textHash": "b68ea818e124"
+  },
+  "s01q3n0128": {
+   "bytes": 63990,
+   "key": "e838c172932260bd",
+   "ms": 7906,
+   "textHash": "b24f2d6d440c"
+  },
+  "s01q3n0129": {
+   "bytes": 41838,
+   "key": "a82f6233877f5dae",
+   "ms": 5122,
+   "textHash": "8e94c6bf576f"
+  },
+  "s01q3n0130": {
+   "bytes": 29091,
+   "key": "856c003b9b706f1c",
+   "ms": 3545,
+   "textHash": "e743d01fc413"
+  },
+  "s01q3n0131": {
+   "bytes": 16970,
+   "key": "909ab27d290367bd",
+   "ms": 2026,
+   "textHash": "800a4c9c2e55"
+  },
+  "s01q3n0132": {
+   "bytes": 26165,
+   "key": "788cfc1ed1147402",
+   "ms": 3181,
+   "textHash": "765d17a03d17"
+  },
+  "s01q3n0133": {
+   "bytes": 22194,
+   "key": "552a34d4397b5745",
+   "ms": 2670,
+   "textHash": "845e0b2adbb2"
+  },
+  "s01q3n0134": {
+   "bytes": 16761,
+   "key": "abaffbca05e092bb",
+   "ms": 1987,
+   "textHash": "afeec5f383c3"
+  },
+  "s01q3n0135": {
+   "bytes": 32016,
+   "key": "90b92668d77fe734",
+   "ms": 3914,
+   "textHash": "ecb5d93fa79f"
+  },
+  "s01q3n0136": {
+   "bytes": 19687,
+   "key": "ffbebfe6131c5119",
+   "ms": 2353,
+   "textHash": "5b04945e0ddf"
+  },
+  "s01q3n0137": {
+   "bytes": 19060,
+   "key": "b8bca6879580dc3d",
+   "ms": 2291,
+   "textHash": "4348bcdc53e7"
+  },
+  "s01q3n0138": {
+   "bytes": 49362,
+   "key": "cced76ef9d478219",
+   "ms": 6066,
+   "textHash": "9c4e2a0b7ee5"
+  },
+  "s01q3n0139": {
+   "bytes": 21358,
+   "key": "50738c2493bd8f4c",
+   "ms": 2577,
+   "textHash": "53d698a6b07e"
+  },
+  "s01q3n0140": {
+   "bytes": 21149,
+   "key": "d5e949991d1d68d1",
+   "ms": 2546,
+   "textHash": "84f440a6ff1f"
+  },
+  "s01q3n0141": {
+   "bytes": 41420,
+   "key": "9aafd8f560cc0fdd",
+   "ms": 5086,
+   "textHash": "53215c66b15e"
+  },
+  "s01q3n0142": {
+   "bytes": 9656,
+   "key": "3e3e8f84f72df257",
+   "ms": 1104,
+   "textHash": "8b03e6e2beeb"
+  },
+  "s01q3n0143": {
+   "bytes": 43928,
+   "key": "1b963dcdc9df8ed6",
+   "ms": 5389,
+   "textHash": "78e4a04a7a13"
+  },
+  "s01q3n0144": {
+   "bytes": 28673,
+   "key": "f62b3c6ce4e416c0",
+   "ms": 3491,
+   "textHash": "9fd44dd00fca"
+  },
+  "s01q3n0145": {
+   "bytes": 62736,
+   "key": "fe89e4d315775088",
+   "ms": 7736,
+   "textHash": "bd2ae5e5c667"
+  },
+  "s01q3n0146": {
+   "bytes": 23866,
+   "key": "34a0c5767f0fd4f2",
+   "ms": 2888,
+   "textHash": "a62bc355333d"
+  },
+  "s01q3n0147": {
+   "bytes": 7357,
+   "key": "279f96ef0e5b4f07",
+   "ms": 819,
+   "textHash": "4993f8ec361a"
+  },
+  "s01q3n0148": {
+   "bytes": 15716,
+   "key": "74d1e896430c5fc9",
+   "ms": 1862,
+   "textHash": "5e7eddb0d536"
+  },
+  "s01q3n0149": {
+   "bytes": 32643,
+   "key": "508fb279049bfc85",
+   "ms": 3974,
+   "textHash": "3af642dd5f82"
+  },
+  "s01q3n0150": {
+   "bytes": 17388,
+   "key": "32a63dced203ffae",
+   "ms": 2087,
+   "textHash": "03e47d03cd16"
+  },
+  "s01q3n0151": {
+   "bytes": 30554,
+   "key": "c465b01a8ec56310",
+   "ms": 3715,
+   "textHash": "a233b917667c"
+  },
+  "s01q3n0152": {
+   "bytes": 41003,
+   "key": "0cfb0509138bdb8d",
+   "ms": 5030,
+   "textHash": "a87fb759a249"
+  },
+  "s01q3n0153": {
+   "bytes": 33061,
+   "key": "8536a35a05761916",
+   "ms": 4027,
+   "textHash": "163e185ad5fc"
+  },
+  "s01q3n0154": {
+   "bytes": 25538,
+   "key": "45be61a251cba0c1",
+   "ms": 3095,
+   "textHash": "46b12dd14920"
+  },
+  "s01q3n0155": {
+   "bytes": 16134,
+   "key": "b899703f4ec571ab",
+   "ms": 1921,
+   "textHash": "ec1b362de984"
+  },
+  "s01q3n0156": {
+   "bytes": 14253,
+   "key": "134117d39a940f98",
+   "ms": 1684,
+   "textHash": "20f2737a0872"
+  },
+  "s01q3n0157": {
+   "bytes": 29718,
+   "key": "ad5550f6f0b67e0c",
+   "ms": 3621,
+   "textHash": "225bcee39a55"
+  },
+  "s01q3n0158": {
+   "bytes": 17179,
+   "key": "36f520f2c844c508",
+   "ms": 2047,
+   "textHash": "104fe4e5bfbe"
+  },
+  "s01q3n0159": {
+   "bytes": 23239,
+   "key": "ed6f2c160b3cd13e",
+   "ms": 2807,
+   "textHash": "f9b9ce2b43ad"
+  },
+  "s01q3n0160": {
+   "bytes": 26374,
+   "key": "44ec0fd2541bf149",
+   "ms": 3204,
+   "textHash": "d214a746b867"
+  },
+  "s01q3n0161": {
+   "bytes": 25956,
+   "key": "95f40de3b6f5573c",
+   "ms": 3141,
+   "textHash": "12aae4e365c4"
+  },
+  "s01q3n0162": {
+   "bytes": 85097,
+   "key": "2cf0b8e1e8b798f1",
+   "ms": 10529,
+   "textHash": "925efcdc985c"
+  },
+  "s01q3n0163": {
+   "bytes": 8820,
+   "key": "48b81151c8f2fa49",
+   "ms": 1008,
+   "textHash": "6e15cd7342e9"
+  },
+  "s01q3n0164": {
+   "bytes": 50616,
+   "key": "ecd563dbdfc92fae",
+   "ms": 6221,
+   "textHash": "e96b8e986a96"
+  },
+  "s01q3n0165": {
+   "bytes": 24493,
+   "key": "ef8877a9ce7f9f8c",
+   "ms": 2962,
+   "textHash": "a2fa0a9d43f1"
+  },
+  "s01q3n0166": {
+   "bytes": 9656,
+   "key": "3e3e8f84f72df257",
+   "ms": 1104,
+   "textHash": "8b03e6e2beeb"
+  },
+  "s01q3n0167": {
+   "bytes": 29718,
+   "key": "6b2c24f86a480c2f",
+   "ms": 3611,
+   "textHash": "215d4fc382b7"
+  },
+  "s01q3n0168": {
+   "bytes": 16552,
+   "key": "178643a228127d6b",
+   "ms": 1970,
+   "textHash": "38f1d9240146"
+  },
+  "s01q3n0169": {
+   "bytes": 26583,
+   "key": "c901eef1d14621ee",
+   "ms": 3239,
+   "textHash": "ddae3880e209"
+  },
+  "s01q3n0170": {
+   "bytes": 13835,
+   "key": "62663a5653d11d4e",
+   "ms": 1645,
+   "textHash": "342be3377853"
+  },
+  "s01q3n0171": {
+   "bytes": 40167,
+   "key": "c8ca3bc6caa9ce42",
+   "ms": 4923,
+   "textHash": "cca4bfe64982"
+  },
+  "s01q3n0172": {
+   "bytes": 32434,
+   "key": "2470beba7316370b",
+   "ms": 3967,
+   "textHash": "621debf0ed28"
+  },
+  "s01q3n0173": {
+   "bytes": 20105,
+   "key": "22ef77ff5fe391f9",
+   "ms": 2408,
+   "textHash": "f168e2c3524e"
+  },
+  "s01q3n0174": {
+   "bytes": 18224,
+   "key": "e3d6933a9d2bec28",
+   "ms": 2188,
+   "textHash": "efd3ea3426a9"
+  },
+  "s01q3n0175": {
+   "bytes": 23448,
+   "key": "e82f38de2f70f0a0",
+   "ms": 2837,
+   "textHash": "d0faa938c5c0"
+  },
+  "s01q4n0176": {
+   "bytes": 18433,
+   "key": "f4c06266cc1b31f4",
+   "ms": 2197,
+   "textHash": "8ea374f90745"
+  },
+  "s01q4n0177": {
+   "bytes": 23239,
+   "key": "b9c870648d49a697",
+   "ms": 2810,
+   "textHash": "c272968cf91d"
+  },
+  "s01q4n0178": {
+   "bytes": 25538,
+   "key": "1a51ac4b2bbdf8ef",
+   "ms": 3085,
+   "textHash": "f33f8c0c8011"
+  },
+  "s01q4n0179": {
+   "bytes": 17597,
+   "key": "3bfb2ed51705b974",
+   "ms": 2095,
+   "textHash": "fa852fcef13b"
+  },
+  "s01q4n0180": {
+   "bytes": 42047,
+   "key": "4dc85bd062cc22b1",
+   "ms": 5151,
+   "textHash": "22dd399062f9"
+  },
+  "s01q4n0181": {
+   "bytes": 15507,
+   "key": "30019117312b7afe",
+   "ms": 1833,
+   "textHash": "1b2dfd6e4f3d"
+  },
+  "s01q4n0182": {
+   "bytes": 25329,
+   "key": "bea289144538b0d2",
+   "ms": 3076,
+   "textHash": "1f2f950f0532"
+  },
+  "s01q4n0183": {
+   "bytes": 15507,
+   "key": "61671f933fc2a4b3",
+   "ms": 1852,
+   "textHash": "dd22272cff29"
+  },
+  "s01q4n0184": {
+   "bytes": 18851,
+   "key": "ae420519805e28f4",
+   "ms": 2252,
+   "textHash": "b1dc569914cb"
+  },
+  "s01q4n0185": {
+   "bytes": 38286,
+   "key": "0344d9faab8613fd",
+   "ms": 4686,
+   "textHash": "f5847517e499"
+  },
+  "s01q4n0186": {
+   "bytes": 19687,
+   "key": "7074331c2d588e04",
+   "ms": 2354,
+   "textHash": "5282d7a84520"
+  },
+  "s01q4n0187": {
+   "bytes": 26583,
+   "key": "cbe07b8ca8d0950d",
+   "ms": 3229,
+   "textHash": "72617f761ec0"
+  },
+  "s01q4n0188": {
+   "bytes": 12163,
+   "key": "3257960352c14ea8",
+   "ms": 1425,
+   "textHash": "5e8f18935a16"
+  },
+  "s01q4n0189": {
+   "bytes": 25120,
+   "key": "b9e6c6ed19539daa",
+   "ms": 3047,
+   "textHash": "8ed4b0813396"
+  },
+  "s01q4n0190": {
+   "bytes": 29927,
+   "key": "14153babc2ac701a",
+   "ms": 3641,
+   "textHash": "d4d367445f91"
+  },
+  "s01q4n0191": {
+   "bytes": 55213,
+   "key": "8aa739171ca67a3f",
+   "ms": 6817,
+   "textHash": "756814f05b71"
+  },
+  "s01q4n0192": {
+   "bytes": 14253,
+   "key": "776f108e3b2a6dd1",
+   "ms": 1688,
+   "textHash": "7290c1a262dd"
+  },
+  "s01q4n0193": {
+   "bytes": 68797,
+   "key": "8f5e2d1095c16387",
+   "ms": 8492,
+   "textHash": "4b07c655ac07"
+  },
+  "s01q4n0194": {
+   "bytes": 24075,
+   "key": "a10c05e5a0c62e53",
+   "ms": 2913,
+   "textHash": "d15b71d8a68a"
+  },
+  "s01q4n0195": {
+   "bytes": 8820,
+   "key": "2cec4e67103b3251",
+   "ms": 1018,
+   "textHash": "12fc67ec3254"
+  },
+  "s01q4n0196": {
+   "bytes": 48944,
+   "key": "96ffb39ab1bc4ca7",
+   "ms": 6027,
+   "textHash": "92204b7c4f13"
+  },
+  "s01q4n0197": {
+   "bytes": 18015,
+   "key": "690a22968175dcd6",
+   "ms": 2146,
+   "textHash": "be41a54592db"
+  },
+  "s01q4n0198": {
+   "bytes": 11954,
+   "key": "5dc835c312b46b91",
+   "ms": 1399,
+   "textHash": "7a2f4a022bca"
+  },
+  "s01q4n0199": {
+   "bytes": 20732,
+   "key": "251b81c7d7a49ab9",
+   "ms": 2498,
+   "textHash": "7e5e125699cb"
+  },
+  "s01q4n0200": {
+   "bytes": 41420,
+   "key": "ea68e9752fa69b38",
+   "ms": 5087,
+   "textHash": "13f8ee30fecc"
+  },
+  "s01q4n0201": {
+   "bytes": 19269,
+   "key": "6129ea7afcda70c3",
+   "ms": 2309,
+   "textHash": "d6c5164b7d42"
+  },
+  "s01q4n0202": {
+   "bytes": 34106,
+   "key": "42220127ef3da97c",
+   "ms": 4161,
+   "textHash": "be6a65b6a535"
+  },
+  "s01q4n0203": {
+   "bytes": 35569,
+   "key": "115034efed6df0cb",
+   "ms": 4354,
+   "textHash": "144a5bfdae5b"
+  },
+  "s01q4n0204": {
+   "bytes": 51243,
+   "key": "bf9e77499b5e67c4",
+   "ms": 6299,
+   "textHash": "258711a21ec8"
+  },
+  "s01q4n0205": {
+   "bytes": 15298,
+   "key": "fbbaf0e6584b021e",
+   "ms": 1828,
+   "textHash": "91f6e1d1536c"
+  },
+  "s01q4n0206": {
+   "bytes": 22194,
+   "key": "96c6a92166e5419a",
+   "ms": 2681,
+   "textHash": "161c338ff170"
+  },
+  "s01q4n0207": {
+   "bytes": 69424,
+   "key": "4b2555dd965cecd6",
+   "ms": 8588,
+   "textHash": "1249ab9c3610"
+  },
+  "s01q4n0208": {
+   "bytes": 27419,
+   "key": "dce4ab38aaaae0a9",
+   "ms": 3330,
+   "textHash": "c0f7acf82d67"
+  },
+  "s01q4n0209": {
+   "bytes": 3804,
+   "key": "e20b8e58174dc96d",
+   "ms": 371,
+   "textHash": "deb928d77890"
+  },
+  "s01q4n0210": {
+   "bytes": 31389,
+   "key": "04d01dabe56f2e16",
+   "ms": 3837,
+   "textHash": "53570ce6a7e2"
+  },
+  "s01q4n0211": {
+   "bytes": 18224,
+   "key": "7571e891b80a9c33",
+   "ms": 2191,
+   "textHash": "78b057bcc684"
+  },
+  "s01q4n0212": {
+   "bytes": 7566,
+   "key": "fc6f6a4fc3e829e3",
+   "ms": 838,
+   "textHash": "281a26a912d6"
+  },
+  "s01q4n0213": {
+   "bytes": 12999,
+   "key": "9f218c58087b788f",
+   "ms": 1533,
+   "textHash": "f45a2697343a"
+  },
+  "s01q4n0214": {
+   "bytes": 33270,
+   "key": "25254471ab56e661",
+   "ms": 4052,
+   "textHash": "27f5d784a21f"
+  },
+  "s01q4n0215": {
+   "bytes": 19478,
+   "key": "a8e3f50b58613b67",
+   "ms": 2331,
+   "textHash": "59565f9eead6"
+  },
+  "s01q4n0216": {
+   "bytes": 18851,
+   "key": "98123ca3e55b3e29",
+   "ms": 2261,
+   "textHash": "bef28e4d97b0"
+  },
+  "s01q4n0217": {
+   "bytes": 26374,
+   "key": "8e8cdf3490ceded5",
+   "ms": 3189,
+   "textHash": "bca14385f495"
+  },
+  "s01q4n0218": {
+   "bytes": 29927,
+   "key": "40b633caa4d27956",
+   "ms": 3642,
+   "textHash": "3042ff0aed81"
+  },
+  "s01q4n0219": {
+   "bytes": 19896,
+   "key": "ac5dcdea52b7a481",
+   "ms": 2389,
+   "textHash": "58ebd042eff5"
+  },
+  "s01q4n0220": {
+   "bytes": 19478,
+   "key": "009577b65957b7d1",
+   "ms": 2332,
+   "textHash": "e7e054789755"
+  },
+  "s01q4n0221": {
+   "bytes": 48108,
+   "key": "b1b916b3caae2068",
+   "ms": 5909,
+   "textHash": "af08b1a05a15"
+  },
+  "s01q4n0222": {
+   "bytes": 22612,
+   "key": "6c37cd2f3022d6b6",
+   "ms": 2732,
+   "textHash": "8178c794fcd4"
+  },
+  "s01q4n0223": {
+   "bytes": 7775,
+   "key": "0dcaa7327ccbe0a1",
+   "ms": 876,
+   "textHash": "6dab15d75a26"
+  },
+  "s01q4n0224": {
+   "bytes": 9865,
+   "key": "c9c7666c38191ab1",
+   "ms": 1134,
+   "textHash": "a1538ad604ab"
+  },
+  "s01q4n0225": {
+   "bytes": 12372,
+   "key": "c84fa4e940175e1d",
+   "ms": 1446,
+   "textHash": "6eaf7e38829c"
+  },
+  "s01q4n0226": {
+   "bytes": 13835,
+   "key": "6a14224f80530a31",
+   "ms": 1631,
+   "textHash": "e753741b9d30"
+  },
+  "s01q4n0227": {
+   "bytes": 18433,
+   "key": "552edf3beffa0cc5",
+   "ms": 2200,
+   "textHash": "7acba2d6029a"
+  },
+  "s01q5n0228": {
+   "bytes": 16552,
+   "key": "ff7e07b7a24c0d2e",
+   "ms": 1966,
+   "textHash": "1cc436319aab"
+  },
+  "s01q5n0229": {
+   "bytes": 11954,
+   "key": "46d4aa1198123b48",
+   "ms": 1389,
+   "textHash": "bac701b13b12"
+  },
+  "s01q5n0230": {
+   "bytes": 21358,
+   "key": "9fe4c70249321389",
+   "ms": 2562,
+   "textHash": "fdc5093e360d"
+  },
+  "s01q5n0231": {
+   "bytes": 18642,
+   "key": "529d70f4c4944693",
+   "ms": 2235,
+   "textHash": "fb7e9608be38"
+  },
+  "s01q5n0232": {
+   "bytes": 33688,
+   "key": "e941ecfad11ee061",
+   "ms": 4105,
+   "textHash": "4618e966b5fc"
+  },
+  "s01q5n0233": {
+   "bytes": 18015,
+   "key": "310c40ab95a3832c",
+   "ms": 2165,
+   "textHash": "067836f0c71d"
+  },
+  "s01q5n0234": {
+   "bytes": 24702,
+   "key": "5f547a640cf8c604",
+   "ms": 2987,
+   "textHash": "398cfceea1ab"
+  },
+  "s01q5n0235": {
+   "bytes": 11327,
+   "key": "5c2ff422984e1fa9",
+   "ms": 1311,
+   "textHash": "1e4c20e0ae80"
+  },
+  "s01q5n0236": {
+   "bytes": 22612,
+   "key": "b8574ddc2f3aa14a",
+   "ms": 2736,
+   "textHash": "92147a1326a9"
+  },
+  "s01q5n0237": {
+   "bytes": 26792,
+   "key": "ba798386f83affd8",
+   "ms": 3252,
+   "textHash": "afd92aa000d5"
+  },
+  "s01q5n0238": {
+   "bytes": 10909,
+   "key": "a9d1d6fc6d18820f",
+   "ms": 1256,
+   "textHash": "543264d1991e"
+  },
+  "s01q5n0239": {
+   "bytes": 24284,
+   "key": "4dd1cc51984410d7",
+   "ms": 2940,
+   "textHash": "5961e9fe0b6f"
+  },
+  "s01q5n0240": {
+   "bytes": 18642,
+   "key": "5440e7167dbf88bc",
+   "ms": 2243,
+   "textHash": "c373891dc335"
+  },
+  "s01q5n0241": {
+   "bytes": 25538,
+   "key": "e06dcc46b0d1b662",
+   "ms": 3108,
+   "textHash": "53c0b52f33e0"
+  },
+  "s01q5n0242": {
+   "bytes": 33061,
+   "key": "e0edba9f9a8a1ce0",
+   "ms": 4027,
+   "textHash": "9af19c8e076b"
+  },
+  "s01q5n0243": {
+   "bytes": 32434,
+   "key": "29d0960d32a1a484",
+   "ms": 3949,
+   "textHash": "c4cbf3316306"
+  },
+  "s01q5n0244": {
+   "bytes": 41003,
+   "key": "ed1a585ec10013a5",
+   "ms": 5039,
+   "textHash": "23314a90b359"
+  },
+  "s01q5n0245": {
+   "bytes": 23657,
+   "key": "2ef0e02d5a538f11",
+   "ms": 2853,
+   "textHash": "314e1a7b9241"
+  },
+  "s01q5n0246": {
+   "bytes": 33897,
+   "key": "5d32c0f26a197f09",
+   "ms": 4130,
+   "textHash": "46ddb97490f6"
+  },
+  "s01q5n0247": {
+   "bytes": 13835,
+   "key": "4858dcf0cd3d1595",
+   "ms": 1622,
+   "textHash": "94e8d8865df2"
+  },
+  "s01q5n0248": {
+   "bytes": 10283,
+   "key": "56874ca2fce9f270",
+   "ms": 1182,
+   "textHash": "291c8b8f6b2a"
+  },
+  "s01q5n0249": {
+   "bytes": 12790,
+   "key": "d34873a3f0cc800c",
+   "ms": 1507,
+   "textHash": "e59f3e13a894"
+  },
+  "s01q5n0250": {
+   "bytes": 38913,
+   "key": "5ba2300d322f4808",
+   "ms": 4774,
+   "textHash": "b50ca879dfa2"
+  },
+  "s01q5n0251": {
+   "bytes": 12999,
+   "key": "849ff1806d01c6eb",
+   "ms": 1525,
+   "textHash": "414ca66f266e"
+  },
+  "s01q5n0252": {
+   "bytes": 18433,
+   "key": "7189f6962c04e6a3",
+   "ms": 2217,
+   "textHash": "c0801be93623"
+  },
+  "s01q5n0253": {
+   "bytes": 24493,
+   "key": "f1d73bb57b05df1f",
+   "ms": 2956,
+   "textHash": "48f1b5122dcb"
+  },
+  "s01q5n0254": {
+   "bytes": 15507,
+   "key": "390eaf1775a18d9c",
+   "ms": 1853,
+   "textHash": "9847c012254d"
+  },
+  "s01q5n0255": {
+   "bytes": 16970,
+   "key": "c7707d60e13dfa3c",
+   "ms": 2020,
+   "textHash": "bca7bd425c2d"
+  },
+  "s01q5n0256": {
+   "bytes": 43928,
+   "key": "0baa21c3237367a6",
+   "ms": 5404,
+   "textHash": "a85ce733f673"
+  },
+  "s01q5n0257": {
+   "bytes": 19269,
+   "key": "c28567a67f7be2c6",
+   "ms": 2314,
+   "textHash": "06fe69e30237"
+  },
+  "s01q5n0258": {
+   "bytes": 16552,
+   "key": "f9f7e1cd11d4ccd0",
+   "ms": 1964,
+   "textHash": "05768b089d9d"
+  },
+  "s01q5n0259": {
+   "bytes": 27419,
+   "key": "be38f560bbed4b46",
+   "ms": 3320,
+   "textHash": "3290f4ce9ba7"
+  },
+  "s01q5n0260": {
+   "bytes": 19896,
+   "key": "55bfc0ae89a1de49",
+   "ms": 2403,
+   "textHash": "4f8986fad219"
+  },
+  "s01q5n0261": {
+   "bytes": 39749,
+   "key": "a3f4946f830e5e9f",
+   "ms": 4861,
+   "textHash": "25646976ac30"
+  },
+  "s01q5n0262": {
+   "bytes": 24075,
+   "key": "d7c9fc80b6238c07",
+   "ms": 2921,
+   "textHash": "87b3ab6dd803"
+  },
+  "s01q5n0263": {
+   "bytes": 15716,
+   "key": "7247e50392808493",
+   "ms": 1879,
+   "textHash": "702f3d16c1ce"
+  },
+  "s01q5n0264": {
+   "bytes": 17179,
+   "key": "da90b0bb916bbfaa",
+   "ms": 2049,
+   "textHash": "01a3f2d9e1bc"
+  },
+  "s01q5n0265": {
+   "bytes": 37868,
+   "key": "86dce5c600baa63e",
+   "ms": 4632,
+   "textHash": "fee83dbab45a"
+  },
+  "s01q5n0266": {
+   "bytes": 35778,
+   "key": "ff461eaa6912de42",
+   "ms": 4365,
+   "textHash": "f34bbb50d3ac"
+  },
+  "s01q5n0267": {
+   "bytes": 13626,
+   "key": "6e252e805ed69236",
+   "ms": 1617,
+   "textHash": "157ccaca14ce"
+  },
+  "s01q5n0268": {
+   "bytes": 31598,
+   "key": "19fead6bc572332f",
+   "ms": 3849,
+   "textHash": "cddbd6663279"
+  },
+  "s01q5n0269": {
+   "bytes": 16134,
+   "key": "618c8d685436b518",
+   "ms": 1917,
+   "textHash": "81ab6dbdbc5d"
+  },
+  "s01q5n0270": {
+   "bytes": 21149,
+   "key": "61f0c310435b7b82",
+   "ms": 2539,
+   "textHash": "cd5fbba29641"
+  },
+  "s01q5n0271": {
+   "bytes": 18015,
+   "key": "25db5bb640630bbb",
+   "ms": 2167,
+   "textHash": "5c83816c701b"
+  },
+  "s01q5n0272": {
+   "bytes": 29509,
+   "key": "5d87972ec67184bf",
+   "ms": 3597,
+   "textHash": "6dc21643cded"
+  },
+  "s01q5n0273": {
+   "bytes": 31389,
+   "key": "cc8305a16b77f2db",
+   "ms": 3834,
+   "textHash": "ea0594ff9b68"
+  },
+  "s01q5n0274": {
+   "bytes": 24075,
+   "key": "d34bfa2a01a89057",
+   "ms": 2923,
+   "textHash": "45671f6a4c78"
+  },
+  "s01q5n0275": {
+   "bytes": 14671,
+   "key": "815cd29c6758ca2e",
+   "ms": 1737,
+   "textHash": "28c15a2a9295"
+  },
+  "s01q5n0276": {
+   "bytes": 35360,
+   "key": "f9323595b0cf5a1c",
+   "ms": 4315,
+   "textHash": "ffd09ccf6fb8"
+  },
+  "s01q5n0277": {
+   "bytes": 25120,
+   "key": "d3109a3944d69a3c",
+   "ms": 3056,
+   "textHash": "d70c7b155436"
+  },
+  "s01q5n0278": {
+   "bytes": 15507,
+   "key": "1de829c7ece1b408",
+   "ms": 1836,
+   "textHash": "71b84bc09f61"
+  },
+  "s01q5n0279": {
+   "bytes": 28046,
+   "key": "86320b771de60cf5",
+   "ms": 3416,
+   "textHash": "d99cb0f608c8"
+  },
+  "s01q5n0280": {
+   "bytes": 34524,
+   "key": "4acf0ff44efb3f18",
+   "ms": 4218,
+   "textHash": "f8de38d0a533"
+  },
+  "s01q5n0281": {
+   "bytes": 28882,
+   "key": "df0811906ff895d3",
+   "ms": 3503,
+   "textHash": "7b877f88bd4f"
+  },
+  "s01q5n0282": {
+   "bytes": 23239,
+   "key": "bdecb509fd8a260c",
+   "ms": 2797,
+   "textHash": "0967c27a5a73"
+  },
+  "s01q5n0283": {
+   "bytes": 14880,
+   "key": "bfff4b1ce944ca4f",
+   "ms": 1757,
+   "textHash": "5dbeeaf03b57"
+  },
+  "s01q5n0284": {
+   "bytes": 15716,
+   "key": "415e30c4f79ad567",
+   "ms": 1869,
+   "textHash": "e5d0b1b0100f"
+  },
+  "s01q5n0285": {
+   "bytes": 20314,
+   "key": "119bec324958fe9c",
+   "ms": 2440,
+   "textHash": "0b0e214bc745"
+  },
+  "s01q5n0286": {
+   "bytes": 35778,
+   "key": "cae8f0d948f6e7a3",
+   "ms": 4387,
+   "textHash": "b4692a99ae26"
+  },
+  "s01q5n0287": {
+   "bytes": 33688,
+   "key": "e078187437d6b41e",
+   "ms": 4118,
+   "textHash": "ff75a67593f1"
+  },
+  "s01q5n0288": {
+   "bytes": 21358,
+   "key": "c2f6becd3dbe586c",
+   "ms": 2563,
+   "textHash": "18f8b5d95976"
+  },
+  "s01q5n0289": {
+   "bytes": 25956,
+   "key": "b5e0a3cc656bd60b",
+   "ms": 3159,
+   "textHash": "d045c50a8681"
+  },
+  "s01q5n0290": {
+   "bytes": 28046,
+   "key": "0ad8b8cfebc59db8",
+   "ms": 3411,
+   "textHash": "e29276146e00"
+  },
+  "s01q5n0291": {
+   "bytes": 11327,
+   "key": "75f297b993d55337",
+   "ms": 1308,
+   "textHash": "9168d1dc4fd4"
+  },
+  "s01q5n0292": {
+   "bytes": 26583,
+   "key": "831daeddc34dd464",
+   "ms": 3218,
+   "textHash": "dca730251ae2"
+  },
+  "s01q5n0293": {
+   "bytes": 13417,
+   "key": "0135eae4f8a17799",
+   "ms": 1592,
+   "textHash": "ab04eff3416b"
+  },
+  "s01q6n0294": {
+   "bytes": 18015,
+   "key": "e92da55465b0278c",
+   "ms": 2156,
+   "textHash": "a7263dcadd3a"
+  },
+  "s01q6n0295": {
+   "bytes": 10909,
+   "key": "15157998a6784088",
+   "ms": 1256,
+   "textHash": "d1f62f8d0d67"
+  },
+  "s01q6n0296": {
+   "bytes": 17806,
+   "key": "ceac8d7ca606f460",
+   "ms": 2129,
+   "textHash": "af643870fdbe"
+  },
+  "s01q6n0297": {
+   "bytes": 20523,
+   "key": "fa0d79218f657e61",
+   "ms": 2477,
+   "textHash": "46b0a54b3a95"
+  },
+  "s01q6n0298": {
+   "bytes": 16343,
+   "key": "f3236d37c7ad1b84",
+   "ms": 1957,
+   "textHash": "852bb5e463e1"
+  },
+  "s01q6n0299": {
+   "bytes": 20732,
+   "key": "c2f604ea3d4beff6",
+   "ms": 2501,
+   "textHash": "d97bbd9724aa"
+  },
+  "s01q6n0300": {
+   "bytes": 27628,
+   "key": "0d84b2b2f0057a8d",
+   "ms": 3352,
+   "textHash": "f834213093a7"
+  },
+  "s01q6n0301": {
+   "bytes": 18851,
+   "key": "25307a59f0860f31",
+   "ms": 2249,
+   "textHash": "a18587ba732c"
+  },
+  "s01q6n0302": {
+   "bytes": 39122,
+   "key": "44ead632c73e4aa9",
+   "ms": 4803,
+   "textHash": "8aa07cdb41a8"
+  },
+  "s01q6n0303": {
+   "bytes": 21149,
+   "key": "1541904eb19786db",
+   "ms": 2545,
+   "textHash": "1e1efbc33af8"
+  },
+  "s01q6n0304": {
+   "bytes": 12790,
+   "key": "8f21b475cfaf7339",
+   "ms": 1495,
+   "textHash": "f7c260e6ca2c"
+  },
+  "s01q6n0305": {
+   "bytes": 13208,
+   "key": "c7f24dbfe34d5aa3",
+   "ms": 1549,
+   "textHash": "ce074ffe577d"
+  },
+  "s01q6n0306": {
+   "bytes": 25956,
+   "key": "d5e2c68eb4975dff",
+   "ms": 3155,
+   "textHash": "1fdf4b58b030"
+  },
+  "s01q6n0307": {
+   "bytes": 28464,
+   "key": "dc3febdc239e2d07",
+   "ms": 3455,
+   "textHash": "a498b92cecb7"
+  },
+  "s01q6n0308": {
+   "bytes": 25747,
+   "key": "a8a2b239b54c9f20",
+   "ms": 3118,
+   "textHash": "28e13af15be6"
+  },
+  "s01q6n0309": {
+   "bytes": 23866,
+   "key": "0317f5c6bd138942",
+   "ms": 2878,
+   "textHash": "6b04eb3ac5ea"
+  },
+  "s01q6n0310": {
+   "bytes": 3386,
+   "key": "88913d3e58012980",
+   "ms": 330,
+   "textHash": "7a8c41348ad2"
+  },
+  "s01q6n0311": {
+   "bytes": 8611,
+   "key": "6a987617af468cab",
+   "ms": 985,
+   "textHash": "d5fd1415f6b3"
+  },
+  "s01q6n0312": {
+   "bytes": 65662,
+   "key": "07e75133989ba8ff",
+   "ms": 8102,
+   "textHash": "5e60e487fb93"
+  },
+  "s01q6n0313": {
+   "bytes": 14044,
+   "key": "b8e8a5d2d54a4c7a",
+   "ms": 1655,
+   "textHash": "28a4bf2255dc"
+  },
+  "s01q6n0314": {
+   "bytes": 19687,
+   "key": "7c45e11e307204b3",
+   "ms": 2355,
+   "textHash": "963bc6c8048f"
+  },
+  "s01q6n0315": {
+   "bytes": 38913,
+   "key": "30daee49e34475ae",
+   "ms": 4777,
+   "textHash": "c1073eede05a"
+  },
+  "s01q6n0316": {
+   "bytes": 38704,
+   "key": "9a7f89c08f58cd9b",
+   "ms": 4750,
+   "textHash": "ae7e25c3585c"
+  },
+  "s01q6n0317": {
+   "bytes": 42256,
+   "key": "0dbf39ec81e2dcdc",
+   "ms": 5176,
+   "textHash": "298c409eaa2b"
+  },
+  "s01q6n0318": {
+   "bytes": 17179,
+   "key": "7f5e835e0ea78a92",
+   "ms": 2040,
+   "textHash": "a9368054501b"
+  },
+  "s01q6n0319": {
+   "bytes": 19687,
+   "key": "4a7d4b1d4fd57eb1",
+   "ms": 2374,
+   "textHash": "f437b4a94ad7"
+  },
+  "s01q6n0320": {
+   "bytes": 43928,
+   "key": "d638961df5f66284",
+   "ms": 5403,
+   "textHash": "3ec6dd108859"
+  },
+  "s01q6n0321": {
+   "bytes": 8611,
+   "key": "a1ba2c21a89a87ed",
+   "ms": 981,
+   "textHash": "7b20b335a997"
+  },
+  "s01q6n0322": {
+   "bytes": 32016,
+   "key": "70a36daa18b0bd07",
+   "ms": 3900,
+   "textHash": "cb7d8848ebd7"
+  },
+  "s01q6n0323": {
+   "bytes": 17388,
+   "key": "c9699ca42ce12c82",
+   "ms": 2066,
+   "textHash": "d3d59a4bd30a"
+  },
+  "s01q6n0324": {
+   "bytes": 13626,
+   "key": "c4f185c07be97eb9",
+   "ms": 1597,
+   "textHash": "c50a745476af"
+  },
+  "s01q6n0325": {
+   "bytes": 30763,
+   "key": "46e5e69beca2a4a7",
+   "ms": 3752,
+   "textHash": "649c988c687d"
+  },
+  "s01q6n0326": {
+   "bytes": 26374,
+   "key": "fb7d2f98a829ea59",
+   "ms": 3189,
+   "textHash": "2454bb5f5e84"
+  },
+  "s01q6n0327": {
+   "bytes": 53959,
+   "key": "3f8bda8642674789",
+   "ms": 6648,
+   "textHash": "3b81a45b1081"
+  },
+  "s01q6n0328": {
+   "bytes": 27001,
+   "key": "1b2151141abfa5d7",
+   "ms": 3278,
+   "textHash": "68ac180c92dd"
+  },
+  "s01q6n0329": {
+   "bytes": 55631,
+   "key": "c24ca076c38adeb7",
+   "ms": 6863,
+   "textHash": "01e77e20f65e"
+  },
+  "s01q6n0330": {
+   "bytes": 34942,
+   "key": "6ed28512ec504823",
+   "ms": 4261,
+   "textHash": "a8690aefc270"
+  },
+  "s01q6n0331": {
+   "bytes": 14044,
+   "key": "5124eb69c5b00bcf",
+   "ms": 1648,
+   "textHash": "ef0d0cc72326"
+  },
+  "s01q6n0332": {
+   "bytes": 20732,
+   "key": "0bc2bc176883c412",
+   "ms": 2484,
+   "textHash": "3c4f0278b1da"
+  },
+  "s01q6n0333": {
+   "bytes": 22612,
+   "key": "c7e6192ea6947d69",
+   "ms": 2734,
+   "textHash": "b82b97bf8a19"
+  },
+  "s01q6n0334": {
+   "bytes": 16343,
+   "key": "2a18c49568618285",
+   "ms": 1944,
+   "textHash": "9b09af74b894"
+  },
+  "s01q6n0335": {
+   "bytes": 23657,
+   "key": "c923b5b6e1036d61",
+   "ms": 2851,
+   "textHash": "35008a7ae2ee"
+  },
+  "s01q6n0336": {
+   "bytes": 47481,
+   "key": "7b34d839815ee04f",
+   "ms": 5830,
+   "textHash": "9945a445adb6"
+  },
+  "s01q6n0337": {
+   "bytes": 31389,
+   "key": "121ad862bd130678",
+   "ms": 3816,
+   "textHash": "efea46560693"
+  },
+  "s01q6n0338": {
+   "bytes": 22821,
+   "key": "7d3df2109acd4262",
+   "ms": 2748,
+   "textHash": "78b77e006604"
+  },
+  "s01q6n0339": {
+   "bytes": 29927,
+   "key": "ec4fecb64640e4b5",
+   "ms": 3633,
+   "textHash": "c9589a797752"
+  },
+  "s01q6n0340": {
+   "bytes": 13417,
+   "key": "4fe83207760375a1",
+   "ms": 1582,
+   "textHash": "646aa08d65f6"
+  },
+  "s01q6n0341": {
+   "bytes": 13208,
+   "key": "256f433b7dcdd3e0",
+   "ms": 1544,
+   "textHash": "65b66f8c404c"
+  },
+  "s01q6n0342": {
+   "bytes": 13417,
+   "key": "56c4f9d428fc949e",
+   "ms": 1569,
+   "textHash": "968d0145950e"
+  },
+  "s01q6n0343": {
+   "bytes": 55422,
+   "key": "7b2284e35faff3aa",
+   "ms": 6830,
+   "textHash": "67b708e61fd3"
+  },
+  "s01q6n0344": {
+   "bytes": 25956,
+   "key": "8ec1c7a761abc546",
+   "ms": 3159,
+   "textHash": "c9fa48a7e4e1"
+  },
+  "s01q6n0345": {
+   "bytes": 19269,
+   "key": "cb2d5beba990bb69",
+   "ms": 2305,
+   "textHash": "2d45f3b85aa0"
+  },
+  "s01q6n0346": {
+   "bytes": 9656,
+   "key": "1a7b8eb70fd7e9fa",
+   "ms": 1099,
+   "textHash": "9e808fb9fb69"
+  },
+  "s01q6n0347": {
+   "bytes": 10074,
+   "key": "908ee7289da4f1e3",
+   "ms": 1153,
+   "textHash": "b9fc81e714c2"
+  },
+  "s01q6n0348": {
+   "bytes": 29300,
+   "key": "462a8dea2f485184",
+   "ms": 3556,
+   "textHash": "023ee3b885b6"
+  },
+  "s01q6n0349": {
+   "bytes": 16134,
+   "key": "d898241682e781e3",
+   "ms": 1926,
+   "textHash": "186f483e7573"
+  },
+  "s01q6n0350": {
+   "bytes": 35569,
+   "key": "d5caae514511f429",
+   "ms": 4342,
+   "textHash": "62f2f5b357cd"
+  },
+  "s01q6n0351": {
+   "bytes": 47063,
+   "key": "7f553094b670b517",
+   "ms": 5783,
+   "textHash": "1b9365339221"
+  },
+  "s01q6n0352": {
+   "bytes": 68379,
+   "key": "0a8f45846d19218b",
+   "ms": 8460,
+   "textHash": "8dff7b6fec7d"
+  }
+ },
+ "version": 1
+}

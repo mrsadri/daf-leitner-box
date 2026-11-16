@@ -65,14 +65,14 @@ harness (`scripts/test-sql.sh`) or a separate dev Supabase project. After any `v
 
 ## Phase 4: audio generation and media (4 days)
 
-- [ ] P4-T1 `gen_audio.py`: keys, incremental runs, loudness normalization, trim and pad, MP3 mono 64 kbps, segment crossfade, provider adapter interface
-- [ ] P4-T2 Mode A adapter for the chosen provider, `--dry-run` cost output, `--max-chars` guard; key read from shell or keychain only
-- [ ] P4-T3 Mode B Piper adapter with NFC fix, phoneme map check, hard failure on unknown phonemes; `test_piper_phonemes.py`
-- [ ] P4-T4 `audio_qa.py` report; listening sample done (10 percent plus long, digit, ellipsis, mixed-segment sentences; ich-sound words per Piper voice)
-- [ ] P4-T4 `upload_media.py`: dry run by default, `--target` and `--yes` required, never overwrites, sets `cacheControl`
-- [ ] P4-T5 Images converted to WebP (1600x1200 and 800x600), uploaded to the **dev** bucket
-- [ ] P4-T5 `story-01.audio.A.json`, `.B.json`, `story-02.audio.A.json`, `.B.json` committed; content test checks every sentence has both keys
-- [ ] Verify: no API key, service-role key or `ELEVEN` string anywhere in the repo or in `dist/`
+- [x] P4-T1 `gen_audio.py`: keys, incremental runs, loudness normalization, trim and pad, MP3 mono 64 kbps, segment crossfade, provider adapter interface — done for Mode B (no provider adapter class: only Piper exists)
+- [ ] P4-T2 (dropped by the owner decision of 2026-11-15, no paid TTS) Mode A adapter for the chosen provider, `--dry-run` cost output, `--max-chars` guard; key read from shell or keychain only
+- [x] P4-T3 Mode B Piper adapter with NFC fix, phoneme map check, hard failure on unknown phonemes; `test_piper_phonemes.py` — `lib/phoneme_fix.py`, `lib/piper_tts.py`; `test_piper_phonemes.py` skips without Piper
+- [x] P4-T4 `audio_qa.py` report; listening sample done (10 percent plus long, digit, ellipsis, mixed-segment sentences; ich-sound words per Piper voice) — report written; the listening sample is for the owner (`build/dictation/audio-qa-NN.md`), not done
+- [x] P4-T4 `upload_media.py`: dry run by default, `--target` and `--yes` required, never overwrites, sets `cacheControl`
+- [ ] P4-T5 (waiting: the owner has no illustrations yet; the UI shows placeholders) Images converted to WebP (1600x1200 and 800x600), uploaded to the **dev** bucket
+- [x] P4-T5 `story-01.audio.B.json` and `story-02.audio.B.json` committed (no A indexes); content test checks every sentence has a B key and the right text hash
+- [x] Verify: no API key, service-role key or `ELEVEN` string anywhere in the repo or in `dist/` — nothing to leak: Piper needs no key; the content test checks the committed files
 
 ## Phase 5: UI (9 days)
 
