@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { lessonProgress } from '../src/services/lessonProgress.ts';
+import { lessonProgress } from '../src/features/dashboard/lessonProgress.ts';
 
 const catalog = [
   { id: 'daf_01_1', lektion: '01', niveau: 'A1' }, { id: 'daf_01_2', lektion: '01', niveau: 'A1' },

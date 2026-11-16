@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { conjugate, diffSegments } from '../src/services/conjugation.ts';
-import type { VerbData, Conjugation } from '../src/services/conjugation.ts';
+import { conjugate, diffSegments } from '../src/shared/vocab/conjugation.ts';
+import type { VerbData, Conjugation } from '../src/shared/vocab/conjugation.ts';
 
 const conj = (v: VerbData) => {
   const c = conjugate(v);

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { removeLegacyStorage } from '../src/services/legacyCleanup.ts';
+import { removeLegacyStorage } from '../src/core/legacyCleanup.ts';
 
 function fakeStorage(keys: string[]) {
   const m = new Map(keys.map(k => [k, '1']));

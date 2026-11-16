@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { computeMoveBack } from '../src/services/moveBack.ts';
+import { computeMoveBack } from '../src/core/moveBack.ts';
 
 /** A local noon, so the local date is unambiguous in every time zone. */
 const day = (y: number, m: number, d: number) => new Date(y, m - 1, d, 12, 0, 0);

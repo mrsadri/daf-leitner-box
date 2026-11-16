@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { lockAxis, releaseDecision, swipeThreshold, stampOpacity, dragRotation } from '../src/services/swipe.ts';
+import { lockAxis, releaseDecision, swipeThreshold, stampOpacity, dragRotation } from '../src/shared/ui/swipe.ts';
 
 test('direction lock: small moves undecided, clear horizontal → drag, otherwise scroll', () => {
   assert.equal(lockAxis(4, 3), null);

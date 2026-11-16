@@ -1,8 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
-import { afterCorrectAnswer, mergeServer, emptySilver, rollDay, SILVER_THRESHOLD, collectionSlots } from '../src/services/silverLogic.ts';
-import { SILVER_FACTS, SILVER_MAX } from '../src/data/silverFacts.ts';
+import { afterCorrectAnswer, mergeServer, emptySilver, rollDay, SILVER_THRESHOLD, collectionSlots } from '../src/features/silver/silverLogic.ts';
+import { SILVER_FACTS, SILVER_MAX } from '../src/features/silver/silverFacts.ts';
 
 const DAY = '2026-11-02';
 const answer = (s: ReturnType<typeof emptySilver>, n: number, day = DAY, max = 30) => {

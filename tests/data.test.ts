@@ -1,9 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { checkPerfekt, parseAccepted } from '../src/services/perfekt.ts';
-import { describePlural } from '../src/services/plural.ts';
-import { conjugate } from '../src/services/conjugation.ts';
+import { checkPerfekt, parseAccepted } from '../src/shared/vocab/perfekt.ts';
+import { describePlural } from '../src/shared/vocab/plural.ts';
+import { conjugate } from '../src/shared/vocab/conjugation.ts';
 
 /** Minimal RFC 4180 reader (the app's parser imports browser-only modules). */
 function readCsv(path: string): Record<string, string>[] {

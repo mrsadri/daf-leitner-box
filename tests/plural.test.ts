@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { patternOf, describePlural } from '../src/services/plural.ts';
+import { patternOf, describePlural } from '../src/shared/vocab/plural.ts';
 
 test('suffix patterns', () => {
   assert.equal(patternOf('der Name', 'die Namen'), '-n');

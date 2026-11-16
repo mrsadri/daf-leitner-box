@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { checkPerfekt, parseAccepted, perfektFromFormen, maskParticiples } from '../src/services/perfekt.ts';
+import { checkPerfekt, parseAccepted, perfektFromFormen, maskParticiples } from '../src/shared/vocab/perfekt.ts';
 
 const check = (input: string, perfekt: string) => checkPerfekt(input, parseAccepted(perfekt));
 const verdict = (input: string, perfekt: string) => check(input, perfekt).verdict;
