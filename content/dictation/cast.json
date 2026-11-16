@@ -1,0 +1,343 @@
+{
+  "_comment": "Characters of the whole series. Ids are stable forever. gender: f|m|c (child) used for pronoun resolution. aliases are matched case-sensitively as whole words, also with a genitive s (Nilufars). Add characters when a story introduces them; the voices go into voices.json. sex: f|m|n for voice casting (gender 'c' marks children for the pronoun rules). age: used by Mode C pitch classes; Sabine, Herr Ebner and Felix have no age in the storyline, the values are placeholders.",
+  "characters": [
+    {
+      "id": "NARRATOR",
+      "name": "Erzähler",
+      "gender": "n",
+      "profile": "adult, neutral, calm, slightly slower",
+      "aliases": [],
+      "sex": "n"
+    },
+    {
+      "id": "NILI",
+      "name": "Nilufar Karimi",
+      "gender": "f",
+      "profile": "young woman",
+      "aliases": [
+        "Nilufar Karimi",
+        "Frau Karimi",
+        "Nilufar",
+        "Nili"
+      ],
+      "sex": "f",
+      "age": 26
+    },
+    {
+      "id": "LUCIA",
+      "name": "Lucía Fernández",
+      "gender": "f",
+      "profile": "young woman, lively, brighter than NILI",
+      "aliases": [
+        "Lucía Fernández",
+        "Lucía"
+      ],
+      "sex": "f",
+      "age": 22
+    },
+    {
+      "id": "JONAS",
+      "name": "Jonas Huber",
+      "gender": "m",
+      "profile": "man, 29, dry and calm",
+      "aliases": [
+        "Jonas Huber",
+        "Jonas"
+      ],
+      "sex": "m",
+      "age": 29
+    },
+    {
+      "id": "LECHNER",
+      "name": "Brigitte Lechner",
+      "gender": "f",
+      "profile": "woman, 52, strict, lower",
+      "aliases": [
+        "Brigitte Lechner",
+        "Frau Lechner",
+        "Lechner"
+      ],
+      "sex": "f",
+      "age": 52
+    },
+    {
+      "id": "WAGNER",
+      "name": "Monika Wagner",
+      "gender": "f",
+      "profile": "woman, 45, warm",
+      "aliases": [
+        "Monika Wagner",
+        "Frau Wagner",
+        "Monika",
+        "Wagner"
+      ],
+      "sex": "f",
+      "age": 45
+    },
+    {
+      "id": "KENJI",
+      "name": "Kenji Sato",
+      "gender": "m",
+      "profile": "man, 31",
+      "aliases": [
+        "Kenji Sato",
+        "Kenji"
+      ],
+      "sex": "m",
+      "age": 31
+    },
+    {
+      "id": "EMILY",
+      "name": "Emily Clark",
+      "gender": "f",
+      "profile": "woman, 28",
+      "aliases": [
+        "Emily Clark",
+        "Emily"
+      ],
+      "sex": "f",
+      "age": 28
+    },
+    {
+      "id": "PIERRE",
+      "name": "Pierre Dubois",
+      "gender": "m",
+      "profile": "man, 24",
+      "aliases": [
+        "Pierre Dubois",
+        "Pierre"
+      ],
+      "sex": "m",
+      "age": 24
+    },
+    {
+      "id": "MEI",
+      "name": "Mei Lin",
+      "gender": "f",
+      "profile": "woman, 27",
+      "aliases": [
+        "Mei Lin",
+        "Mei"
+      ],
+      "sex": "f",
+      "age": 27
+    },
+    {
+      "id": "NOVAK",
+      "name": "Ana Novak",
+      "gender": "f",
+      "profile": "woman, 38, teacher, clear",
+      "aliases": [
+        "Ana Novak",
+        "Frau Novak",
+        "Novak"
+      ],
+      "sex": "f",
+      "age": 38
+    },
+    {
+      "id": "KEMAL",
+      "name": "Kemal Yıldız",
+      "gender": "m",
+      "profile": "man, 34",
+      "aliases": [
+        "Kemal Yıldız",
+        "Kemal"
+      ],
+      "sex": "m",
+      "age": 34
+    },
+    {
+      "id": "AYSE",
+      "name": "Ayşe Yıldız",
+      "gender": "f",
+      "profile": "woman, 34",
+      "aliases": [
+        "Ayşe Yıldız",
+        "Ayşe"
+      ],
+      "sex": "f",
+      "age": 34
+    },
+    {
+      "id": "CLAUDIA",
+      "name": "Claudia Steiner",
+      "gender": "f",
+      "profile": "woman, 41",
+      "aliases": [
+        "Claudia Steiner",
+        "Claudia"
+      ],
+      "sex": "f",
+      "age": 41
+    },
+    {
+      "id": "MARTIN",
+      "name": "Martin Steiner",
+      "gender": "m",
+      "profile": "man, 44",
+      "aliases": [
+        "Martin Steiner",
+        "Martin"
+      ],
+      "sex": "m",
+      "age": 44
+    },
+    {
+      "id": "PAUL",
+      "name": "Paul Steiner",
+      "gender": "c",
+      "profile": "boy, 9",
+      "aliases": [
+        "Paul"
+      ],
+      "sex": "m",
+      "age": 9
+    },
+    {
+      "id": "LENA",
+      "name": "Lena Steiner",
+      "gender": "c",
+      "profile": "girl, 6",
+      "aliases": [
+        "Lena"
+      ],
+      "sex": "f",
+      "age": 6
+    },
+    {
+      "id": "HERMINE",
+      "name": "Hermine Steiner",
+      "gender": "f",
+      "profile": "woman, 78, slower",
+      "aliases": [
+        "Hermine Steiner",
+        "Oma Hermine",
+        "Hermine"
+      ],
+      "sex": "f",
+      "age": 78
+    },
+    {
+      "id": "PICHLER",
+      "name": "Theresia Pichler",
+      "gender": "f",
+      "profile": "woman, 67, landlady",
+      "aliases": [
+        "Theresia Pichler",
+        "Frau Pichler",
+        "Pichler"
+      ],
+      "sex": "f",
+      "age": 67
+    },
+    {
+      "id": "SABINE",
+      "name": "Sabine",
+      "gender": "f",
+      "profile": "woman, club trainer, energetic",
+      "aliases": [
+        "Sabine"
+      ],
+      "sex": "f",
+      "age": 35
+    },
+    {
+      "id": "EBNER",
+      "name": "Herr Ebner",
+      "gender": "m",
+      "profile": "man, owner of the laundromat café",
+      "aliases": [
+        "Herr Ebner",
+        "Ebner"
+      ],
+      "sex": "m",
+      "age": 55
+    },
+    {
+      "id": "FELIX",
+      "name": "Felix",
+      "gender": "m",
+      "profile": "young man, flatmate",
+      "aliases": [
+        "Felix"
+      ],
+      "sex": "m",
+      "age": 25
+    },
+    {
+      "id": "GUEST_F1",
+      "name": "Gast (w) 1",
+      "gender": "f",
+      "profile": "generic woman, reused across stories",
+      "aliases": [],
+      "sex": "f",
+      "age": 35
+    },
+    {
+      "id": "GUEST_F2",
+      "name": "Gast (w) 2",
+      "gender": "f",
+      "profile": "generic woman, reused across stories",
+      "aliases": [],
+      "sex": "f",
+      "age": 35
+    },
+    {
+      "id": "GUEST_M1",
+      "name": "Gast (m) 1",
+      "gender": "m",
+      "profile": "generic man, reused across stories",
+      "aliases": [],
+      "sex": "m",
+      "age": 35
+    },
+    {
+      "id": "GUEST_M2",
+      "name": "Gast (m) 2",
+      "gender": "m",
+      "profile": "generic man, reused across stories",
+      "aliases": [],
+      "sex": "m",
+      "age": 35
+    }
+  ],
+  "speechVerbs": [
+    "sagt",
+    "sagen",
+    "fragt",
+    "fragen",
+    "antwortet",
+    "antworten",
+    "ruft",
+    "rufen",
+    "flüstert",
+    "flüstern",
+    "meint",
+    "meinen",
+    "erklärt",
+    "erklären",
+    "lacht",
+    "lachen",
+    "schreibt",
+    "schreiben",
+    "liest",
+    "lesen",
+    "bittet",
+    "bitten",
+    "begrüßt",
+    "begrüßen",
+    "präsentiert",
+    "fragen",
+    "antwortet",
+    "ergänzt",
+    "fügt",
+    "stellt",
+    "murmelt",
+    "seufzt",
+    "lächelt",
+    "sagte",
+    "fragte",
+    "antwortete"
+  ]
+}

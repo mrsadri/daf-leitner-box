@@ -1,6 +1,7 @@
 import { LeitnerCard, AppSettings, MASTERED_BOX, ReviewEvent } from '../types/leitner';
 import { parseCSV, transformCsvToCards } from './csvParser';
 import { toLocalDateString } from './dates';
+import { computeMoveBack } from './dictation/moveBack';
 
 export { toLocalDateString };
 
@@ -457,6 +458,23 @@ class LeitnerEngine {
     this.cards[idx] = { ...this.cards[idx], ...updates, id: cardId };
     this.persist([this.cards[idx]]);
     return this.cards[idx];
+  }
+
+  /**
+   * Story dictation: move a card back one compartment (a manual decision, not a review). The due date is the earliest
+   * review of the new compartment, never in the past. No review event, counters and lastReviewedAt stay. Returns the
+   * state before the move so the caller can offer Undo through updateCard.
+   */
+  public moveBackOne(cardId: string, today: Date = new Date()):
+    { card: LeitnerCard; before: Pick<LeitnerCard, 'box' | 'nextReviewDate' | 'lastReviewedAt'>; moved: boolean } | null {
+    const idx = this.cards.findIndex(c => c.id === cardId);
+    if (idx === -1) return null;
+    const card = this.cards[idx];
+    const before = { box: card.box, nextReviewDate: card.nextReviewDate, lastReviewedAt: card.lastReviewedAt };
+    const next = computeMoveBack(card, today);
+    this.cards[idx] = { ...card, box: next.box, nextReviewDate: next.nextReviewDate };
+    this.persist([this.cards[idx]]);
+    return { card: this.cards[idx], before, moved: next.moved };
   }
 
   public resetCardToBox0(cardId: string) {

@@ -1,0 +1,612 @@
+{
+  "block": 1,
+  "cards": [
+    {
+      "block": 1,
+      "examples": [
+        {
+          "id": "s01q2n0080",
+          "text": "Sie notiert die Namen: Frau Lechner, Jonas, Kenji, Emily, Pierre, Mei."
+        }
+      ],
+      "id": "g-01-01-regelmaessige-verben-im-praesens",
+      "lesson": 1,
+      "level": "A1",
+      "related": [
+        "g-01-02-personalpronomen-im-nominativ-und-akkusativ"
+      ],
+      "rule": "Ein Verb besteht aus dem Stamm und einer Endung. Die Endung zeigt die Person an: ich -e, du -st, er/sie/es -t, wir -en, ihr -t, sie/Sie -en.\nEndet der Stamm auf -t oder -d (arbeiten, finden), steht bei du, er/sie/es und ihr ein zusätzliches -e: du arbeitest, er arbeitet.",
+      "table": {
+        "head": [
+          "",
+          "lernen",
+          "arbeiten",
+          "tanzen"
+        ],
+        "rows": [
+          [
+            "ich",
+            "lerne",
+            "arbeite",
+            "tanze"
+          ],
+          [
+            "du",
+            "lernst",
+            "arbeitest",
+            "tanzt"
+          ],
+          [
+            "er / sie / es",
+            "lernt",
+            "arbeitet",
+            "tanzt"
+          ],
+          [
+            "wir",
+            "lernen",
+            "arbeiten",
+            "tanzen"
+          ],
+          [
+            "ihr",
+            "lernt",
+            "arbeitet",
+            "tanzt"
+          ],
+          [
+            "sie / Sie",
+            "lernen",
+            "arbeiten",
+            "tanzen"
+          ]
+        ]
+      },
+      "title": "Regelmäßige Verben im Präsens"
+    },
+    {
+      "block": 1,
+      "examples": [
+        {
+          "id": "s01q6n0304",
+          "text": "Wie viel kostet alles?"
+        }
+      ],
+      "id": "g-01-01-wortstellung-in-aussagen-w-fragen-und-ja-nein-fragen",
+      "lesson": 1,
+      "level": "A1",
+      "rule": "In einer Aussage und in einer W-Frage steht das konjugierte Verb auf Position 2. W-Fragen beginnen mit einem Fragewort (wer, was, wo, woher, wann, wie).\nIn einer Ja/Nein-Frage steht das konjugierte Verb auf Position 1. Man antwortet mit Ja oder Nein.",
+      "table": {
+        "head": [
+          "",
+          "Position 1",
+          "Position 2",
+          "Rest"
+        ],
+        "rows": [
+          [
+            "Aussage",
+            "Tim",
+            "wohnt",
+            "in Hamburg."
+          ],
+          [
+            "W-Frage",
+            "Wo",
+            "wohnt",
+            "Tim?"
+          ],
+          [
+            "Ja/Nein-Frage",
+            "Wohnt",
+            "Tim",
+            "in Hamburg?"
+          ]
+        ]
+      },
+      "title": "Wortstellung in Aussagen, W-Fragen und Ja/Nein-Fragen"
+    },
+    {
+      "block": 1,
+      "examples": [
+        {
+          "id": "s01q1n0002",
+          "text": "Die Annenstraße in Graz ist noch ruhig."
+        },
+        {
+          "id": "s01q4n0177",
+          "text": "Das Wetter ist schön: Sonne und zwanzig Grad."
+        }
+      ],
+      "id": "g-01-02-artikel-bestimmt-und-unbestimmt",
+      "lesson": 2,
+      "level": "A1",
+      "rule": "Ist eine Sache neu in dem Gespräch oder Text, steht der unbestimmte Artikel (ein, eine). Ist sie schon bekannt, steht der bestimmte Artikel (der, das, die).\nDer Artikel zeigt das Genus des Nomens: maskulin, neutral oder feminin. Im Plural gibt es nur „die“; der unbestimmte Artikel fehlt.",
+      "table": {
+        "head": [
+          "",
+          "maskulin",
+          "neutral",
+          "feminin",
+          "Plural"
+        ],
+        "rows": [
+          [
+            "bestimmt",
+            "der Tisch",
+            "das Buch",
+            "die Lampe",
+            "die Stühle"
+          ],
+          [
+            "unbestimmt",
+            "ein Tisch",
+            "ein Buch",
+            "eine Lampe",
+            "– Stühle"
+          ]
+        ]
+      },
+      "title": "Artikel: bestimmt und unbestimmt"
+    },
+    {
+      "block": 1,
+      "examples": [
+        {
+          "id": "s01q4n0186",
+          "text": "Am Nachmittag besuchen sie den Stadtpark."
+        },
+        {
+          "id": "s01q5n0285",
+          "text": "Die Frage ist: Wer macht den Haushalt?"
+        }
+      ],
+      "id": "g-01-02-nominativ-und-akkusativ-mit-bestimmtem-artikel",
+      "lesson": 2,
+      "level": "A1",
+      "related": [
+        "g-01-02-artikel-bestimmt-und-unbestimmt"
+      ],
+      "rule": "Das Subjekt steht im Nominativ. Das direkte Objekt, zum Beispiel nach haben, sehen, kaufen oder brauchen, steht im Akkusativ.\nMit dem bestimmten Artikel ändert sich nur das Maskulinum: aus „der“ wird „den“. Neutrum, Femininum und Plural bleiben gleich.",
+      "table": {
+        "head": [
+          "",
+          "maskulin",
+          "neutral",
+          "feminin",
+          "Plural"
+        ],
+        "rows": [
+          [
+            "Nominativ",
+            "der Hund",
+            "das Pferd",
+            "die Katze",
+            "die Fische"
+          ],
+          [
+            "Akkusativ",
+            "den Hund",
+            "das Pferd",
+            "die Katze",
+            "die Fische"
+          ]
+        ]
+      },
+      "title": "Nominativ und Akkusativ mit bestimmtem Artikel"
+    },
+    {
+      "block": 1,
+      "examples": [
+        {
+          "id": "s01q4n0178",
+          "text": "Nilufar, Lucía und Jonas machen einen Ausflug."
+        },
+        {
+          "id": "s01q1n0003",
+          "text": "Nilufar Karimi hat heute einen Termin um neun Uhr."
+        }
+      ],
+      "id": "g-01-02-nominativ-und-akkusativ-mit-unbestimmtem-artikel-und-negativ",
+      "lesson": 2,
+      "level": "A1",
+      "related": [
+        "g-01-02-verneinung-mit-nicht-und-kein"
+      ],
+      "rule": "Auch beim unbestimmten Artikel und bei „kein-“ ändert sich im Akkusativ nur das Maskulinum: „ein“ wird „einen“, „kein“ wird „keinen“. Die anderen Formen bleiben gleich.\nIm Plural steht kein unbestimmter Artikel, die Verneinung heißt „keine“.",
+      "table": {
+        "head": [
+          "",
+          "maskulin",
+          "neutral",
+          "feminin",
+          "Plural"
+        ],
+        "rows": [
+          [
+            "Nominativ",
+            "ein / kein Hund",
+            "ein / kein Pferd",
+            "eine / keine Katze",
+            "– / keine Fische"
+          ],
+          [
+            "Akkusativ",
+            "einen / keinen Hund",
+            "ein / kein Pferd",
+            "eine / keine Katze",
+            "– / keine Fische"
+          ]
+        ]
+      },
+      "title": "Nominativ und Akkusativ mit unbestimmtem Artikel und Negativartikel"
+    },
+    {
+      "block": 1,
+      "examples": [
+        {
+          "id": "s01q1n0016",
+          "text": "„Danke! Freut mich!“"
+        },
+        {
+          "id": "s01q1n0017",
+          "text": "„Mich auch! Das Team ist schon da. Am Montag trinken wir immer zusammen Kaffee.“"
+        }
+      ],
+      "id": "g-01-02-personalpronomen-im-nominativ-und-akkusativ",
+      "lesson": 2,
+      "level": "A1",
+      "rule": "Personalpronomen ersetzen Personen und Dinge. Im Akkusativ ändern sich ich, du, er, wir und ihr: mich, dich, ihn, uns, euch. Die Formen sie, es und Sie bleiben gleich.",
+      "table": {
+        "head": [
+          "Nominativ",
+          "ich",
+          "du",
+          "er",
+          "sie",
+          "es",
+          "wir",
+          "ihr",
+          "sie / Sie"
+        ],
+        "rows": [
+          [
+            "Akkusativ",
+            "mich",
+            "dich",
+            "ihn",
+            "sie",
+            "es",
+            "uns",
+            "euch",
+            "sie / Sie"
+          ]
+        ]
+      },
+      "title": "Personalpronomen im Nominativ und Akkusativ"
+    },
+    {
+      "block": 1,
+      "examples": [
+        {
+          "id": "s01q3n0174",
+          "text": "Das Telefon funktioniert immer noch nicht."
+        },
+        {
+          "id": "s01q5n0233",
+          "text": "Am Morgen sind die Kinder nicht schnell."
+        }
+      ],
+      "id": "g-01-02-verneinung-mit-nicht-und-kein",
+      "lesson": 2,
+      "level": "A1",
+      "related": [
+        "g-01-02-nominativ-und-akkusativ-mit-unbestimmtem-artikel-und-negativ"
+      ],
+      "rule": "Mit „kein-“ verneinst du ein Nomen, vor dem ein unbestimmter Artikel stehen würde oder gar kein Artikel steht: Ich habe keine Zeit.\nMit „nicht“ verneinst du alles andere: ein Verb, einen ganzen Satz, ein Adjektiv oder eine Zeitangabe. Oft steht „nicht“ am Satzende oder direkt vor dem Wort, das verneint wird: Er kommt nicht. Das ist nicht teuer.",
+      "title": "Verneinung mit „nicht“ und „kein“"
+    },
+    {
+      "block": 1,
+      "examples": [
+        {
+          "id": "s01q1n0009",
+          "text": "Um Viertel vor neun ist sie schon da."
+        },
+        {
+          "id": "s01q4n0179",
+          "text": "Am Vormittag besuchen sie den Markt."
+        }
+      ],
+      "id": "g-01-02-wortstellung-subjekt",
+      "lesson": 2,
+      "level": "A1",
+      "rule": "Das Verb steht in der Aussage immer auf Position 2. Auf Position 1 steht oft das Subjekt, aber es kann auch eine Zeit- oder Ortsangabe stehen. Dann folgt das Subjekt direkt nach dem Verb.",
+      "table": {
+        "head": [
+          "Position 1",
+          "Position 2",
+          "Rest"
+        ],
+        "rows": [
+          [
+            "Wir",
+            "essen",
+            "heute Abend Pizza."
+          ],
+          [
+            "Heute Abend",
+            "essen",
+            "wir Pizza."
+          ]
+        ]
+      },
+      "title": "Wortstellung: Subjekt"
+    },
+    {
+      "block": 1,
+      "examples": [
+        {
+          "id": "s01q1n0023",
+          "text": "Er kann Japanisch, Englisch und Deutsch."
+        },
+        {
+          "id": "s01q2n0097",
+          "text": "Wei ist Chinese und kann Chinesisch."
+        }
+      ],
+      "id": "g-01-03-modalverben-im-praesens-koennen-muessen-moecht",
+      "lesson": 3,
+      "level": "A1",
+      "related": [
+        "g-01-03-modalverben-wortstellung-in-aussagesaetzen-und-w-fragen"
+      ],
+      "rule": "Modalverben sagen, ob etwas möglich ist (können), nötig ist (müssen) oder gewünscht wird (möchten). Bei ich und er/sie/es haben sie keine Endung. Bei können und müssen ändert sich der Stammvokal im Singular: ich kann, ich muss.",
+      "table": {
+        "head": [
+          "",
+          "können",
+          "müssen",
+          "möchten"
+        ],
+        "rows": [
+          [
+            "ich",
+            "kann",
+            "muss",
+            "möchte"
+          ],
+          [
+            "du",
+            "kannst",
+            "musst",
+            "möchtest"
+          ],
+          [
+            "er / sie / es",
+            "kann",
+            "muss",
+            "möchte"
+          ],
+          [
+            "wir",
+            "können",
+            "müssen",
+            "möchten"
+          ],
+          [
+            "ihr",
+            "könnt",
+            "müsst",
+            "möchtet"
+          ],
+          [
+            "sie / Sie",
+            "können",
+            "müssen",
+            "möchten"
+          ]
+        ]
+      },
+      "title": "Modalverben im Präsens: „können“, „müssen“, „möcht-“"
+    },
+    {
+      "block": 1,
+      "examples": [
+        {
+          "id": "s01q5n0288",
+          "text": "Sie möchte die Grafik mit Spanien vergleichen."
+        },
+        {
+          "id": "s01q1n0018",
+          "text": "Frau Wagner möchte das Team vorstellen."
+        }
+      ],
+      "id": "g-01-03-modalverben-wortstellung-in-aussagesaetzen-und-w-fragen",
+      "lesson": 3,
+      "level": "A1",
+      "related": [
+        "g-01-03-modalverben-im-praesens-koennen-muessen-moecht"
+      ],
+      "rule": "Das Modalverb steht auf Position 2 (in der Ja/Nein-Frage auf Position 1). Das zweite Verb steht im Infinitiv ganz am Ende des Satzes. Modalverb und Infinitiv bilden zusammen einen Rahmen um den Rest des Satzes.",
+      "table": {
+        "head": [
+          "",
+          "Position 1",
+          "Position 2",
+          "Mitte",
+          "Satzende"
+        ],
+        "rows": [
+          [
+            "Aussage",
+            "Ich",
+            "kann",
+            "heute nicht",
+            "kommen."
+          ],
+          [
+            "W-Frage",
+            "Wann",
+            "musst",
+            "du",
+            "arbeiten?"
+          ],
+          [
+            "Ja/Nein-Frage",
+            "Kannst",
+            "du",
+            "mir",
+            "helfen?"
+          ]
+        ]
+      },
+      "title": "Modalverben: Wortstellung in Aussagesätzen und W-Fragen"
+    },
+    {
+      "block": 1,
+      "examples": [
+        {
+          "id": "s01q1n0007",
+          "text": "Heute beginnt ihre Zeit im Team von Murklang."
+        },
+        {
+          "id": "s01q5n0253",
+          "text": "Sie ist Putzfrau, und ihr Mann ist auch Putzmann."
+        }
+      ],
+      "id": "g-01-03-possessivartikel-im-nominativ",
+      "lesson": 3,
+      "level": "A1",
+      "rule": "Possessivartikel zeigen, zu wem etwas gehört. Der Possessivartikel passt zur Person (mein = ich, dein = du, …) und bekommt dieselbe Endung wie „ein“: Im Nominativ haben Femininum und Plural ein -e (meine Tochter, meine Kinder), Maskulinum und Neutrum keine Endung (mein Sohn, mein Kind).",
+      "table": {
+        "head": [
+          "",
+          "Maskulinum / Neutrum",
+          "Femininum / Plural"
+        ],
+        "rows": [
+          [
+            "ich",
+            "mein",
+            "meine"
+          ],
+          [
+            "du",
+            "dein",
+            "deine"
+          ],
+          [
+            "er / es",
+            "sein",
+            "seine"
+          ],
+          [
+            "sie",
+            "ihr",
+            "ihre"
+          ],
+          [
+            "wir",
+            "unser",
+            "unsere"
+          ],
+          [
+            "ihr",
+            "euer",
+            "eure"
+          ],
+          [
+            "sie / Sie",
+            "ihr / Ihr",
+            "ihre / Ihre"
+          ]
+        ]
+      },
+      "title": "Possessivartikel im Nominativ"
+    },
+    {
+      "block": 1,
+      "examples": [
+        {
+          "id": "s01q2n0052",
+          "text": "Frau Wagner fragt, und Nilufar antwortet."
+        },
+        {
+          "id": "s01q1n0004",
+          "text": "Sie ist sechsundzwanzig Jahre alt und kommt aus Shiraz."
+        }
+      ],
+      "id": "g-01-03-verbindung-von-satzteilen-mit-und",
+      "lesson": 3,
+      "level": "A1",
+      "rule": "Mit „und“ verbindest du Wörter, Wortgruppen und Sätze. Gehören beide Teile zusammen, steht vor „und“ kein Komma: Tim und Anna kochen. Ich kaufe Brot und Käse.",
+      "title": "Verbindung von Satzteilen mit „und“"
+    },
+    {
+      "block": 1,
+      "examples": [
+        {
+          "id": "s01q1n0037",
+          "text": "„Ich komme aus Graz, und ich wohne auch in Graz, in Lend."
+        },
+        {
+          "id": "s01q4n0217",
+          "text": "Graz ist schön, das Team ist sehr nett, und ich habe eine Freundin aus Spanien."
+        }
+      ],
+      "id": "g-01-03-wortstellung-in-saetzen-mit-und",
+      "lesson": 3,
+      "level": "A1",
+      "rule": "„Und“ steht auf Position 0, es ist kein Satzglied und verändert die Wortstellung nicht. Nach „und“ beginnt ein neuer Hauptsatz: Das Verb steht wieder auf Position 2. Ist das Subjekt gleich, kann man es im zweiten Satz weglassen.",
+      "table": {
+        "head": [
+          "Position 1",
+          "Position 2",
+          "Rest",
+          "Position 0",
+          "Position 1",
+          "Position 2",
+          "Rest"
+        ],
+        "rows": [
+          [
+            "Ich",
+            "lese",
+            "ein Buch,",
+            "und",
+            "ich",
+            "schreibe",
+            "eine Karte."
+          ],
+          [
+            "Ich",
+            "lese",
+            "ein Buch",
+            "und",
+            "",
+            "schreibe",
+            "eine Karte."
+          ]
+        ]
+      },
+      "title": "Wortstellung in Sätzen mit „und“"
+    }
+  ],
+  "first": {
+    "g-01-01-regelmaessige-verben-im-praesens": "s01q1n0014",
+    "g-01-01-wortstellung-in-aussagen-w-fragen-und-ja-nein-fragen": "s01q1n0013",
+    "g-01-02-artikel-bestimmt-und-unbestimmt": "s01q1n0002",
+    "g-01-02-nominativ-und-akkusativ-mit-bestimmtem-artikel": "s01q4n0179",
+    "g-01-02-nominativ-und-akkusativ-mit-unbestimmtem-artikel-und-negativ": "s01q1n0003",
+    "g-01-02-personalpronomen-im-nominativ-und-akkusativ": "s01q1n0016",
+    "g-01-02-verneinung-mit-nicht-und-kein": "s01q1n0043",
+    "g-01-02-wortstellung-subjekt": "s01q1n0009",
+    "g-01-03-modalverben-im-praesens-koennen-muessen-moecht": "s01q1n0018",
+    "g-01-03-modalverben-wortstellung-in-aussagesaetzen-und-w-fragen": "s01q1n0018",
+    "g-01-03-possessivartikel-im-nominativ": "s01q1n0007",
+    "g-01-03-verbindung-von-satzteilen-mit-und": "s01q1n0004",
+    "g-01-03-wortstellung-in-saetzen-mit-und": "s01q1n0037"
+  },
+  "storyId": "story-01"
+}

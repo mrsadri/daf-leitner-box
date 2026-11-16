@@ -1,0 +1,209 @@
+{
+  "_comment": "Mode B (Piper) casting, proposed by cast_voices.py WITHOUT listening. Edit single entries by hand; a changed entry regenerates only that character's audio. Mode C voices are computed on the device (src/services/dictation/voiceMap.ts). Mode A (paid TTS) is not used.",
+  "_licences": "thorsten and kerstin: CC0. MLS (OpenSLR 94): CC-BY 4.0, credit required in the app.",
+  "B": {
+    "NARRATOR": {
+      "model": "de_DE-thorsten-medium",
+      "length_scale": 1.05
+    },
+    "NILI": {
+      "model": "de_DE-mls-medium",
+      "speaker": 17,
+      "noise_scale": 0.333,
+      "noise_w": 0.333,
+      "length_scale": 0.85,
+      "tempo": 1.3
+    },
+    "LUCIA": {
+      "model": "de_DE-mls-medium",
+      "speaker": 104,
+      "noise_scale": 0.333,
+      "noise_w": 0.333,
+      "length_scale": 0.85,
+      "tempo": 1.25
+    },
+    "JONAS": {
+      "model": "de_DE-mls-medium",
+      "speaker": 203,
+      "noise_scale": 0.333,
+      "noise_w": 0.333,
+      "length_scale": 0.85,
+      "tempo": 1.15
+    },
+    "LECHNER": {
+      "model": "de_DE-mls-medium",
+      "speaker": 105,
+      "noise_scale": 0.333,
+      "noise_w": 0.333,
+      "length_scale": 0.85,
+      "tempo": 1.1
+    },
+    "WAGNER": {
+      "model": "de_DE-mls-medium",
+      "speaker": 204,
+      "noise_scale": 0.333,
+      "noise_w": 0.333,
+      "length_scale": 0.85,
+      "tempo": 1.1
+    },
+    "KENJI": {
+      "model": "de_DE-mls-medium",
+      "speaker": 95,
+      "noise_scale": 0.333,
+      "noise_w": 0.333,
+      "length_scale": 0.85,
+      "tempo": 1.1
+    },
+    "EMILY": {
+      "model": "de_DE-mls-medium",
+      "speaker": 123,
+      "noise_scale": 0.333,
+      "noise_w": 0.333,
+      "length_scale": 0.85,
+      "tempo": 1.1
+    },
+    "PIERRE": {
+      "model": "de_DE-mls-medium",
+      "speaker": 27,
+      "noise_scale": 0.333,
+      "noise_w": 0.333,
+      "length_scale": 0.85,
+      "tempo": 1.1
+    },
+    "MEI": {
+      "model": "de_DE-mls-medium",
+      "speaker": 54,
+      "noise_scale": 0.333,
+      "noise_w": 0.333,
+      "length_scale": 0.85,
+      "tempo": 1.1
+    },
+    "NOVAK": {
+      "model": "de_DE-kerstin-medium",
+      "length_scale": 0.98
+    },
+    "KEMAL": {
+      "model": "de_DE-mls-medium",
+      "speaker": 135,
+      "noise_scale": 0.333,
+      "noise_w": 0.333,
+      "length_scale": 0.85,
+      "tempo": 1.2
+    },
+    "AYSE": {
+      "model": "de_DE-mls-medium",
+      "speaker": 103,
+      "noise_scale": 0.333,
+      "noise_w": 0.333,
+      "length_scale": 0.85,
+      "tempo": 1.1
+    },
+    "CLAUDIA": {
+      "model": "de_DE-mls-medium",
+      "speaker": 82,
+      "noise_scale": 0.333,
+      "noise_w": 0.333,
+      "length_scale": 0.85,
+      "tempo": 1.15
+    },
+    "MARTIN": {
+      "model": "de_DE-mls-medium",
+      "speaker": 9,
+      "noise_scale": 0.333,
+      "noise_w": 0.333,
+      "length_scale": 0.85,
+      "tempo": 1.078
+    },
+    "PAUL": {
+      "model": "de_DE-mls-medium",
+      "speaker": 83,
+      "noise_scale": 0.333,
+      "noise_w": 0.333,
+      "length_scale": 0.85,
+      "tempo": 1.133,
+      "pitch_semitones": 4.0
+    },
+    "LENA": {
+      "model": "de_DE-mls-medium",
+      "speaker": 12,
+      "noise_scale": 0.333,
+      "noise_w": 0.333,
+      "length_scale": 0.85,
+      "tempo": 1.133,
+      "pitch_semitones": 2.0
+    },
+    "HERMINE": {
+      "model": "de_DE-mls-medium",
+      "speaker": 138,
+      "noise_scale": 0.333,
+      "noise_w": 0.333,
+      "length_scale": 0.85,
+      "tempo": 1.012
+    },
+    "PICHLER": {
+      "model": "de_DE-mls-medium",
+      "speaker": 184,
+      "noise_scale": 0.333,
+      "noise_w": 0.333,
+      "length_scale": 0.85,
+      "tempo": 1.05
+    },
+    "SABINE": {
+      "model": "de_DE-mls-medium",
+      "speaker": 153,
+      "noise_scale": 0.333,
+      "noise_w": 0.333,
+      "length_scale": 0.85,
+      "tempo": 1.122
+    },
+    "EBNER": {
+      "model": "de_DE-mls-medium",
+      "speaker": 39,
+      "noise_scale": 0.333,
+      "noise_w": 0.333,
+      "length_scale": 0.85,
+      "tempo": 1.056
+    },
+    "FELIX": {
+      "model": "de_DE-mls-medium",
+      "speaker": 81,
+      "noise_scale": 0.333,
+      "noise_w": 0.333,
+      "length_scale": 0.85,
+      "tempo": 1.122
+    },
+    "GUEST_F1": {
+      "model": "de_DE-mls-medium",
+      "speaker": 187,
+      "noise_scale": 0.333,
+      "noise_w": 0.333,
+      "length_scale": 0.85,
+      "tempo": 1.1
+    },
+    "GUEST_F2": {
+      "model": "de_DE-mls-medium",
+      "speaker": 19,
+      "noise_scale": 0.333,
+      "noise_w": 0.333,
+      "length_scale": 0.85,
+      "tempo": 1.1
+    },
+    "GUEST_M1": {
+      "model": "de_DE-mls-medium",
+      "speaker": 126,
+      "noise_scale": 0.333,
+      "noise_w": 0.333,
+      "length_scale": 0.85,
+      "tempo": 1.1
+    },
+    "GUEST_M2": {
+      "model": "de_DE-mls-medium",
+      "speaker": 137,
+      "noise_scale": 0.333,
+      "noise_w": 0.333,
+      "length_scale": 0.85,
+      "tempo": 1.1
+    }
+  },
+  "C": {}
+}

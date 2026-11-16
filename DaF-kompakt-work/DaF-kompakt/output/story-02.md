@@ -270,7 +270,7 @@ Am 1. November ist Feiertag, Allerheiligen. Nilufar **zieht** **ein**. Lucía **
 
 Aber in der Nacht ist es **kalt**. Die Heizung ist **ausgegangen**! Nilufar schreibt eine **Nachricht**:
 
-„Frau Pichler, die Heizung ist **heute** Nacht **ausgegangen**. Können Sie die Heizung **bald** **reparieren**? **Bitte** **rufen** Sie **zurück**. **Mit freundlichen Grüßen**, Nilufar Karimi“
+„Frau Pichler, die Heizung ist **heute** Nacht **ausgegangen**. Können Sie die Heizung **bald** **reparieren**? **Bitte** **rufen** Sie **zurück**. **Mit freundlichen Grüßen**, Nilufar Karimi.“
 
 Am **Morgen** **ruft** Frau Pichler **zurück**. „Kein Problem! Der **Hausmeister** kommt um neun. Und **denken** Sie **doch** nicht **so** viel, Frau Karimi. Das **Haus** ist alt, aber **gesund**!“
 

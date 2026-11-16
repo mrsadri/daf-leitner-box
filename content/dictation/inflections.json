@@ -1,0 +1,4 @@
+{
+  "_comment": "Extra word forms the CSV generator cannot derive. Key: surface form as typed (matching is case-insensitive); value: list of CSV 'Wort' strings (exactly as in public/data/wortschatz-daf-kompakt.csv, first match wins) the form belongs to.",
+  "forms": {}
+}

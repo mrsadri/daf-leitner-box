@@ -10,6 +10,7 @@ import { Switch } from './ui/Switch';
 import { LanguageSwitch } from './ui/LanguageSwitch';
 import { Auto, Ltr } from './ui/Text';
 import { Credit } from './ui/Credit';
+import { AudioModeSettings } from './dictation/AudioModeSettings';
 import { InstallSection, NotificationSection } from './AppInstall';
 
 interface SettingsBackupModalProps {
@@ -20,6 +21,8 @@ interface SettingsBackupModalProps {
   profile: UserProfile;
   onProfileChange: (profile: UserProfile) => void;
   onSignOut: () => void;
+  /** Story dictation is visible to this user (released, or admin preview). */
+  showDictationSettings?: boolean;
 }
 
 export const SettingsBackupModal: React.FC<SettingsBackupModalProps> = ({
@@ -29,7 +32,8 @@ export const SettingsBackupModal: React.FC<SettingsBackupModalProps> = ({
   onDataImported,
   profile,
   onProfileChange,
-  onSignOut
+  onSignOut,
+  showDictationSettings = false
 }) => {
   const { t } = useI18n();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -318,6 +322,8 @@ export const SettingsBackupModal: React.FC<SettingsBackupModalProps> = ({
           </div>
         </div>
       </div>
+
+      {showDictationSettings && <AudioModeSettings settings={settings} onUpdateSettings={onUpdateSettings} cardClass={section} titleClass={sectionTitle} />}
 
       {/* Backup & restore */}
       <div className={section}>

@@ -38,3 +38,9 @@ DaF-kompakt-work/DaF-kompakt/Kontext/
 DaF-kompakt-work/scripts/vision_ocr
 Screenshot*.png
 *.zip
+
+# Story illustration originals (large); the app uses the WebP files made by scripts/dictation/prepare_images.py
+DaF-kompakt-work/DaF-kompakt/output/image-prompts/scenes/*.jpg
+DaF-kompakt-work/DaF-kompakt/output/image-prompts/scenes/*.jpeg
+DaF-kompakt-work/DaF-kompakt/output/image-prompts/scenes/*.png
+DaF-kompakt-work/DaF-kompakt/output/image-prompts/scenes/*.webp
