@@ -19,6 +19,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: python3 -m unittest discover scripts/dictation/tests
+      - run: python3 scripts/dictation/stage_media.py --check
       - run: npm run lint
       - run: npm test
       - run: npm run build

@@ -178,7 +178,8 @@ export const DictationScreen: React.FC<Props> = ({ profile, cards, settings, fla
         {back({ name: 'detail', entry: view.entry })}
         <h1 className="text-xl font-bold mb-3 text-slate-900 dark:text-white"><span dir="ltr" lang="de">{seq.title}</span></h1>
         {seq.image
-          ? <img src={`${STORY_MEDIA_BASE}/${seq.image.key}.webp`} alt={alt} width={seq.image.w} height={seq.image.h} className="w-full max-w-[480px] aspect-[4/3] rounded-2xl object-cover" />
+          ? <img src={`${STORY_MEDIA_BASE}/${seq.image.key}.webp`} srcSet={`${STORY_MEDIA_BASE}/${seq.image.key}@800.webp 800w, ${STORY_MEDIA_BASE}/${seq.image.key}.webp 1600w`}
+              sizes="(max-width: 520px) calc(100vw - 32px), 480px" alt={alt} width={seq.image.w} height={seq.image.h} decoding="async" className="w-full max-w-[480px] aspect-[4/3] rounded-2xl object-cover" />
           : <Placeholder title={seq.title} note={t.dictation.sequence.noImage} />}
         <h2 className="mt-5 text-sm font-semibold text-slate-500 dark:text-slate-400">{t.dictation.sequence.situation}</h2>
         <p className="mt-1 text-slate-800 dark:text-slate-200 leading-7">{text}</p>

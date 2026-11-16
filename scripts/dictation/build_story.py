@@ -264,7 +264,9 @@ def build(story_no: str, *, root: Path = REPO, source_dir: Path | None = None, l
             "order": seq.number,
             "title": seq.title,
             "situation": {"fa": seq.situation_fa, "en": seq.situation_en},
-            "image": ({"key": f"images/{key}", "w": image_info["w"], "h": image_info["h"],
+            # key carries the source hash (images.json, prepare_images.py), so a replaced picture gets a new URL
+            "image": ({"key": f"images/{key}.{image_info['hash']}" if image_info.get("hash") else f"images/{key}",
+                       "w": image_info["w"], "h": image_info["h"],
                        "alt": overrides.get("alt", {}).get(key) or {"fa": first_sentence(seq.situation_fa), "en": first_sentence(seq.situation_en)}}
                       if image_info else None),
             "sentences": sentences,

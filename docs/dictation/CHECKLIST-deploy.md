@@ -10,7 +10,7 @@ Reference: `11-release-plan.md`, `09-data-model.md`, `05-audio.md`.
 
 - [ ] All items in `CHECKLIST-dev.md` through Phase 7 are ticked, and the PRs are merged to `main`
 - [ ] `scripts/test-sql.sh` green locally (migration twice, RLS tests, existing tests)
-- [ ] Final content built and committed: `public/data/stories/index.json`, `story-01.json`, `story-02.json`, audio indexes for modes A and B
+- [ ] Final content built and committed: `public/data/stories/index.json`, `story-01.json`, `story-02.json`, audio indexes for mode B, `public/story-media/` (`stage_media.py --check` green)
 - [ ] Audio QA report (`audio-qa.md`) shows zero failures; listening sample signed off
 - [ ] Setup document `docs/supabase-dictation-setup.md` is on the `main` branch, readable at its GitHub raw URL, and the migration file path in it is correct
 - [ ] Known secrets are absent from the build: `dist/` search for `service_role`, `sk_`, `ELEVEN` returns nothing
@@ -29,15 +29,15 @@ Follow `docs/supabase-dictation-setup.md` step by step; stop and report on any e
 - [ ] B5 Run Supabase security and performance advisors; no new warnings caused by the migration
 - [ ] B6 Confirm existing features still work on the production app (current version): sign in, review a card, sync dot green
 
-## C. Production Storage (PROD)
+## C. Production Storage (PROD): not needed
 
-- [ ] C1 Create bucket `story-media`: public read, file size limit 2 MB, allowed types `audio/mpeg` and `image/webp`, no insert, update or delete policies for `anon` or `authenticated`
-- [ ] C2 Run `upload_media.py 01 --dry-run`, review the list (counts: audio files for A and B, 6 images per story)
-- [ ] C3 Run the real upload for story 01 with `--target <production-project-ref> --yes`; service-role key from the shell only; then story 02
-- [ ] C4 Verify by hand: open three audio URLs and one image URL in a browser (200, correct type, `Cache-Control` shows the long max-age)
-- [ ] C5 Verify CORS: a `fetch` from the production origin (browser console on the app) to an audio URL succeeds
-- [ ] C6 Count objects in the bucket equals the index entries (A, B, images); no stray files
-- [ ] C7 Confirm Storage usage is far below the plan limit (Open Question 8)
+Decision of 2026-11-16: audio and illustrations ship with the app in `public/story-media/` and are served by Vercel
+(same origin, one-year immutable cache for hashed names). No bucket, no upload, no service-role key, no
+`VITE_STORY_MEDIA_BASE`. After the deploy, check instead:
+
+- [ ] C1 Three audio URLs and one image URL under `https://daf-leitner-box.vercel.app/story-media/` answer 200 with
+  `audio/mpeg` or `image/webp` and `Cache-Control: public, max-age=31536000, immutable`
+- [ ] C2 A missing file (`/story-media/audio/B/0000000000000000.mp3`) answers 404, not the app page
 
 ## D. App deploy (PROD)
 

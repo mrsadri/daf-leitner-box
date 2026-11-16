@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, statSync } from 'node:fs';
 import type { GrammarCard, GrammarFile, Story, StoryIndex } from '../src/types/dictation.ts';
 
 const ROOT = new URL('../', import.meta.url).pathname;
@@ -150,8 +150,29 @@ test('every sentence has an audio file key in the Piper (B) index, and the index
   }
 });
 
+test('every audio file and illustration the stories reference is served from public/story-media', () => {
+  const statSize = (rel: string) => statSync(ROOT + rel).size;
+  for (const { story } of stories) {
+    const idx = JSON.parse(read(`public/data/stories/${story.id}.audio.B.json`)) as { sentences: Record<string, { key: string; bytes: number }> };
+    for (const [id, e] of Object.entries(idx.sentences)) {
+      const rel = `public/story-media/audio/B/${e.key}.mp3`;
+      assert.ok(existsSync(ROOT + rel), `${id}: ${rel} missing (run scripts/dictation/stage_media.py)`);
+      assert.equal(statSize(rel), e.bytes, `${id}: ${rel} is not the file the index describes`);
+    }
+    for (const q of story.sequences) {
+      if (!q.image) continue;
+      assert.match(q.image.key, /^images\/S\d{2}-Q[1-6]\.[0-9a-f]{10}$/, `${q.id}: image key without content hash`);
+      for (const suffix of ['', '@800']) {
+        assert.ok(existsSync(`${ROOT}public/story-media/${q.image.key}${suffix}.webp`), `${q.id}: ${q.image.key}${suffix}.webp missing`);
+      }
+      assert.ok(q.image.alt.fa.trim() && q.image.alt.en.trim(), `${q.id}: alt text missing`);
+    }
+  }
+  assert.ok(existsSync(ROOT + 'public/story-media/audio/B/test.mp3'), 'Settings test sample missing (gen_audio.py --test-sample)');
+});
+
 test('no API key, service-role key or provider secret appears in the committed content or code', () => {
-  const files = ['src/config.ts', 'content/dictation/voices.json', 'scripts/dictation/gen_audio.py', 'scripts/dictation/upload_media.py'];
+  const files = ['src/config.ts', 'content/dictation/voices.json', 'scripts/dictation/gen_audio.py', 'scripts/dictation/upload_media.py', 'scripts/dictation/stage_media.py', 'vercel.json'];
   for (const f of files) {
     const text = read(f);
     assert.ok(!/eyJ[A-Za-z0-9_-]{20,}/.test(text), `${f}: looks like a JWT`);

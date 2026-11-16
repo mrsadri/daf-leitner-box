@@ -4,6 +4,7 @@
   python3 scripts/dictation/gen_audio.py 01 --dry-run          what would be generated, no model needed
   python3 scripts/dictation/gen_audio.py 01                    generate missing files (incremental)
   python3 scripts/dictation/gen_audio.py 01 --sentence s01q1n0013 --force
+  python3 scripts/dictation/gen_audio.py --test-sample                the sample of the Settings "Test" button (test.mp3)
 
 Runs on the owner's machine, never in CI. Needs `pip install piper-tts numpy` in a virtual environment, ffmpeg, and
 `brew install espeak-ng` (see lib/piper_tts.py). No key, no network call: Piper is local.
@@ -103,15 +104,42 @@ def synthesize_audible(engine, settings: VoiceSettings, text: str, where: str):
     raise RuntimeError(f"no audible synthesis for {text!r} (best raw peak {best[0]:.3f}); add a speech override or use another voice")
 
 
+# The Settings "Test" button plays this file (src/components/dictation/AudioModeSettings.tsx); same text as there
+TEST_SAMPLE_TEXT = "Guten Tag! Wie geht es Ihnen?"
+TEST_SAMPLE_FILE = "test.mp3"
+
+
+def write_test_sample(mode: str) -> int:
+    from lib import audio
+    from lib.piper_tts import PiperEngine
+    voices = json.loads((CONTENT / "voices.json").read_text(encoding="utf-8"))
+    settings = voice_for(voices, mode, "NARRATOR")
+    engine = PiperEngine()
+    out = AUDIO_DIR / mode / TEST_SAMPLE_FILE
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory() as tmp:
+        samples, rate, _ = synthesize_audible(engine, settings, TEST_SAMPLE_TEXT, "test")
+        wav = Path(tmp) / "test.wav"
+        audio.write_wav(wav, samples, rate)
+        audio.encode([wav], rate, [settings.pitch_semitones], [settings.tempo], out)
+    print(f"wrote {out.relative_to(REPO)} ({audio.probe(out)['ms']} ms)")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("story")
+    ap.add_argument("story", nargs="?")
+    ap.add_argument("--test-sample", action="store_true", help=f"write {TEST_SAMPLE_FILE} (narrator voice) and exit")
     ap.add_argument("--mode", default="B", choices=["B"], help="only B (Piper) is implemented; A is a paid provider adapter for later")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--sentence", help="only this sentence id")
     ap.add_argument("--force", action="store_true", help="generate again even if the file exists")
     ap.add_argument("--limit", type=int, default=0, help="stop after this many files (for trials)")
     args = ap.parse_args(argv)
+    if args.test_sample:
+        return write_test_sample(args.mode)
+    if not args.story:
+        ap.error("story number required (or --test-sample)")
     no = args.story.zfill(2)
     story = json.loads((PUBLIC / f"story-{no}.json").read_text(encoding="utf-8"))
     voices = json.loads((CONTENT / "voices.json").read_text(encoding="utf-8"))

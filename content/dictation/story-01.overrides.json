@@ -1,5 +1,31 @@
 {
   "_comment": "Human decisions for story 01. 'speakers' were PROPOSED by Claude after reading the review report; they are NOT signed off: 'reviewed' stays empty until the owner has checked the rows.",
+  "alt": {
+    "S01-Q1": {
+      "en": "Watercolour illustration: in a bright office, Nili shakes hands with Frau Lechner while her new colleagues wave, drink coffee and take a photo.",
+      "fa": "تصویر آبرنگی: در دفتری روشن، نیلوفر با خانم لشنر دست می‌دهد و همکاران تازه‌اش دست تکان می‌دهند، قهوه می‌نوشند و عکس می‌گیرند."
+    },
+    "S01-Q2": {
+      "en": "Watercolour illustration: in the evening German class, Nili and Lucía laugh and show each other drawings of their home towns.",
+      "fa": "تصویر آبرنگی: در کلاس عصرگاهی آلمانی، نیلوفر و لوسیا می‌خندند و نقاشی‌هایی از شهرهای خودشان را به هم نشان می‌دهند."
+    },
+    "S01-Q3": {
+      "en": "Watercolour illustration: the Murklang team sits around the meeting table; a colleague holds up a poster of a stage in the city park.",
+      "fa": "تصویر آبرنگی: تیم مورکلانگ دور میز جلسه نشسته‌اند و یکی از همکاران پوستری از صحنه‌ای در پارک شهر را بالا گرفته است."
+    },
+    "S01-Q4": {
+      "en": "Watercolour illustration: Nili, Lucía and Jonas at a café table under the Graz clock tower, looking at an old photo of two people.",
+      "fa": "تصویر آبرنگی: نیلوفر، لوسیا و یوناس پشت میز کافه‌ای زیر برج ساعت گراتس، به عکسی قدیمی از دو نفر نگاه می‌کنند."
+    },
+    "S01-Q5": {
+      "en": "Watercolour illustration: early morning in the Steiner family's kitchen; Lucía brings a basket of rolls to the breakfast table.",
+      "fa": "تصویر آبرنگی: صبح زود در آشپزخانه‌ی خانواده‌ی اشتاینر؛ لوسیا سبدی نان به میز صبحانه می‌آورد."
+    },
+    "S01-Q6": {
+      "en": "Watercolour illustration: in the supermarket, Lucía reads a very long shopping list at the cheese counter while Nili pushes the trolley.",
+      "fa": "تصویر آبرنگی: در سوپرمارکت، لوسیا جلوی پیشخوان پنیر فهرست خرید بلندی را می‌خواند و نیلوفر چرخ خرید را هل می‌دهد."
+    }
+  },
   "protectedWords": [
     "Ah",
     "Allerheiligen",

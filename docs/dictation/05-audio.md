@@ -124,7 +124,10 @@ unit-tested like `voices.ts`):
 |---|---|---|---|
 | `gen_audio.py NN --mode A` | The owner's Mac, never CI, never Vercel | For every sentence (and segment) computes the file key, skips existing, calls the provider, normalizes loudness (EBU R128, target -16 LUFS, true peak -1.5 dB), trims silence, adds 80 ms lead and 250 ms tail padding, joins segments with an 80 ms crossfade, encodes MP3 mono 64 kbps, writes to `build/dictation/audio/A/` and updates the index JSON | `ELEVENLABS_API_KEY` from the shell or the macOS keychain, never from a repo file and never with a `VITE_` prefix |
 | `gen_audio.py NN --mode B` | Same | Same pipeline with Piper | none |
-| `upload_media.py NN` | Same | Uploads audio and images to the `story-media` bucket with `cacheControl: 31536000`. **Dry run by default**; real upload needs `--target <project-ref> --yes`. Never overwrites an existing key | `SUPABASE_SERVICE_ROLE_KEY` from the shell only |
+| `gen_audio.py --test-sample` | Same | Writes `audio/B/test.mp3` (narrator voice, "Guten Tag! Wie geht es Ihnen?") for the Settings Test button | none |
+| `prepare_images.py` | Same | Converts the illustrations (`SNN-QN.jpg/png/webp`, names matched leniently) to WebP 1600x1200 and 800x600 in `public/story-media/images/`, with the source hash in the name; records them in `content/dictation/images.json` | none |
+| `stage_media.py` | Same, and `--check` in CI | Copies the audio the indexes reference (plus `test.mp3`) from `build/dictation/audio/` to `public/story-media/audio/`, removes unreferenced files; `--check` fails on anything missing or extra | none |
+| `upload_media.py NN` | Not used since 2026-11-16 (see Hosting) | Uploads audio and images to a `story-media` bucket. Dry run by default; real upload needs `--target <project-ref> --yes`. Never overwrites an existing key | `SUPABASE_SERVICE_ROLE_KEY` from the shell only |
 | `audio_qa.py NN` | Same | `ffprobe` and `volumedetect` on every file: duration within `[0.4 s, 1.5 s + 0.6 s per word]`, mean volume above -50 dB, sample rate and channels as expected; writes `audio-qa.md`; a human listens to a 10 percent sample plus every long, digit, ellipsis and quote-mixed sentence | none |
 
 Cost guard: `gen_audio.py --dry-run` prints characters and the estimated cost; `--max-chars` aborts above a limit.
@@ -132,11 +135,16 @@ Cost guard: `gen_audio.py --dry-run` prints characters and the estimated cost; `
 ### File keys, storage and caching
 
 - Key = first 16 hex of `sha256(provider | model | voiceId | voiceSettings | seed | speechText)` over all segments.
-  Path: `audio/A/<key>.mp3`, `audio/B/<key>.mp3`, `images/S01-Q1.webp`. Identical text and voice yields the same file.
+  Path: `audio/A/<key>.mp3`, `audio/B/<key>.mp3`, `images/S01-Q1.<sourcehash>.webp` (and `@800`). Identical text and voice yields the same file.
 - The index `story-NN.audio.A.json` maps sentence id to `{ key, ms, bytes, textHash }`. It ships with the app.
 - Size: a 5.6-word sentence is about 2.5 s, about 20 KB at 64 kbps; about 10 MB per story per mode.
-- Bucket `story-media`: public read, no insert, update or delete policies (default deny for `anon` and
-  `authenticated`), file size limit 2 MB, allowed types `audio/mpeg` and `image/webp`. Writes only with the service role.
+- **Hosting (decision 2026-11-16):** the files are served by Vercel from the app's own origin under `/story-media/`
+  (committed in `public/story-media/`, about 22 MB for stories 1 and 2). Same origin, so no CORS and no bucket, upload
+  step or service-role key in production. `vercel.json` excludes `/story-media/` from the SPA rewrite (a missing file
+  is a real 404, so the player falls back) and sends a one-year immutable `Cache-Control` for hashed audio keys and
+  images. If the media ever outgrows Vercel (bandwidth or deployment size), the earlier plan applies: a public bucket
+  `story-media` (read for everyone, no write policies, 2 MB limit, `audio/mpeg` and `image/webp`), `upload_media.py`,
+  and `VITE_STORY_MEDIA_BASE` set to the bucket URL (`src/config.ts`).
 - Client caching: HTTP `Cache-Control: public, max-age=31536000, immutable` (keys never change content). On top of that
   the page prefetches the next two sentences into the Cache API (`daf-dictation-audio-v1`, LRU 200 entries or 20 MB)
   and plays from `blob:` URLs, so replays and offline sessions cost no network.
@@ -145,7 +153,9 @@ Cost guard: `gen_audio.py --dry-run` prints characters and the estimated cost; `
 
 Because the key includes the spoken text, any change creates a new key: the next `gen_audio.py` run generates only
 the changed sentences and the index is updated. Old files are kept for at least 30 days (users may hold a cached old
-index), then `gen_audio.py --gc` lists unreferenced keys and deletes them only with `--delete`. A voice change in
+index), then `gen_audio.py --gc` lists unreferenced keys and deletes them only with `--delete`. Accepted deviation since
+the Vercel hosting: `stage_media.py` drops unreferenced files from `public/story-media/` at the next deploy, so a session
+that was open during a content deploy plays the changed sentences with the browser voice (fallback) until it reloads. A voice change in
 `voices.json` for one character regenerates exactly that character's sentences.
 
 ## Playback controller (client)

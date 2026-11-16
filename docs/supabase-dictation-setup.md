@@ -76,20 +76,12 @@ select (select count(*) from public.cards) as cards,
 
 Report the results of steps 0 and 2.
 
-## 3. Storage bucket `story-media` (Dashboard → Storage)
+## 3. Storage: nothing to do
 
-Create a **public** bucket named `story-media`:
-
-| Setting | Value |
-|---|---|
-| Public bucket | on (read for everyone) |
-| File size limit | 2 MB |
-| Allowed MIME types | `audio/mpeg`, `image/webp` |
-| Policies | none for insert, update or delete: only the service role (the owner's upload script) writes |
-
-Then check, with any uploaded test file (`upload_media.py` dry run first, see `docs/dictation/05-audio.md`):
-- a public URL plays in a browser and answers with `Cache-Control: public, max-age=31536000`;
-- `fetch()` from `https://<your-production-origin>` is not blocked by CORS (a missing CORS header would stop the Cache API prefetch).
+Decision of 2026-11-16: the audio and the illustrations are served by Vercel from the app itself
+(`/story-media/...`, files in `public/story-media/`), not from a Supabase bucket. So there is **no bucket to create,
+no upload and no service-role key** in production. The earlier bucket plan is kept in `docs/dictation/05-audio.md`
+("Hosting") for the case that the media ever outgrows Vercel.
 
 ## 4. Release: turn the feature on, and off again
 

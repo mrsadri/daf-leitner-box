@@ -10,10 +10,11 @@ story 3 to 10 must be a content task: Markdown, images, an overrides file, a scr
 | Static JSON in the repo, built by a script, served from `public/data/stories/` | **Chosen for text and indexes** | Public content, small (about 150 KB raw, about 30 KB gzip per story with link data), reviewed in PRs, CDN-cached, versioned with the app, needs no migration and no RLS, already excluded from the SPA rewrite (`vercel.json` excludes `/data/`), works in demo mode |
 | Supabase tables for stories and sentences | Rejected | Every new story would need an insert job against the production DB, content review would leave Git, and a bad edit could not be rolled back with the app |
 | Supabase Storage for the JSON | Rejected | Same review problem; no benefit over the repo |
-| Supabase Storage for audio and images | **Chosen for media** | Roughly 15 to 30 MB of audio per story per mode and about 12 illustrations would bloat the repo and Vercel deploys; content-addressed names give immutable caching and free regeneration |
+| Supabase Storage for audio and images | Planned first; **replaced on 2026-11-16** | The real size is about 10 MB of Mode B audio per story (no Mode A) and about 1.3 MB per story of illustrations, so the repo and Vercel can carry it; a bucket would add a production upload with the service-role key, CORS and an extra env var |
+| `public/story-media/` in the repo, served by Vercel | **Chosen for media (2026-11-16)** | Same origin, one deploy carries text and media together, content-addressed names give immutable caching; revisit if the media passes a few hundred MB (see `05-audio.md`, Hosting) |
 
-Consequence: the sentence JSON and the audio index ship together with a deploy, while media files are uploaded
-**before** that deploy (deploy checklist order matters).
+Consequence: the sentence JSON, the audio index and the media files ship together in one deploy; `stage_media.py --check`
+in CI fails a PR whose index references a file that is not in `public/story-media/`.
 
 ## Repository layout (new)
 
@@ -21,7 +22,9 @@ Consequence: the sentence JSON and the audio index ship together with a deploy, 
 scripts/dictation/                 Python 3, standard library only (like scripts/build-*.py)
   build_story.py                   parse, split, attribute, link, validate, publish
   gen_audio.py                     Mode A and Mode B generation (see 05-audio.md)
-  upload_media.py                  Storage upload (dry run by default)
+  prepare_images.py                illustrations to WebP in public/story-media/images (+ content/dictation/images.json)
+  stage_media.py                   referenced audio to public/story-media/audio; --check in CI
+  upload_media.py                  bucket upload (not used since the Vercel hosting decision)
   lib/ splitter.py attribution.py linker.py grammar_links.py tts_text.py
 content/dictation/                 committed, original work only
   cast.json                        global characters and aliases (stable across stories)
@@ -212,28 +215,30 @@ carries flag `digits`, and the UI shows the hint "This sentence contains numbers
 
 ## Images
 
-- Source images: 4:3 landscape PNG named `S01-Q1.png` to `S02-Q6.png` (naming from `image-prompts/S01-image-prompts.md`).
-  Originals stay out of Git (open question: where to archive them).
-- The build converts to WebP 1600x1200 (quality 80) and 800x600, names them `images/S01-Q1.webp` and
-  `images/S01-Q1@800.webp`, and `upload_media.py` pushes them to the `story-media` bucket. The sequence JSON stores
-  only the key and dimensions (no hard-coded URL; the base URL is one constant).
+- Source images: `SNN-QN` with `.jpg`, `.png` or `.webp`, about 4:3 (at most 3 percent off, at least 1600x1200), in
+  `DaF-kompakt-work/DaF-kompakt/output/image-prompts/scenes/` (not committed). Names are matched leniently: the first
+  delivery (2026-11-16, story 1, 2400x1792 JPG) had a zero-width space in front of three names.
+- `python3 scripts/dictation/prepare_images.py` crops to 4:3 (centred), converts to WebP 1600x1200 and 800x600
+  (quality 80, no metadata), names them `images/S01-Q1.<sourcehash>.webp` and `...@800.webp` in `public/story-media/`,
+  and records `{hash, w, h}` in `content/dictation/images.json`, which `build_story.py` reads. The sequence JSON stores
+  only the key and dimensions; the app loads the 800px file on phones (`srcSet`).
+- Alt text: from `alt` in `story-NN.overrides.json` (written after looking at the picture, both languages), otherwise
+  the first sentence of the situation.
 - Validation fails the publish when a sequence has no image unless `--allow-missing-images` is passed. The app also
   tolerates `image: null` (state 20 in `03-ui-states.md`), so a missing image never blocks the feature.
-- Alt text: author-written or generated from the English situation's first sentence, reviewed in the same report,
-  stored in both languages.
 
 ## Onboarding a new story (content task, no code change)
 
 1. Put `story-NN.md` in the output folder (already true for 3 to 10).
 2. Add or update `cast.json` for new characters (and their `voices.json` entries for A, B, C).
-3. Add the 6 images to the images folder (`SNN-Q1.png` to `SNN-Q6.png`).
+3. Add the 6 images to the scenes folder (`SNN-Q1` to `SNN-Q6`, JPG, PNG or WebP), run `prepare_images.py` and write the alt texts in the overrides.
 4. Ensure the block's grammar cards exist in `content/dictation/grammar/`.
 5. `python3 scripts/dictation/build_story.py NN --report` writes the three review files (speakers, splits, links).
 6. Resolve the review, record `reviewed` ranges in `story-NN.overrides.json`.
 7. `python3 scripts/dictation/build_story.py NN --publish` writes `public/data/stories/story-NN.json` and updates
    `index.json` and `story-NN.ids.json`.
-8. `python3 scripts/dictation/gen_audio.py NN --mode A` and `--mode B` (local, keys from the shell), then
-   `upload_media.py NN` (dry run first, then `--target` the project explicitly).
+8. `python3 scripts/dictation/gen_audio.py NN --mode B` (local), then `python3 scripts/dictation/stage_media.py`
+   (copies the referenced audio into `public/story-media/`).
 9. Open a PR containing only content files. CI runs `tests/dictationContent.test.ts` (schema, id uniqueness,
    speakers in cast, every sentence has an audio key for modes A and B, every link range valid).
 10. Merge, then deploy per `CHECKLIST-deploy.md`. A story appears in the list when its entry is in `index.json`.

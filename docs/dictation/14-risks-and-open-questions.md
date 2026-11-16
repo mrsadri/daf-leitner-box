@@ -31,7 +31,7 @@ Everything that cannot be determined from the repository, with the default this 
 |---|---|---|---|
 | 1 | May text from the textbook's grammar pages be published in the app? | **Decided: no.** Own-words German cards, no book text committed (confirmed by the owner 2026-11-15) | Closed |
 | 2 | Persian and English grammar explanations? | **Decided: not needed, German grammar is enough.** Cards are German only; only drawer labels are localized | Closed |
-| 3 | Illustrations: exact file names and format, and when the 12 images exist | **Accepted:** placeholders until they exist; assumed naming `S01-Q1.png`, 4:3, converted to WebP | Phase 0, Phase 7 |
+| 3 | Illustrations: exact file names and format, and when the 12 images exist | **Answered 2026-11-16:** `SNN-QN` JPG, PNG or WebP, about 4:3, matched leniently (the first files had a zero-width space); converted by `prepare_images.py`; story 1 delivered, story 2 shows placeholders until its images exist | Done for story 1 |
 | 4 | Which German Piper voices exist now and what are their licences? | **Accepted:** settled in the Phase 0 spike; Mode B shares voices across characters with offsets | Phase 0 |
 | 5 | Is it acceptable that "move back one compartment" lowers the all-time score (sum of boxes) and writes no review event? Confirm: box 0 stays put (due today) and mastered goes to box 5 | Yes to all, as in the nightly overdue rule | Phase 2 |
 | 6 | Persian and English translations of individual sentences do not exist (only situation texts). Do you want them for the card back side or a "show translation" hint? | Not included | After the Beta |
