@@ -143,7 +143,7 @@ export const GrammarDrawer: React.FC<Props> = ({ file, storyBlock, sequence, tri
       {shown.fresh.length + shown.again.length === 0 && <p className="text-sm text-slate-600 dark:text-slate-300">{t.dictation.grammar.nothingInSequence}</p>}
       {group(t.dictation.grammar.newHere, shown.fresh)}
       {group(t.dictation.grammar.alsoUsed, shown.again)}
-      <p className="text-[11px] text-slate-400">{t.dictation.grammar.note}</p>
+      <p className="text-[11px] text-slate-500 dark:text-slate-400">{t.dictation.grammar.note}</p>
     </div>
   );
 

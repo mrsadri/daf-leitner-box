@@ -257,7 +257,7 @@ export const SentenceStage: React.FC<Props> = ({
               <li key={s.id}>
                 <button type="button" dir="ltr" lang="de" onClick={() => void play(s, true)} aria-label={`${t.dictation.stage.replayHistory}: ${s.text}`}
                   className="w-full text-start text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg px-2 py-1.5">
-                  {s.text}{st === 'skipped' && <span className="ms-2 text-xs text-slate-400" dir={lang === 'fa' ? 'rtl' : 'ltr'}>· {t.dictation.stage.skippedMark}</span>}
+                  {s.text}{st === 'skipped' && <span className="ms-2 text-xs text-slate-500 dark:text-slate-400" dir={lang === 'fa' ? 'rtl' : 'ltr'}>· {t.dictation.stage.skippedMark}</span>}
                 </button>
               </li>
             );

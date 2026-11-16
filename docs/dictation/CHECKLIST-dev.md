@@ -103,7 +103,7 @@ harness (`scripts/test-sql.sh`) or a separate dev Supabase project. After any `v
 
 - [ ] P7-T1 Two accounts and two devices against the dev Supabase project (integration scenarios 1 to 7 in `13-test-plan.md`)
 - [ ] P7-T2 Manual device and keyboard matrix executed in both interface languages; findings table filled; blockers zero
-- [ ] P7-T3 Accessibility pass: VoiceOver (iOS, macOS), TalkBack, NVDA, keyboard only, 200 percent zoom, reduced motion
+- [ ] P7-T3 Accessibility pass (2026-11-16, Chromium only): axe-core WCAG 2 A/AA found one contrast problem (grammar note and skipped mark in slate-400, fixed) and then zero violations on the stage with mistakes, the grammar column, the phone peek bar and the open sheet (English desktop, Persian phone). Edge cases checked in the browser: X3 keyboard flow and Escape closing the sheet, X4 focus (Next after a correct sentence, input after Next), X5 no animation under reduced motion, X6 no horizontal scroll at 640 px and 390 px, X9 no target under 44 px, R1, R4, R5 (umlaut order), R7. Accepted deviation X3: the grammar toggle is first in the tab order (top row), not last. Still open: VoiceOver, TalkBack, NVDA, Safari and Firefox, real 200 percent zoom — all need devices; original item: VoiceOver (iOS, macOS), TalkBack, NVDA, keyboard only, 200 percent zoom, reduced motion
 - [ ] P7-T4 Performance pass: chunk size, long-session memory, story list load time
 - [ ] P7-T5 Final proofreading and the hottest-50-sentences listening pass
 - [ ] Every row in `10-edge-cases.md` has a verified result or an accepted, written deviation
