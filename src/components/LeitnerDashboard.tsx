@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { LeitnerCard, BOX_CONFIGS } from '../types/leitner';
 import { isCardDue, getTodayString, isNounCard } from '../services/leitnerEngine';
 import { vocabText } from '../services/vocabText';
-import { Play, CheckCircle2, HelpCircle, BookOpen, Target, X, Headphones } from 'lucide-react';
+import { Play, CheckCircle2, HelpCircle, BookOpen, Target, X } from 'lucide-react';
 import { useI18n } from '../i18n/I18nProvider';
 import { De, Auto } from './ui/Text';
 import { InstallBanner } from './AppInstall';
@@ -23,8 +23,6 @@ interface LeitnerDashboardProps {
   catalog: LeitnerCard[];
   /** Open the word list filtered to a lesson (tapping a station on the metro map) */
   onOpenLesson: (lektion: string) => void;
-  /** Story dictation entry (only when the feature is visible to this user) */
-  onOpenDictation?: () => void;
 }
 
 
@@ -34,8 +32,7 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
   onStartNewWordsLearning,
   onOpenSettings,
   catalog,
-  onOpenLesson,
-  onOpenDictation
+  onOpenLesson
 }) => {
   const { t, lang, num, date } = useI18n();
   const [selectedBoxModal, setSelectedBoxModal] = useState<number | null>(null);
@@ -55,23 +52,6 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
   return (
     <div className="space-y-8 pb-12">
       {onOpenSettings && <InstallBanner onShowHow={onOpenSettings} />}
-
-      {onOpenDictation && (
-        <button
-          type="button"
-          onClick={onOpenDictation}
-          className="w-full flex items-center gap-3 text-start bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 hover:border-indigo-400 focus-visible:ring-2 focus-visible:ring-indigo-500 min-h-16"
-        >
-          <Headphones className="w-6 h-6 text-indigo-600 shrink-0" aria-hidden />
-          <span className="min-w-0">
-            <span className="block font-semibold text-slate-900 dark:text-white">
-              {t.dictation.title}
-              <span className="ms-2 px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-200">{t.dictation.beta}</span>
-            </span>
-            <span className="block text-sm text-slate-600 dark:text-slate-400">{t.dictation.subtitle}</span>
-          </span>
-        </button>
-      )}
 
       {/* Hero / status */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 lg:p-8 shadow-xs">

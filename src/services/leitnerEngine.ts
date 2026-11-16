@@ -1,7 +1,7 @@
 import { LeitnerCard, AppSettings, MASTERED_BOX, ReviewEvent } from '../types/leitner';
 import { parseCSV, transformCsvToCards } from './csvParser';
 import { toLocalDateString } from './dates';
-import { computeMoveBack } from './dictation/moveBack';
+import { computeMoveBack } from './moveBack';
 
 export { toLocalDateString };
 
@@ -461,7 +461,7 @@ class LeitnerEngine {
   }
 
   /**
-   * Story dictation: move a card back one compartment (a manual decision, not a review). The due date is the earliest
+   * Stories (tapped word): move a card back one compartment (a manual decision, not a review). The due date is the earliest
    * review of the new compartment, never in the past. No review event, counters and lastReviewedAt stay. Returns the
    * state before the move so the caller can offer Undo through updateCard.
    */

@@ -1,10 +1,10 @@
 import React from 'react';
-import { Layers, PlayCircle, BookOpen, Sparkles, Settings2, Plus, Trophy, ShieldCheck, Headphones, LucideIcon } from 'lucide-react';
+import { Layers, PlayCircle, BookOpen, Sparkles, Settings2, Plus, Trophy, ShieldCheck, LucideIcon } from 'lucide-react';
 import { UserProfile } from '../types/leitner';
 import type { SyncStatus } from '../services/cloudSync';
 import { useI18n } from '../i18n/I18nProvider';
 
-export type ActiveTab = 'dashboard' | 'review' | 'catalog' | 'reflections' | 'leaderboard' | 'dictation' | 'settings' | 'admin';
+export type ActiveTab = 'dashboard' | 'review' | 'catalog' | 'reflections' | 'leaderboard' | 'settings' | 'admin';
 
 interface NavbarProps {
   activeTab: ActiveTab;
@@ -13,8 +13,6 @@ interface NavbarProps {
   onOpenNewCardModal: () => void;
   profile: UserProfile;
   syncStatus: SyncStatus;
-  /** Story dictation is released (or an admin previews it). Hidden otherwise. */
-  showDictation?: boolean;
 }
 
 const SYNC_DOT: Record<SyncStatus, string> = {
@@ -30,7 +28,6 @@ const TABS: { id: ActiveTab; icon: LucideIcon }[] = [
   { id: 'catalog', icon: BookOpen },
   { id: 'reflections', icon: Sparkles },
   { id: 'leaderboard', icon: Trophy },
-  { id: 'dictation', icon: Headphones },
   { id: 'settings', icon: Settings2 },
   { id: 'admin', icon: ShieldCheck }
 ];
@@ -41,12 +38,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   dueTodayCount,
   onOpenNewCardModal,
   profile,
-  syncStatus,
-  showDictation = false
+  syncStatus
 }) => {
   const { t, num } = useI18n();
   const syncText = t.sync[syncStatus];
-  const tabs = TABS.filter(tab => (tab.id !== 'admin' || profile.isAdmin) && (tab.id !== 'dictation' || showDictation));
+  const tabs = TABS.filter(tab => (tab.id !== 'admin' || profile.isAdmin));
 
   return (
     <header className="sticky top-0 z-30 pt-[env(safe-area-inset-top)] bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
