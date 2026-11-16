@@ -2,7 +2,7 @@
   "stories": [
     {
       "block": 1,
-      "contentVersion": "438ec4f7eca9",
+      "contentVersion": "908c98b4828e",
       "file": "story-01.json",
       "id": "story-01",
       "lessons": [
@@ -15,7 +15,7 @@
     },
     {
       "block": 2,
-      "contentVersion": "c20ed5cf4413",
+      "contentVersion": "05e594798429",
       "file": "story-02.json",
       "id": "story-02",
       "lessons": [

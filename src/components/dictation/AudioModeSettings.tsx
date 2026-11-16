@@ -6,6 +6,7 @@ import { speechService } from '../../services/speechService';
 import { audioController } from '../../services/dictation/audioController';
 import { browserSources, hasGermanVoice } from '../../services/dictation/browserSources';
 import { STORY_MEDIA_BASE } from '../../config';
+import { drawerOpenDefault } from '../../services/dictation/grammarDrawer';
 import { BetaBadge } from './BetaBadge';
 
 interface Props {
@@ -56,6 +57,13 @@ export const AudioModeSettings: React.FC<Props> = ({ settings, onUpdateSettings,
           <Volume2 className="w-4 h-4" />{t.dictation.settings.test}
         </button>
       )}
+      <label className="mt-4 flex items-start gap-3 min-h-11 cursor-pointer">
+        <input type="checkbox" checked={drawerOpenDefault(settings.dictationGrammarOpen, typeof window === 'undefined' ? 0 : window.innerWidth)} onChange={e => onUpdateSettings({ dictationGrammarOpen: e.target.checked })} className="mt-1 accent-indigo-600" />
+        <span>
+          <span className="block text-sm font-semibold text-slate-900 dark:text-white">{t.dictation.settings.grammarOpen}</span>
+          <span className="block text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{t.dictation.settings.grammarOpenBody}</span>
+        </span>
+      </label>
       <p className="mt-3 text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">{t.dictation.settings.credit}</p>
     </div>
   );

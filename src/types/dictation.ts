@@ -69,6 +69,28 @@ export interface Story {
   lessons: [number, number];
   contentVersion: string;
   speakersReviewed: boolean;
+  grammarReviewed?: boolean;
   names: string[];               // proper names and protected words (never offered as new cards)
   sequences: Sequence[];
+}
+
+/** A grammar card (own-words German text, content/dictation/grammar/block-NN.json). */
+export interface GrammarCard {
+  id: string;                    // 'g-01-02-artikel-bestimmt-und-unbestimmt', fixed once published
+  block: number;
+  lesson: number;
+  level: 'A1' | 'A2' | 'B1';
+  title: string;                 // German title as in the book
+  rule: string;                  // short explanation in German; "\n" separates paragraphs
+  table?: { head: string[]; rows: string[][] };
+  examples: { id: string; text: string }[];   // sentences from the stories, resolved at build time
+  related?: string[];
+}
+
+/** story-NN.grammar.json: the cards used by one story and the first sentence that carries each point. */
+export interface GrammarFile {
+  storyId: string;
+  block: number;
+  cards: GrammarCard[];
+  first: Record<string, string>;
 }

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Volume2, RotateCcw, ArrowRight, SkipForward, Check } from 'lucide-react';
-import type { Sentence, Sequence, Story } from '../../types/dictation';
+import type { GrammarFile, Sentence, Sequence, Story } from '../../types/dictation';
 import type { AppSettings, LeitnerCard } from '../../types/leitner';
 import { useI18n } from '../../i18n/I18nProvider';
 import { STORY_MEDIA_BASE } from '../../config';
@@ -12,6 +12,7 @@ import { storyPosition, type SentenceProgress } from '../../services/dictation/p
 import { DictationQueue, clearDraft, readDraft, writeDraft } from '../../services/dictation/syncCore';
 import { audioController } from '../../services/dictation/audioController';
 import { hasGermanVoice, prefetch } from '../../services/dictation/browserSources';
+import { drawerOpenDefault, keyboardIsUp, pickDrawerContent } from '../../services/dictation/grammarDrawer';
 import type { AudioIndex } from '../../services/dictation/content';
 import type { AudioMode } from '../../services/dictation/fallback';
 import abbreviationsFile from '../../../content/dictation/abbreviations.json';
@@ -19,6 +20,7 @@ import cast from '../../../content/dictation/cast.json';
 import { FeedbackText, useSummaryLine } from './FeedbackText';
 import { UmlautBar } from './UmlautBar';
 import { WordSheet } from './WordSheet';
+import { GrammarDrawer, GrammarToggle, useMediaQuery } from './GrammarDrawer';
 
 const ABBREVIATIONS = (abbreviationsFile as { abbreviations: string[] }).abbreviations;
 const NAMES = new Map((cast as { characters: { id: string; name: string }[] }).characters.map(c => [c.id, c.name]));
@@ -32,6 +34,8 @@ interface Props {
   settings: AppSettings;
   cards: LeitnerCard[];
   indexes: { A: AudioIndex | null; B: AudioIndex | null };
+  grammar: GrammarFile | null;
+  onUpdateSettings: (s: Partial<AppSettings>) => void;
   onCardsChanged: () => void;
   onOpenAudioSettings: () => void;
   onSequenceDone: () => void;
@@ -44,7 +48,7 @@ type Finish = 'correct' | 'moved' | 'skipped';
 const nowIso = () => new Date().toISOString();
 
 export const SentenceStage: React.FC<Props> = ({
-  story, sequence, startIndex, userId, queue, settings, cards, indexes, onCardsChanged, onOpenAudioSettings, onSequenceDone, onExit
+  story, sequence, startIndex, userId, queue, settings, cards, indexes, grammar, onUpdateSettings, onCardsChanged, onOpenAudioSettings, onSequenceDone, onExit
 }) => {
   const { t, lang, num } = useI18n();
   const sentences = sequence.sentences;
@@ -61,6 +65,11 @@ export const SentenceStage: React.FC<Props> = ({
   const [audioFailed, setAudioFailed] = useState(false);
   const [sheet, setSheet] = useState<{ target: Exclude<WordTarget, { kind: 'none' }>; word: string } | null>(null);
   const [live, setLive] = useState('');
+  // grammar drawer: the trigger is the last sentence the learner entered (submitted, Next, skipped), never a replay
+  const [entered, setEntered] = useState<string | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [kbUp, setKbUp] = useState(false);
+  const desktop = useMediaQuery('(min-width: 1024px)');
   const textRef = useRef<HTMLTextAreaElement>(null);
   const nextRef = useRef<HTMLButtonElement>(null);
   const composing = useRef(false);
@@ -114,7 +123,7 @@ export const SentenceStage: React.FC<Props> = ({
   useEffect(() => {
     const vv = window.visualViewport;
     if (!vv) return;
-    const onResize = () => textRef.current?.scrollIntoView({ block: 'nearest' });
+    const onResize = () => { setKbUp(keyboardIsUp(window.innerHeight, vv.height)); textRef.current?.scrollIntoView({ block: 'nearest' }); };
     vv.addEventListener('resize', onResize);
     return () => vv.removeEventListener('resize', onResize);
   }, []);
@@ -137,6 +146,7 @@ export const SentenceStage: React.FC<Props> = ({
   // ---- checking -------------------------------------------------------------------------------------------------
   const submit = useCallback((text: string) => {
     if (!text.trim()) return;
+    setEntered(sentence.id);
     const r = compare(text, sentence.text);
     const cur = row(sentence);
     if (r.correct) {
@@ -199,6 +209,7 @@ export const SentenceStage: React.FC<Props> = ({
   // ---- moving on ------------------------------------------------------------------------------------------------
   const advance = useCallback((finish: Finish) => {
     const cur = row(sentence);
+    setEntered(sentence.id);
     if (finish === 'skipped') save(sentence, { status: 'skipped', skips: cur.skips + 1 });
     else if (finish === 'moved') save(sentence, { status: cur.status === 'correct' ? 'correct' : 'moved' });
     clearDraft(localStorage, userId, sentence.id);
@@ -221,12 +232,21 @@ export const SentenceStage: React.FC<Props> = ({
   const isLast = index + 1 >= sentences.length;
   const hint = sentence.flags.includes('digits') ? t.dictation.stage.digitsHint : needsManualSubmitHint(sentence.flags) ? t.dictation.stage.manualSubmitHint : '';
   const pulse = playState === 'playing' || playState === 'loading';
+  const trigger = entered ? sentences.find(x => x.id === entered) ?? null : null;
+  const drawerOpen = drawerOpenDefault(settings.dictationGrammarOpen, typeof window === 'undefined' ? 0 : window.innerWidth);
+  const drawerCount = grammar ? (() => { const c = pickDrawerContent(grammar, story.block, sequence, trigger); return c.fresh.length + c.again.length; })() : 0;
+  const drawerId = 'dictation-grammar';
 
   return (
-    <div className="space-y-4">
+    <div className="lg:flex lg:items-start lg:gap-6">
+    <div className="space-y-4 min-w-0 flex-1">
       <div className="flex items-center justify-between gap-2 text-sm text-slate-600 dark:text-slate-300">
         <button type="button" onClick={() => { audioController.stop(); void queue.flush(); onExit(); }} className="min-h-11 px-2 -mx-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">{t.dictation.back}</button>
-        <span className="font-mono-num" aria-hidden>{num(index + 1)} / {num(sentences.length)}</span>
+        <span className="flex items-center gap-2">
+          {grammar && <GrammarToggle open={drawerOpen} count={drawerCount} controls={drawerId}
+            onToggle={() => onUpdateSettings({ dictationGrammarOpen: !drawerOpen })} />}
+          <span className="font-mono-num" aria-hidden>{num(index + 1)} / {num(sentences.length)}</span>
+        </span>
       </div>
 
       {finished.length > 0 && (
@@ -325,6 +345,11 @@ export const SentenceStage: React.FC<Props> = ({
         <WordSheet target={sheet.target} expectedWord={sheet.word} sentenceText={sentence.text} lessons={story.lessons}
           onClose={() => setSheet(null)} onCardsChanged={onCardsChanged} />
       )}
+    </div>
+    {grammar && (
+      <GrammarDrawer file={grammar} storyBlock={story.block} sequence={sequence} trigger={trigger} desktop={desktop} open={drawerOpen}
+        sheetOpen={sheetOpen && !kbUp} onSheetOpenChange={setSheetOpen} id={drawerId} />
+    )}
     </div>
   );
 };

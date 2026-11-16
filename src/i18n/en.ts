@@ -869,6 +869,24 @@ export const en: Messages = {
       congrats: 'Congratulations! You finished every sequence.',
       openNext: 'Next story'
     },
+    grammar: {
+      title: 'Grammar',
+      show: 'Show grammar',
+      hide: 'Hide grammar',
+      points: (x: number) => (x === 1 ? '1 point' : `${n(x)} points`),
+      forLast: 'For the last sentence',
+      inSequence: 'In this sequence',
+      newHere: 'New in this story',
+      alsoUsed: 'Also used here',
+      firstTime: 'First time in this story',
+      noneHere: 'No new grammar in this sentence.',
+      sequenceList: 'Points in this sequence',
+      nothingInSequence: 'No grammar points are listed for this sequence.',
+      updated: 'Grammar updated for the last sentence.',
+      examples: 'Examples',
+      lesson: (x: number) => `Lesson ${n(x)}`,
+      note: 'Grammar text is in German.'
+    },
     settings: {
       title: 'Story dictation',
       mode: 'Voices',
@@ -878,7 +896,9 @@ export const en: Messages = {
       modeCBody: "Your browser's or phone's own voice; no internet and no download. Quality depends on the device, and it needs a German voice installed.",
       test: 'Test voice',
       credit: 'Voices: Piper with the Thorsten and Kerstin models (CC0) and MLS (CC-BY 4.0, OpenSLR 94).',
-      noGermanVoice: 'No German voice found on this device.'
+      noGermanVoice: 'No German voice found on this device.',
+      grammarOpen: 'Keep the grammar drawer open',
+      grammarOpenBody: 'On a wide screen the grammar column stays open beside the sentence. On a phone only the small grammar bar at the bottom is shown.'
     }
   }
 };

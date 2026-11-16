@@ -93,3 +93,19 @@ earlier block and merely occur again are listed in a second, quieter group "Also
 Cards are structured JSON rendered by React components (no `dangerouslySetInnerHTML`, no Markdown parser in the client).
 All card content is German (`dir="ltr" lang="de"`); only the drawer's labels follow the interface direction.
 Missing card (id with no card): skipped silently in production and caught by the content validation test in CI.
+
+## As built (Phase 6)
+
+- Cards live in `content/dictation/grammar/block-NN.json` (own words, German only, fixed ids). `build_story.py` writes
+  `public/data/stories/story-NN.grammar.json` with the cards the story uses (examples resolved to text) and `first`
+  (the first sentence of the story that carries each point).
+- Detectors (`scripts/dictation/lib/grammar.py`) are conservative. Very common points (plain present, articles, subject
+  order, "und") have the scope `sequence`: they are attached only to the first sentence of each sequence that carries
+  them. Everything else is attached to every sentence that carries it. A story only gets points up to its own block.
+- Human confirmation: `story-NN.overrides.json` has `grammar.add`, `grammar.remove` (sentence id to point ids) and
+  `grammar.reviewed`; the story JSON carries `grammarReviewed`.
+- Groups: "New in this story" (the card's block equals the story's block) and "Also used here" (earlier blocks). A card
+  whose point first occurs in the trigger sentence shows "First time in this story".
+- Wide screens (1024 px and up): 320 px column, toggle button always visible; setting `dictationGrammarOpen` (unset means
+  open). Narrower: a peek bar in the page flow below the input (never covers it) opens a bottom sheet; the sheet closes
+  while the on-screen keyboard is up.

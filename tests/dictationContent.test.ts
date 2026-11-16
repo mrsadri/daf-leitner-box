@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
-import type { Story, StoryIndex } from '../src/types/dictation.ts';
+import type { GrammarCard, GrammarFile, Story, StoryIndex } from '../src/types/dictation.ts';
 
 const ROOT = new URL('../', import.meta.url).pathname;
 const read = (p: string) => readFileSync(ROOT + p, 'utf8');
@@ -156,5 +156,64 @@ test('no API key, service-role key or provider secret appears in the committed c
     const text = read(f);
     assert.ok(!/eyJ[A-Za-z0-9_-]{20,}/.test(text), `${f}: looks like a JWT`);
     assert.ok(!/sk_[a-z0-9]{20,}/i.test(text), `${f}: looks like an API key`);
+  }
+});
+
+// ---- grammar cards and links ---------------------------------------------------------------------------------------
+
+const blockCards = new Map<string, GrammarCard>();
+for (const b of [1, 2]) {
+  const data: { block: number; cards: GrammarCard[] } = JSON.parse(read(`content/dictation/grammar/block-0${b}.json`));
+  for (const c of data.cards) {
+    assert.ok(!blockCards.has(c.id), `duplicate grammar id ${c.id}`);
+    blockCards.set(c.id, c);
+  }
+}
+
+test('grammar cards are complete, German-only and use stable ids', () => {
+  assert.ok(blockCards.size >= 25);
+  for (const c of blockCards.values()) {
+    assert.match(c.id, /^g-\d\d-\d\d-[a-z0-9-]+$/);
+    assert.ok(c.rule.trim().length > 40, `${c.id}: rule text missing`);
+    assert.ok(c.rule.length < 900, `${c.id}: rule is too long for a card`);
+    assert.ok(c.title.length > 0 && ['A1', 'A2', 'B1'].includes(c.level));
+    if (c.table) for (const r of c.table.rows) assert.equal(r.length, c.table.head.length, `${c.id}: table row width`);
+    for (const r of c.related ?? []) assert.ok(blockCards.has(r), `${c.id}: related ${r} is unknown`);
+  }
+});
+
+test('every sentence grammar id has a card, and each story has a consistent grammar file', () => {
+  for (const { entry, story } of stories) {
+    const file: GrammarFile = JSON.parse(read(`public/data/stories/${entry.id}.grammar.json`));
+    assert.equal(file.storyId, story.id);
+    const have = new Set(file.cards.map(c => c.id));
+    const used = new Set<string>();
+    const order: string[] = [];
+    for (const q of story.sequences) for (const s of q.sentences) {
+      for (const g of s.grammar) {
+        assert.ok(blockCards.has(g), `${s.id}: ${g} has no card`);
+        assert.ok(have.has(g), `${s.id}: ${g} missing in the grammar file`);
+        assert.ok(blockCards.get(g)!.block <= story.block, `${s.id}: ${g} is taught after this story`);
+        used.add(g);
+      }
+      order.push(s.id);
+    }
+    assert.deepEqual([...have].sort(), [...used].sort(), 'the grammar file holds exactly the points in use');
+    const ids = new Set(order);
+    for (const [point, sid] of Object.entries(file.first)) {
+      assert.ok(ids.has(sid), `first[${point}] points to an unknown sentence`);
+      const first = order.find(id => story.sequences.flatMap(q => q.sentences).find(s => s.id === id)!.grammar.includes(point));
+      assert.equal(first, sid, `first[${point}] is not the first occurrence`);
+    }
+    for (const c of file.cards) for (const e of c.examples) assert.ok(e.text.length > 0, `${c.id}: example text missing`);
+  }
+});
+
+test('most sentences carry no grammar point (the drawer must stay readable)', () => {
+  for (const { story } of stories) {
+    const all = story.sequences.flatMap(q => q.sentences);
+    const withPoints = all.filter(s => s.grammar.length > 0).length;
+    assert.ok(withPoints / all.length < 0.7, `${story.id}: ${withPoints} of ${all.length} sentences have points`);
+    assert.ok(all.every(s => s.grammar.length <= 6));
   }
 });

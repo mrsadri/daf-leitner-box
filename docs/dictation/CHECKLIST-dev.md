@@ -87,17 +87,17 @@ harness (`scripts/test-sql.sh`) or a separate dev Supabase project. After any `v
 - [x] P5-T5 `FeedbackText` marks per category (shapes and lines, not color only), summary line, praise (no repeat), polite live region
 - [x] P5-T6 `WordSheet`: base form and card state, Add to my box, Move back one compartment, Undo toast, custom card via `NewCardModal` prefill — the "custom card via NewCardModal prefill" part is simplified: the sheet adds the card directly with `addCard`
 - [x] P5-T6 Verify in code review: no code path changes a card on typing, Next or Skip — only `WordSheet.tsx` calls the engine (`grep leitnerEngine src/components/dictation`)
-- [ ] P5-T7 Settings section: mode radios with Test button, speed, grammar default; `dictationIntroSeen` dialog — Mode radios (B or C) and credit are in; the Test button exists for C; speed reuses the global speech-rate setting; grammar default waits for Phase 6
+- [ ] P5-T7 Settings section: mode radios with Test button, speed, grammar default; `dictationIntroSeen` dialog — Mode radios (B or C) and credit are in; the Test button exists for C; speed reuses the global speech-rate setting; the grammar-drawer checkbox is in (Phase 6)
 - [ ] P5-T7 Responsive layouts (desktop two columns, tablet, phone with sticky umlaut bar and `visualViewport` handling); RTL pass for edge cases R1 to R10 — phone: sticky umlaut bar and `visualViewport` done; Persian and English checked in Chromium (phone and desktop); there is no second column yet (the grammar drawer is Phase 6); the full R1 to R10 pass is for Phase 7
 - [x] Lazy-load the dictation chunk (`React.lazy`) so the main bundle does not grow — chunk 41 kB (12 kB gzip); the main bundle still grew from 346.7 to 371.3 kB (gzip 112.0 to 121.0) because the fa/en strings are in it
 
 ## Phase 6: grammar (3 days plus owner review)
 
-- [ ] P6-T1 Point ids and skeleton generated from the local grammar files for blocks 1 and 2
-- [ ] P6-T2 Own-words German-only cards for about 30 points; owner reviewed (no book text committed)
-- [ ] P6-T3 Detectors, candidate links, human confirmation in the overrides; "New in this story" computed
-- [ ] P6-T4 `GrammarDrawer`: trigger is the last entered sentence, sequence list before the first entry, open or collapsed setting persists across reload and devices, phone sheet and desktop column
-- [ ] Confirm that no textbook-derived file is staged in Git (`git status` shows nothing from `Grammatik/`, `Wortschatz/`, `Kontext/`)
+- [x] P6-T1 Point ids and skeleton generated from the local grammar files for blocks 1 and 2 — `scripts/dictation/grammar_skeleton.py`; 13 points in block 1, 15 in block 2; only titles, lessons and levels are read, ids are fixed in `content/dictation/grammar/block-NN.json`
+- [ ] P6-T2 Own-words German-only cards for about 30 points; owner reviewed (no book text committed) — all 28 cards are written (rule, own mini table, examples from the stories); **owner review still open** (a German speaker should read them once)
+- [ ] P6-T3 Detectors, candidate links, human confirmation in the overrides; "New in this story" computed — `lib/grammar.py` detectors (tested), scope rule, `grammar.add/remove`, report `build/dictation/story-NN.grammar.md`, `story-NN.grammar.json` with `first`; **human confirmation open**: set `grammar.reviewed` in the overrides after reading the report (story JSON carries `grammarReviewed`)
+- [x] P6-T4 `GrammarDrawer`: trigger is the last entered sentence, sequence list before the first entry, open or collapsed setting persists across reload and devices, phone sheet and desktop column — checked in Chromium (desktop English, phone Persian); no console errors
+- [x] Confirm that no textbook-derived file is staged in Git (`git status` shows nothing from `Grammatik/`, `Wortschatz/`, `Kontext/`) — verified before the Phase 6 commit
 
 ## Phase 7: integration and hardening (5 days)
 

@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, Headphones, PlayCircle, CheckCircle2, ImageOff } from 'lucide-react';
 import type { AppSettings, LeitnerCard, UserProfile } from '../../types/leitner';
-import type { Sequence, Story, StoryIndex, StoryIndexEntry } from '../../types/dictation';
+import type { GrammarFile, Sequence, Story, StoryIndex, StoryIndexEntry } from '../../types/dictation';
 import { useI18n } from '../../i18n/I18nProvider';
 import { STORY_MEDIA_BASE } from '../../config';
-import { loadAudioIndex, loadIndex, loadStory, type AudioIndex } from '../../services/dictation/content';
+import { loadAudioIndex, loadGrammar, loadIndex, loadStory, type AudioIndex } from '../../services/dictation/content';
 import { sequenceCounts, storyPosition, type SentenceProgress } from '../../services/dictation/progressMerge';
 import { dictationQueue } from '../../services/dictationSync';
 import { unlockAudio } from '../../services/dictation/browserSources';
@@ -50,6 +50,7 @@ export const DictationScreen: React.FC<Props> = ({ profile, cards, settings, fla
   const [index, setIndex] = useState<StoryIndex | null>(null);
   const [story, setStory] = useState<Story | null>(null);
   const [audioIdx, setAudioIdx] = useState<{ A: AudioIndex | null; B: AudioIndex | null }>({ A: null, B: null });
+  const [grammar, setGrammar] = useState<GrammarFile | null>(null);
   const [error, setError] = useState<'offline' | 'failed' | null>(null);
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState<ReadonlyMap<string, SentenceProgress>>(queue.getRows());
@@ -81,8 +82,8 @@ export const DictationScreen: React.FC<Props> = ({ profile, cards, settings, fla
   const openStory = useCallback(async (entry: StoryIndexEntry, next: (s: Story) => View) => {
     setLoading(true); setError(null);
     try {
-      const [s, a, b] = await Promise.all([loadStory(entry.file), loadAudioIndex(entry.id, 'A'), loadAudioIndex(entry.id, 'B')]);
-      setStory(s); setAudioIdx({ A: a, B: b });
+      const [s, a, b, g] = await Promise.all([loadStory(entry.file), loadAudioIndex(entry.id, 'A'), loadAudioIndex(entry.id, 'B'), loadGrammar(entry.id)]);
+      setStory(s); setAudioIdx({ A: a, B: b }); setGrammar(g);
       setView(next(s));
     } catch {
       setError(navigator.onLine === false ? 'offline' : 'failed');
@@ -137,12 +138,12 @@ export const DictationScreen: React.FC<Props> = ({ profile, cards, settings, fla
   if (view.name === 'stage' && story) {
     const seq = story.sequences[view.seq];
     return (
-      <div className="max-w-2xl mx-auto pb-24">
+      <div className="max-w-2xl lg:max-w-5xl mx-auto pb-24">
         {IntroDialog}
         <SentenceStage
           key={seq.id}
           story={story} sequence={seq} startIndex={view.start} userId={profile.id} queue={queue} settings={settings} cards={cards}
-          indexes={audioIdx} onCardsChanged={onCardsChanged} onOpenAudioSettings={onOpenSettings}
+          indexes={audioIdx} grammar={grammar} onUpdateSettings={onUpdateSettings} onCardsChanged={onCardsChanged} onOpenAudioSettings={onOpenSettings}
           onSequenceDone={() => { refreshRows(); setView(view.seq + 1 >= story.sequences.length && storyPosition(story, queue.getRows()).completed ? { name: 'storyEnd', entry: view.entry } : { name: 'sequenceEnd', entry: view.entry, seq: view.seq }); }}
           onExit={() => { refreshRows(); setView({ name: 'detail', entry: view.entry }); }}
         />

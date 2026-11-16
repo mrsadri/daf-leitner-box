@@ -19,6 +19,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from lib import ids as idlib  # noqa: E402
+from lib import grammar as gram  # noqa: E402
 from lib import linker, tts_text  # noqa: E402
 from lib.attribution import NARRATOR, UNKNOWN, Cast, attribute_sentences  # noqa: E402
 from lib.normalize import odd_glyphs  # noqa: E402
@@ -89,6 +90,90 @@ def expand_ranges(ranges: list[str], order: list[str]) -> set[str]:
             raise BuildError(f"reviewed range {r!r}: unknown sentence id")
         covered.update(order[pos[a]:pos[b] + 1])
     return covered
+
+
+
+def load_cards(content: Path, max_block: int) -> dict[str, dict]:
+    cards: dict[str, dict] = {}
+    for b in range(1, max_block + 1):
+        data = load_json(content / "grammar" / f"block-{b:02d}.json", {"cards": []})
+        for c in data["cards"]:
+            cards[c["id"]] = c
+    return cards
+
+
+def apply_grammar(flat: list[dict], story_block: int, overrides: dict, cards: dict[str, dict],
+                  warnings: list[str], errors: list[str]) -> tuple[dict[str, str], dict]:
+    """Detect candidate points, apply the scope rule and the overrides. Returns ({point: first sentence id}, stats)."""
+    gov = overrides.get("grammar", {})
+    add, remove = gov.get("add", {}), gov.get("remove", {})
+    seen_in_seq: set[tuple[str, str]] = set()
+    first: dict[str, str] = {}
+    stats = {"candidates": 0, "attached": 0}
+    ids_by_sentence = {f["sentence"]["id"]: f for f in flat}
+    for sid in list(add) + list(remove):
+        if sid not in ids_by_sentence:
+            warnings.append(f"overrides.grammar: unknown sentence id {sid}")
+    for f in flat:
+        s = f["sentence"]
+        found = gram.detect(s["text"], s["links"], story_block)
+        stats["candidates"] += len(found)
+        kept = []
+        for pid in found:
+            if gram.scope_of(pid) == "sequence":
+                key = (f["seq"], pid)
+                if key in seen_in_seq:
+                    continue
+                seen_in_seq.add(key)
+            kept.append(pid)
+        kept = [p for p in kept if p not in remove.get(s["id"], [])]
+        for p in add.get(s["id"], []):
+            if p not in kept:
+                kept.append(p)
+        for p in kept:
+            if p not in cards:
+                errors.append(f"{s['id']}: grammar point {p} has no card in content/dictation/grammar/")
+        s["grammar"] = sorted(kept)
+        stats["attached"] += len(kept)
+        for p in kept:
+            first.setdefault(p, s["id"])
+    return first, stats
+
+
+def build_grammar_file(story: dict, first: dict[str, str], cards: dict[str, dict], root: Path,
+                       warnings: list[str]) -> dict:
+    """Cards used by the story, with example sentences resolved to text (earlier blocks come from their story file)."""
+    used = {p for q in story["sequences"] for s in q["sentences"] for p in s["grammar"]}
+    texts: dict[str, dict[str, str]] = {}
+
+    def sentence_text(block: int, sid: str) -> str | None:
+        if block == story["block"]:
+            return next((s["text"] for q in story["sequences"] for s in q["sentences"] if s["id"] == sid), None)
+        if block not in texts:
+            path = root / "public" / "data" / "stories" / f"story-{block:02d}.json"
+            other = load_json(path, None)
+            texts[block] = {s["id"]: s["text"] for q in other["sequences"] for s in q["sentences"]} if other else {}
+        return texts[block].get(sid)
+
+    out = []
+    for pid in sorted(used, key=lambda x: (cards[x]["block"], cards[x]["lesson"], x) if x in cards else (99, 99, x)):
+        c = cards.get(pid)
+        if c is None:
+            continue
+        if not c.get("rule"):
+            warnings.append(f"grammar card {pid} has no rule text yet")
+        ex = []
+        for sid in c.get("examples", []):
+            t = sentence_text(c["block"], sid)
+            if t is None:
+                warnings.append(f"grammar card {pid}: example {sid} not found")
+            else:
+                ex.append({"id": sid, "text": t})
+        card = {k: v for k, v in c.items() if k != "examples"}
+        card["examples"] = ex
+        out.append(card)
+    return {"storyId": story["id"], "block": story["block"], "cards": out,
+            "first": {k: v for k, v in sorted(first.items())}}
 
 
 def build(story_no: str, *, root: Path = REPO, source_dir: Path | None = None, lock_path: Path | None = None,
@@ -208,6 +293,12 @@ def build(story_no: str, *, root: Path = REPO, source_dir: Path | None = None, l
         else:
             warnings.append(f"overrides.speech: unknown sentence id {sid}")
 
+    cards = load_cards(content, int(story_no))
+    first_use, gram_stats = apply_grammar(flat, int(story_no), overrides, cards, warnings, errors)
+    grammar_reviewed = bool(overrides.get("grammar", {}).get("reviewed", False))
+    if not grammar_reviewed:
+        warnings.append("grammar points are automatic candidates: review story-%s.grammar.md and set grammar.reviewed" % story_no)
+
     covered = expand_ranges(overrides.get("reviewed", []), order)
     cast_ids = cast.ids()
     voices = load_json(content / "voices.json", None)
@@ -243,6 +334,7 @@ def build(story_no: str, *, root: Path = REPO, source_dir: Path | None = None, l
         "block": int(story_no),
         "lessons": list(parsed.lessons),
         "speakersReviewed": speakers_reviewed,
+        "grammarReviewed": grammar_reviewed,
         "names": sorted(names),          # proper names and protected words: never offered as new vocabulary cards
         "sequences": sequences,
     }
@@ -253,8 +345,36 @@ def build(story_no: str, *, root: Path = REPO, source_dir: Path | None = None, l
                    "file": f"story-{story_no}.json"}
     reports = render_reports(story_no, story, flat, unreviewed, split_notes, glyphs, coverage, unresolved,
                              bold_unresolved, summaries, covered)
-    return {"story": story, "index_entry": index_entry, "reports": reports, "warnings": warnings, "errors": errors,
+    grammar_file = build_grammar_file(story, first_use, cards, root, warnings)
+    reports[f"story-{story_no}.grammar.md"] = render_grammar_report(story, cards, first_use, gram_stats)
+    return {"story": story, "grammar": grammar_file, "index_entry": index_entry, "reports": reports, "warnings": warnings, "errors": errors,
             "lock": lock, "summaries": summaries}
+
+
+def render_grammar_report(story: dict, cards: dict[str, dict], first: dict[str, str], stats: dict) -> str:
+    by_point: dict[str, list[tuple[str, str, str]]] = {}
+    for q in story["sequences"]:
+        for s in q["sentences"]:
+            for p in s["grammar"]:
+                by_point.setdefault(p, []).append((q["id"], s["id"], s["text"]))
+    lines = [f"# Grammar review: {story['id']} ({story['title']})", "",
+             "Points are automatic candidates. Remove wrong ones with `grammar.remove` and add missed ones with "
+             f"`grammar.add` in `content/dictation/{story['id']}.overrides.json` (`{{\"S01-Q1\": ...}}` keys are sentence ids), "
+             "then set `grammar.reviewed` to true. Points marked `sequence` are attached to the first sentence of each "
+             "sequence that carries them (they are very common).", "",
+             f"- candidates before the scope rule: {stats['candidates']}; attached: {stats['attached']}", ""]
+    for pid in sorted(by_point, key=lambda x: (cards[x]["block"], cards[x]["lesson"], x) if x in cards else (99, 99, x)):
+        c = cards.get(pid, {})
+        lines += [f"## {pid}", "", f"{c.get('title', '?')} (block {c.get('block')}, lesson {c.get('lesson')}); scope {gram.scope_of(pid)}; "
+                  f"{len(by_point[pid])} sentences; first: {first.get(pid)}", ""]
+        for seq, sid, text in by_point[pid][:60]:
+            lines.append(f"- {sid} ({seq}): {text[:130]}")
+        if len(by_point[pid]) > 60:
+            lines.append(f"- ... and {len(by_point[pid]) - 60} more")
+        lines.append("")
+    missing = [pid for pid in cards if cards[pid]["block"] <= story["block"] and pid not in by_point]
+    lines += ["## Points with no sentence in this story", ""] + ([f"- {m}" for m in missing] or ["- none"])
+    return "\n".join(lines) + "\n"
 
 
 def render_reports(story_no, story, flat, unreviewed, split_notes, glyphs, coverage, unresolved, bold_unresolved,
@@ -340,6 +460,7 @@ def main(argv: list[str] | None = None) -> int:
             return 1
         PUBLIC.mkdir(parents=True, exist_ok=True)
         (PUBLIC / f"story-{no}.json").write_text(dump_story(story), encoding="utf-8")
+        (PUBLIC / f"story-{no}.grammar.json").write_text(dump_json(res["grammar"]), encoding="utf-8")
         idx_path = PUBLIC / "index.json"
         idx = load_json(idx_path, {"version": 1, "stories": []})
         idx["stories"] = sorted([s for s in idx["stories"] if s["id"] != story["id"]] + [res["index_entry"]], key=lambda s: s["id"])
