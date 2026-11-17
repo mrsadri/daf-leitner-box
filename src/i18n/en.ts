@@ -394,7 +394,6 @@ export const en: Messages = {
       refresh: 'Refresh',
       empty: 'No records in this period yet.',
       hiddenNotice: 'Your name is hidden from others (you still see your own rank).',
-      disabledNotice: 'This section has been switched off for now.',
       start: 'Start the contest'
     }
   },

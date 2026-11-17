@@ -31,12 +31,16 @@ import { AdminPanel } from '../features/admin/AdminPanel';
 import { SuspendedScreen } from '../features/auth/LoginScreen';
 import { refreshSilver } from '../features/silver/silver';
 import { storiesEnabled } from '../features/stories/flag';
+import { adjectiveDrillEnabled } from '../features/adjective/flag';
+import { clearQueue as clearAdjectiveQueue } from '../features/adjective/drillSync';
+import { Dialog, Button } from '../shared/ui';
 
-// Stories are a separate chunk (the reader and its content load only when opened)
+// Stories and the adjective drill are separate chunks, loaded only when opened
 const StoriesScreen = lazy(() => import('../features/stories/StoriesScreen'));
+const DrillScreen = lazy(() => import('../features/adjective/DrillScreen'));
 
-// Where a tapped notification wants to go ("?go=learn" / "review" / "leaderboard" / "stories"; "dictation" is the old
-// name of Stories), read before the URL is cleaned up
+// Where a tapped notification wants to go ("?go=learn" / "review" / "leaderboard" / "stories" / "adjective";
+// "dictation" is the old name of Stories), read before the URL is cleaned up
 const initialGo = new URLSearchParams(window.location.search).get('go');
 
 export function LeitnerApp({ user }: { user: User }) {
@@ -52,6 +56,11 @@ export function LeitnerApp({ user }: { user: User }) {
   const [isStudyingNewWords, setIsStudyingNewWords] = useState(false);
   const [overdueMoves, setOverdueMoves] = useState<OverdueMove[]>([]);
   const [showStories, setShowStories] = useState(true);
+  const [showAdjective, setShowAdjective] = useState(true);
+  const [leaderboardTopTab, setLeaderboardTopTab] = useState<'leitner' | 'adjective'>('leitner');
+  // True while an adjective drill run is in progress; guards navigating away without confirming.
+  const [adjectiveRunning, setAdjectiveRunning] = useState(false);
+  const [pendingTab, setPendingTab] = useState<ActiveTab | null>(null);
 
   // Stories kill switch (app_flags.stories_enabled; missing or unreadable = on)
   useEffect(() => {
@@ -60,6 +69,19 @@ export function LeitnerApp({ user }: { user: User }) {
     storiesEnabled().then(on => { if (!cancelled) setShowStories(on); });
     return () => { cancelled = true; };
   }, [ready]);
+
+  // Adjective drill kill switch (app_flags.adjective_drill_enabled; missing or unreadable = on)
+  useEffect(() => {
+    if (!ready) return;
+    let cancelled = false;
+    adjectiveDrillEnabled().then(on => { if (!cancelled) setShowAdjective(on); });
+    return () => { cancelled = true; };
+  }, [ready]);
+
+  // If the flag turns out to be off, a deep link (or an already-open tab) falls back to the home page.
+  useEffect(() => {
+    if (activeTab === 'adjective' && !showAdjective) setActiveTab('dashboard');
+  }, [activeTab, showAdjective]);
 
   // Cards the nightly overdue rule moved back: explain them once (fresh server data is loaded by now)
   useEffect(() => {
@@ -95,6 +117,7 @@ export function LeitnerApp({ user }: { user: User }) {
     else if (initialGo === 'review') startReview();
     else if (initialGo === 'leaderboard') setActiveTab('leaderboard');
     else if (initialGo === 'stories' || initialGo === 'dictation') setActiveTab('stories');
+    else if (initialGo === 'adjective') setActiveTab('adjective');
     if (initialGo) window.history.replaceState(null, '', window.location.pathname);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile]);
@@ -106,10 +129,28 @@ export function LeitnerApp({ user }: { user: User }) {
   };
 
   const signOut = async () => {
-    // The next person signing in on this device must not get this user's reminders
+    // The next person signing in on this device must not get this user's reminders or pending results
     await disablePush().catch(() => undefined);
+    clearAdjectiveQueue(user.id);
     await cloudSync.stop();
     await supabase?.auth.signOut();
+  };
+
+  // A run in progress blocks navigating away until the learner confirms abandoning it.
+  const applyTabChange = (tab: ActiveTab) => {
+    if (tab === 'review') return startReview();
+    setIsStudyingNewWords(false);
+    setActiveTab(tab);
+  };
+  const requestTabChange = (tab: ActiveTab) => {
+    if (adjectiveRunning && activeTab === 'adjective' && tab !== 'adjective') { setPendingTab(tab); return; }
+    applyTabChange(tab);
+  };
+  const confirmLeaveDrill = () => {
+    const tab = pendingTab;
+    setPendingTab(null);
+    setAdjectiveRunning(false);
+    if (tab) applyTabChange(tab);
   };
 
   if (!profile) return <FullScreenLoader text={t.app.preparing} />;
@@ -119,11 +160,8 @@ export function LeitnerApp({ user }: { user: User }) {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col selection:bg-amber-100 selection:text-amber-900">
       <Navbar
         activeTab={activeTab}
-        onTabChange={(tab) => {
-          if (tab === 'review') return startReview();
-          setIsStudyingNewWords(false);
-          setActiveTab(tab);
-        }}
+        onTabChange={requestTabChange}
+        showAdjective={showAdjective}
         dueTodayCount={dueCards.length}
         onOpenNewCardModal={() => setIsNewCardModalOpen(true)}
         profile={profile}
@@ -158,6 +196,7 @@ export function LeitnerApp({ user }: { user: User }) {
                 onOpenLesson={openWordBank}
                 onNavigateToReflections={() => openWordBank(MY_CARDS)}
                 onOpenStories={showStories ? () => setActiveTab('stories') : undefined}
+                onOpenAdjective={showAdjective ? () => setActiveTab('adjective') : undefined}
                 onOpenNewCardModal={() => setIsNewCardModalOpen(true)}
                 onOpenSettings={() => {
                   setActiveTab('settings');
@@ -198,8 +237,24 @@ export function LeitnerApp({ user }: { user: User }) {
               </Suspense>
             )}
 
+            {activeTab === 'adjective' && showAdjective && (
+              <Suspense fallback={<FullScreenLoader text={t.app.preparing} />}>
+                <DrillScreen
+                  userId={user.id}
+                  onRunningChange={setAdjectiveRunning}
+                  onViewRecords={() => { setLeaderboardTopTab('adjective'); setActiveTab('leaderboard'); }}
+                />
+              </Suspense>
+            )}
+
             {activeTab === 'leaderboard' && (
-              <Leaderboard profile={profile} onOpenSettings={() => setActiveTab('settings')} />
+              <Leaderboard
+                profile={profile}
+                onOpenSettings={() => setActiveTab('settings')}
+                showAdjective={showAdjective}
+                topTab={leaderboardTopTab}
+                onTopTabChange={setLeaderboardTopTab}
+              />
             )}
 
             {activeTab === 'admin' && profile.isAdmin && <AdminPanel profile={profile} />}
@@ -231,6 +286,20 @@ export function LeitnerApp({ user }: { user: User }) {
       )}
 
       <NewCardModal isOpen={isNewCardModalOpen} onClose={() => setIsNewCardModalOpen(false)} onAddCard={actions.addCard} />
+
+      {pendingTab && (
+        <Dialog
+          onClose={() => setPendingTab(null)}
+          title={t.adjective.leaveConfirm.title}
+          description={t.adjective.leaveConfirm.body}
+          footer={
+            <>
+              <Button variant="secondary" onClick={() => setPendingTab(null)}>{t.adjective.leaveConfirm.cancel}</Button>
+              <Button variant="danger" onClick={confirmLeaveDrill}>{t.adjective.leaveConfirm.confirm}</Button>
+            </>
+          }
+        />
+      )}
 
       <AppFooter />
     </div>

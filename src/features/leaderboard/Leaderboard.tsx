@@ -8,10 +8,17 @@ import { fetchLeaderboard, LeaderboardRow, cloudSync } from '../../core/cloudSyn
 import { UserProfile } from '../../core/types';
 import { useI18n } from '../../i18n/I18nProvider';
 import { Auto } from '../../shared/ui/Text';
+import { AdjectiveBoard } from '../adjective/AdjectiveBoard';
+
+export type LeaderboardTopTab = 'leitner' | 'adjective';
 
 interface LeaderboardProps {
   profile: UserProfile;
   onOpenSettings: () => void;
+  /** The adjective drill kill switch; the «صفت‌ها» tab is hidden while it's off. */
+  showAdjective?: boolean;
+  topTab?: LeaderboardTopTab;
+  onTopTabChange?: (tab: LeaderboardTopTab) => void;
 }
 
 type Period = 'all' | 'week';
@@ -33,8 +40,11 @@ const RankBadge: React.FC<{ rank: number }> = ({ rank }) => {
   return <span className="font-mono-num text-sm font-bold text-slate-600 dark:text-slate-400">{num(rank)}</span>;
 };
 
-export const Leaderboard: React.FC<LeaderboardProps> = ({ profile, onOpenSettings }) => {
+export const Leaderboard: React.FC<LeaderboardProps> = ({ profile, onOpenSettings, showAdjective = true, topTab: topTabProp, onTopTabChange }) => {
   const { t, num } = useI18n();
+  const [topTabState, setTopTabState] = useState<LeaderboardTopTab>('leitner');
+  const topTab = topTabProp ?? topTabState;
+  const setTopTab = onTopTabChange ?? setTopTabState;
   const [period, setPeriod] = useState<Period>('all');
   const [rows, setRows] = useState<LeaderboardRow[]>([]);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
@@ -64,6 +74,33 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ profile, onOpenSetting
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 pb-12">
+      {showAdjective && (
+        <div role="tablist" aria-label={t.leaderboard.title} className="inline-flex p-1 gap-1 bg-slate-100 dark:bg-slate-800 rounded-xl text-sm font-semibold">
+          {([
+            { id: 'leitner', label: t.leaderboard.topTabLeitner },
+            { id: 'adjective', label: t.leaderboard.topTabAdjective }
+          ] as const).map(tab => (
+            <button
+              key={tab.id}
+              role="tab"
+              aria-selected={topTab === tab.id}
+              onClick={() => setTopTab(tab.id)}
+              className={`px-4 py-2 rounded-lg transition-colors ${
+                topTab === tab.id
+                  ? 'bg-white dark:bg-slate-900 text-indigo-700 dark:text-indigo-300 shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {topTab === 'adjective' && showAdjective ? (
+        <AdjectiveBoard showOnLeaderboard={profile.showOnLeaderboard} />
+      ) : (
+      <>
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1 min-w-0">
@@ -211,6 +248,8 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ profile, onOpenSetting
           </table>
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 };
