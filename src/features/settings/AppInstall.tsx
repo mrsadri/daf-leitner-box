@@ -3,6 +3,7 @@
  */
 import React, { useEffect, useState } from 'react';
 import { Smartphone, Bell, BellOff, CheckCircle2, AlertTriangle, Loader2, X, Share } from 'lucide-react';
+import { buttonClass, cx } from '../../shared/ui';
 import { useI18n } from '../../i18n/I18nProvider';
 import { Switch } from '../../shared/ui/Switch';
 import {
@@ -55,7 +56,7 @@ export const InstallSection: React.FC = () => {
       ) : canPromptInstall() ? (
         <button
           onClick={() => promptInstall()}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold"
+          className={buttonClass('primary', 'sm')}
         >
           <Smartphone className="w-4 h-4" />
           {t.pwa.installButton}
@@ -144,7 +145,7 @@ export const NotificationSection: React.FC<NotificationSectionProps> = ({ notify
             <button
               onClick={() => toggle(true)}
               disabled={busy}
-              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold disabled:opacity-50"
+              className={buttonClass('primary', 'sm')}
             >
               {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Bell className="w-4 h-4" />}
               {t.pwa.notifEnable}
@@ -200,7 +201,7 @@ export const InstallBanner: React.FC<{ onShowHow: () => void }> = ({ onShowHow }
       </div>
       <button
         onClick={() => (canPromptInstall() ? promptInstall() : onShowHow())}
-        className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold shrink-0"
+        className={cx(buttonClass('primary', 'sm'), 'shrink-0')}
       >
         {canPromptInstall() ? t.pwa.installButton : t.pwa.bannerHow}
       </button>

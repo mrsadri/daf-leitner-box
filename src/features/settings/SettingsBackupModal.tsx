@@ -9,6 +9,7 @@ import { cloudSync } from '../../core/cloudSync';
 import { soundService } from '../../shared/lib/soundService';
 import { speechService } from '../../shared/lib/speechService';
 import { Download, Upload, Volume2, ShieldCheck, Check, AlertTriangle, UserRound, LogOut, Trophy, Languages } from 'lucide-react';
+import { buttonClass, cx } from '../../shared/ui';
 import { useI18n } from '../../i18n/I18nProvider';
 import { Switch } from '../../shared/ui/Switch';
 import { LanguageSwitch } from '../../shared/ui/LanguageSwitch';
@@ -191,7 +192,7 @@ export const SettingsBackupModal: React.FC<SettingsBackupModalProps> = ({
               <button
                 onClick={() => saveProfile({ displayName: trimmedName })}
                 disabled={!nameIsValid || trimmedName === profile.displayName || profileStatus === 'saving'}
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white rounded-xl text-xs font-semibold transition-colors shrink-0"
+                className={cx(buttonClass('primary', 'sm'), 'shrink-0')}
               >
                 {t.settings.saveName}
               </button>
@@ -335,7 +336,7 @@ export const SettingsBackupModal: React.FC<SettingsBackupModalProps> = ({
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
           <button
             onClick={handleExport}
-            className="flex items-center justify-center gap-2 px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-xs transition-colors"
+            className={buttonClass('primary', 'md')}
           >
             <Download className="w-4 h-4" />
             <span>{t.settings.download(cards.length)}</span>
@@ -345,7 +346,7 @@ export const SettingsBackupModal: React.FC<SettingsBackupModalProps> = ({
 
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="flex items-center justify-center gap-2 px-5 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-xl text-xs font-semibold transition-colors"
+            className={buttonClass('secondary', 'md')}
           >
             <Upload className="w-4 h-4" />
             <span>{t.settings.upload}</span>

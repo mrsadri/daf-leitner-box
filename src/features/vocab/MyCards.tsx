@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { LeitnerCard, ReflectionCategory, BOX_CONFIGS, MASTERED_BOX } from '../../core/types';
 import { soundService } from '../../shared/lib/soundService';
 import { Plus, Trash2, Edit3, Calendar, Quote } from 'lucide-react';
+import { buttonClass, cx } from '../../shared/ui';
 import { useI18n } from '../../i18n/I18nProvider';
 import { Auto } from '../../shared/ui/Text';
 
@@ -74,7 +75,7 @@ export const MyCards: React.FC<MyCardsProps> = ({ cards, onAddCard, onDeleteCard
           <button
             onClick={() => setIsAdding(!isAdding)}
             aria-expanded={isAdding}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-xs shrink-0 transition-colors"
+            className={cx(buttonClass('primary', 'sm'), 'shrink-0')}
           >
             <Plus className={`w-4 h-4 transition-transform ${isAdding ? 'rotate-45' : ''}`} />
             <span>{isAdding ? t.reflections.closeForm : t.reflections.newCard}</span>
@@ -103,10 +104,10 @@ export const MyCards: React.FC<MyCardsProps> = ({ cards, onAddCard, onDeleteCard
                 value={content} onChange={(e) => setContent(e.target.value)} className={`${field} leading-relaxed`} />
             </div>
             <div className="flex justify-end gap-3 pt-2">
-              <button type="button" onClick={() => setIsAdding(false)} className="px-4 py-2 text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+              <button type="button" onClick={() => setIsAdding(false)} className={buttonClass('ghost', 'sm')}>
                 {t.common.cancel}
               </button>
-              <button type="submit" className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-xs">
+              <button type="submit" className={buttonClass('primary', 'sm')}>
                 {t.reflections.add}
               </button>
             </div>
@@ -121,7 +122,7 @@ export const MyCards: React.FC<MyCardsProps> = ({ cards, onAddCard, onDeleteCard
           </div>
           <h3 className="font-bold text-base text-slate-900 dark:text-white">{t.reflections.emptyTitle}</h3>
           <p className="text-xs text-slate-600 dark:text-slate-400 max-w-md mx-auto leading-relaxed">{t.reflections.emptyBody}</p>
-          <button onClick={() => setIsAdding(true)} className="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-semibold">
+          <button onClick={() => setIsAdding(true)} className={buttonClass('primary', 'sm')}>
             {t.reflections.emptyCta}
           </button>
         </div>

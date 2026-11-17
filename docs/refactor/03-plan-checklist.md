@@ -14,7 +14,7 @@ Commits on `refactor/stories-and-cleanup`, in this order. The order changed from
 
 | Section | Status | Notes |
 |---|---|---|
-| 0 Preparation | ✅ | #27 cherry-picked. Baseline: 64 screenshots, bundle 373.6 kB main + 50.7 kB dictation chunk. |
+| 0 Preparation | ✅ | #27 cherry-picked. Baseline: 64 screenshots. |
 | 1 Tooling | ✅ with deviations | `strict` on (0 errors). **oxlint instead of ESLint**: typescript-eslint cannot run on TypeScript 7. Playwright in `e2e/` and in CI. A `--mode demo` build for tests and previews. Fonts served from the app (screenshots identical). |
 | 5.17 Dictation removed | ✅ | Code, audio (21.6 MB), Python pipeline. `moveBack` kept. Old localStorage keys removed at start-up. |
 | 4 Insights | ✅ | Sharing removed. MyCards in the word bank (lesson menu «کارت‌های من»). `shared_…` filtered in the cache and the queue. |
@@ -26,8 +26,13 @@ Commits on `refactor/stories-and-cleanup`, in this order. The order changed from
 | 6 Database | ✅ (file only) | Clean-up migration, SQL test, owner guide. Not run. |
 | 7 Files | ✅ | Docs deleted. Local work folder out of Git. SVG sources moved to `design/`. |
 | 8 Docs | ✅ | CLAUDE.md, AGENTS.md, architecture.md, README, CONTRIBUTING. |
-| 9 Verification | ✅ | lint, 114 unit tests, 28 Python tests, content check, SQL harness and 20 Playwright tests pass. Main bundle 353.7 kB (−20 kB), Stories chunk 22.7 kB. Upload estimate 12.7 MB, no textbook files. No secrets in the diff. |
-| 10 Release | ⏳ | Waiting for the owner. |
+| 9 Verification | ✅ | lint, 114 unit tests, 28 Python tests, content check, SQL harness and 20 Playwright tests pass. Bundle, measured with placeholder Supabase values (see the correction below): main 833.6 → 759.2 kB (gzip 234.7 → 214.4 kB), dictation chunks 59.3 kB → Stories chunk 22.7 kB. Upload estimate 12.7 MB, no textbook files. No secrets in the diff. |
+| 10 Release | ✅ | Merged and deployed 2026-11-16 (59727ca); live check passed. The owner runs the clean-up SQL. |
+
+**Correction (2026-11-17).** The bundle sizes first reported here came from local builds without `VITE_SUPABASE_*`.
+- In such a build `isSupabaseConfigured` is a constant `false`, so the bundler drops the whole signed-in app.
+- Those numbers were therefore only the sign-in page.
+- The numbers above are from builds with placeholder values, like the build on Vercel.
 
 ---
 

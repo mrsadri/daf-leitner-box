@@ -10,7 +10,9 @@ import { getQuizArticle, stripArticleFromWord } from '../../core/leitnerEngine';
 import { vocabText, pluralParts, conjugationOf } from '../../shared/vocab/vocabText';
 import { ConjugationButton } from '../../shared/vocab/ConjugationDialog';
 import { PluralInfo } from '../../shared/vocab/PluralInfo';
+import { ARTICLE_COLOR } from '../../shared/vocab/VocabCardParts';
 import { Search, Volume2, Plus, Check } from 'lucide-react';
+import { buttonClass, cx } from '../../shared/ui';
 import { useI18n } from '../../i18n/I18nProvider';
 import { De, Auto } from '../../shared/ui/Text';
 import { MyCards } from './MyCards';
@@ -165,7 +167,7 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
           {selectedLektion !== 'all' && !showMine && (
             <button
               onClick={handleAddEntireLesson}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-xs shrink-0 transition-colors"
+              className={cx(buttonClass('primary', 'sm'), 'shrink-0')}
             >
               <Plus className="w-4 h-4" />
               <span>{t.catalog.addLesson(selectedLektion)}</span>
@@ -230,7 +232,7 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
               </button>
               <button
                 onClick={handleAddSelectedToLeitner}
-                className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow-xs"
+                className={buttonClass('primary', 'sm')}
               >
                 {t.catalog.addSelected(selectedIds.size)}
               </button>
@@ -304,11 +306,7 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
                 <div className="flex items-start justify-between gap-3">
                   <De as="div" className="flex flex-wrap items-baseline gap-x-2 min-w-0 break-words hyphens-auto">
                     {article && (
-                      <span className={`text-xs font-bold ${
-                        article === 'der' ? 'text-blue-600 dark:text-blue-400' :
-                        article === 'die' ? 'text-red-600 dark:text-red-400' :
-                        'text-emerald-600 dark:text-emerald-400'
-                      }`}>
+                      <span className={`text-xs font-bold ${ARTICLE_COLOR[article]}`}>
                         {article}
                       </span>
                     )}
