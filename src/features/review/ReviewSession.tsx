@@ -18,7 +18,7 @@ import { vibrate } from '../../shared/lib/haptics';
 import { recordSilverCorrect } from '../silver/silver';
 import { SilverCardEarned } from '../silver/SilverCards';
 import { Icon3D } from '../../shared/ui/Icon3D';
-import { PluralInfo } from '../../shared/vocab/PluralInfo';
+import { VocabDetails, ExampleBox, ARTICLE_COLOR } from '../../shared/vocab/VocabCardParts';
 import { Volume2, RotateCw, Check, X, Sparkles, ArrowLeft, BookOpen, Quote, Edit3 } from 'lucide-react';
 import { isDialogOpen } from '../../shared/ui/Dialog';
 import { useI18n } from '../../i18n/I18nProvider';
@@ -34,12 +34,6 @@ interface ReviewSessionProps {
   onCardUpdated: () => void;
   onStartNewWordsLearning?: () => void;
 }
-
-const ARTICLE_COLOR: Record<'der' | 'die' | 'das', string> = {
-  der: 'text-blue-600 dark:text-blue-400',
-  die: 'text-red-600 dark:text-red-400',
-  das: 'text-emerald-600 dark:text-emerald-400'
-};
 
 export const ReviewSession: React.FC<ReviewSessionProps> = ({
   initialCards,
@@ -629,53 +623,8 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
                     )}
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                    {plural.length > 0 && (
-                      <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 sm:col-span-2">
-                        <span className="text-slate-600 dark:text-slate-400 block mb-1">{t.review.plural}</span>
-                        <PluralInfo parts={plural} />
-                      </div>
-                    )}
-
-                    {text.formen && (
-                      <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 sm:col-span-2">
-                        <span className="text-slate-600 dark:text-slate-400 block mb-1">{t.review.formen}</span>
-                        <Auto as="div" className="font-medium text-slate-800 dark:text-slate-200 leading-relaxed text-start">{hide(text.formen)}</Auto>
-                      </div>
-                    )}
-
-                    {text.oesterreich && (
-                      <div className="p-3 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-800/40 sm:col-span-2">
-                        <span className="font-semibold text-amber-800 dark:text-amber-300 block mb-1">🇦🇹 {t.review.austria}</span>
-                        <Auto as="div" className="text-amber-900 dark:text-amber-200 leading-relaxed text-start">{hide(text.oesterreich)}</Auto>
-                      </div>
-                    )}
-                  </div>
-
-                  {text.exampleDe && (
-                    <div
-                      className="p-4 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40 space-y-2"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-xs font-bold text-indigo-700 dark:text-indigo-300">{t.review.exampleTitle}</span>
-                        <button
-                          type="button"
-                          onClick={() => handleSpeak(text.exampleDe)}
-                          disabled={isSpeaking}
-                          className="p-1.5 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 transition-colors"
-                          title={t.review.playExample}
-                          aria-label={t.review.playExample}
-                        >
-                          <Volume2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                      <De as="p" className="text-sm text-slate-900 dark:text-white leading-relaxed">{hide(text.exampleDe)}</De>
-                      {text.exampleTranslation && (
-                        <Auto as="p" className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed text-start">{text.exampleTranslation}</Auto>
-                      )}
-                    </div>
-                  )}
+                  <VocabDetails text={text} plural={plural} hide={hide} />
+                  <ExampleBox text={text} hide={hide} onSpeak={handleSpeak} speaking={isSpeaking} />
                 </>
               ) : (
                 /* Back of a reflection card */

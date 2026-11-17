@@ -10,6 +10,7 @@ import { getQuizArticle, stripArticleFromWord } from '../../core/leitnerEngine';
 import { vocabText, pluralParts, conjugationOf } from '../../shared/vocab/vocabText';
 import { ConjugationButton } from '../../shared/vocab/ConjugationDialog';
 import { PluralInfo } from '../../shared/vocab/PluralInfo';
+import { ARTICLE_COLOR } from '../../shared/vocab/VocabCardParts';
 import { Search, Volume2, Plus, Check } from 'lucide-react';
 import { useI18n } from '../../i18n/I18nProvider';
 import { De, Auto } from '../../shared/ui/Text';
@@ -304,11 +305,7 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
                 <div className="flex items-start justify-between gap-3">
                   <De as="div" className="flex flex-wrap items-baseline gap-x-2 min-w-0 break-words hyphens-auto">
                     {article && (
-                      <span className={`text-xs font-bold ${
-                        article === 'der' ? 'text-blue-600 dark:text-blue-400' :
-                        article === 'die' ? 'text-red-600 dark:text-red-400' :
-                        'text-emerald-600 dark:text-emerald-400'
-                      }`}>
+                      <span className={`text-xs font-bold ${ARTICLE_COLOR[article]}`}>
                         {article}
                       </span>
                     )}

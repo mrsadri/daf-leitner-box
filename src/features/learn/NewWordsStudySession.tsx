@@ -11,7 +11,7 @@ import { vocabText, perfektAnswers, pluralParts, conjugationOf, perfektGuideOf }
 import { ConjugationButton } from '../../shared/vocab/ConjugationDialog';
 import { maskParticiples, PerfektResult } from '../../shared/vocab/perfekt';
 import { PerfektQuiz } from '../../shared/vocab/PerfektQuiz';
-import { PluralInfo } from '../../shared/vocab/PluralInfo';
+import { VocabDetails, ExampleBox, ARTICLE_COLOR } from '../../shared/vocab/VocabCardParts';
 import { PerfektExplanation } from '../../shared/vocab/PerfektGuide';
 import { Volume2, RotateCw, ArrowLeft, BookOpen, CheckCircle2, Sparkles, X, ChevronLeft, Undo2, Check, RotateCcw, ArrowRight, Hand } from 'lucide-react';
 import { isDialogOpen } from '../../shared/ui/Dialog';
@@ -459,11 +459,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
                 <div className="flex items-start justify-between gap-3">
                   <De as="div" className="flex flex-wrap items-baseline gap-x-2 min-w-0 break-words hyphens-auto">
                     {quizArticle && (
-                      <span className={`text-xl font-bold ${
-                        quizArticle === 'der' ? 'text-blue-600 dark:text-blue-400' :
-                        quizArticle === 'die' ? 'text-red-600 dark:text-red-400' :
-                        'text-emerald-600 dark:text-emerald-400'
-                      }`}>
+                      <span className={`text-xl font-bold ${ARTICLE_COLOR[quizArticle]}`}>
                         {quizArticle}
                       </span>
                     )}
@@ -500,60 +496,8 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                {!flipMode && perfektAccepted.length > 0 && (
-                  <div className="p-3 rounded-xl bg-violet-50/70 dark:bg-violet-950/30 border border-violet-200/60 dark:border-violet-800/40 sm:col-span-2">
-                    <De className="text-violet-700 dark:text-violet-300 font-semibold block mb-1">Perfekt</De>
-                    <De as="div" className="text-sm font-bold text-slate-900 dark:text-white leading-relaxed">{perfektAccepted.join(' / ')}</De>
-                  </div>
-                )}
-
-                {plural.length > 0 && (
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 sm:col-span-2">
-                    <span className="text-slate-500 dark:text-slate-400 block mb-1">{t.review.plural}</span>
-                    <PluralInfo parts={plural} />
-                  </div>
-                )}
-
-                {text.formen && (
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 sm:col-span-2">
-                    <span className="text-slate-500 dark:text-slate-400 block mb-1">{t.review.formen}</span>
-                    <Auto as="div" className="text-slate-800 dark:text-slate-200 leading-relaxed text-start">{hide(text.formen)}</Auto>
-                  </div>
-                )}
-
-                {text.oesterreich && (
-                  <div className="p-3 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-800/40 sm:col-span-2">
-                    <span className="font-semibold text-amber-800 dark:text-amber-300 block mb-1">🇦🇹 {t.review.austria}</span>
-                    <Auto as="div" className="text-amber-900 dark:text-amber-200 leading-relaxed text-start">{hide(text.oesterreich)}</Auto>
-                  </div>
-                )}
-              </div>
-
-              {text.exampleDe && (
-                <div
-                  className="p-4 rounded-2xl bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40 space-y-1.5"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-bold text-indigo-700 dark:text-indigo-300">{t.review.exampleTitle}</span>
-                    <button
-                      type="button"
-                      onClick={() => handleSpeak(text.exampleDe)}
-                      disabled={isSpeaking}
-                      title={t.review.playExample}
-                      aria-label={t.review.playExample}
-                      className="p-1.5 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900 text-indigo-700 dark:text-indigo-300 transition-colors"
-                    >
-                      <Volume2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                  <De as="p" className="text-sm text-slate-900 dark:text-white leading-relaxed">{hide(text.exampleDe)}</De>
-                  {text.exampleTranslation && (
-                    <Auto as="p" className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed text-start">{text.exampleTranslation}</Auto>
-                  )}
-                </div>
-              )}
+              <VocabDetails text={text} plural={plural} hide={hide} perfekt={flipMode ? undefined : perfektAccepted} />
+              <ExampleBox text={text} hide={hide} onSpeak={handleSpeak} speaking={isSpeaking} />
             </div>
           )}
 

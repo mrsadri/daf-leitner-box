@@ -47,10 +47,13 @@
   },
   "ignorePatterns": [
     "dist",
+    "dist-*",
     "node_modules",
+    "playwright-report",
     "public/sw.js",
+    "scripts",
     "supabase/functions",
-    "scripts"
+    "test-results"
   ],
   "overrides": [
     {

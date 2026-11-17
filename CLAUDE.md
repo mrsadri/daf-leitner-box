@@ -81,6 +81,9 @@ e2e/                Playwright tests;  tests/ unit tests;  docs/ setup guides an
   - The server copy is merged before anything is sent, and progress never goes backwards.
   - Kill switch: `app_flags.stories_enabled`. A missing flag means on.
 - **Story media** is served by Vercel from `/story-media/` (hashed names, cached for a year by `vercel.json`).
+- **Local builds without Supabase settings.** A production build without `VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY` treats Supabase as not configured at build time and drops the whole signed-in app.
+  - To measure bundle sizes, build with placeholder values: `VITE_SUPABASE_URL=https://example.supabase.co VITE_SUPABASE_ANON_KEY=x npx vite build`.
+  - To test the app, use a demo build.
 - **Fonts** are served from `public/fonts` (Google Fonts may be blocked in Iran). The app makes no requests to other hosts, and the e2e smoke test checks this.
 - **Releases:**
   1. One PR, CI green.
