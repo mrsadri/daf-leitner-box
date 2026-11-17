@@ -40,7 +40,7 @@ The source makes no requests to other hosts and has no text smaller than 12px.
 - [x] Record the baseline: `npm run lint`, `npm test`, `npm run build`, main bundle size. *lint clean; 114 unit tests passing; build with placeholder Supabase keys: main bundle 760.73 kB / 216.40 kB gzip, `StoriesScreen` chunk 22.77 kB.*
 
 ### 3.1 Move the code
-- [x] `src/features/adjective/grammar.ts`, copied from the source with a header comment. *Deviation: `adjektivdeklination-training/` does not exist on this machine (untracked, local-only, per §2). Written fresh from the declension rules and examples in this document (kaltem Kaffee, frische Milch, Herrn/Nachbarn/Studenten, Fahrrädern/Parks/Autos) instead of a copy; the owner should have a native speaker check it (§7).*
+- [x] `src/features/adjective/grammar.ts`, copied from the source with a header comment. *Deviation: `adjektivdeklination-training/` does not exist on this machine (untracked, local-only, per §2). Written fresh from the declension rules and examples in this document (kaltem Kaffee, frische Milch, Herrn/Nachbarn/Studenten, Fahrrädern/Parks/Autos) instead of a copy; the owner should have a native speaker check it (§7).* **Review fix (2026-11-17):** replaced by a port of the source's `grammar.ts` (the folder exists on the owner's machine): its 88 nouns, its 85 invariant-stem adjectives (the fresh version had «teuer» → "teuere"), the negative article «kein» including plural «keine», mass nouns only with definite/«kein»/no article, the per-run word draw (`drawSessionWords`) and every case of its self-test. A script compared all 3,372 article/case/number/noun combinations with the source engine: no difference.
 - [x] `tests/adjectiveGrammar.test.ts`: every case of `runDeclensionSelfTest`, plus n-Deklination (Herrn, Nachbarn, Studenten), dative plural (Fahrrädern, Parks, Autos), strong declension of uncountable nouns (kaltem Kaffee, frische Milch), and "no adjective" rounds.
 - [x] Remove the self-test call from screen code (it lives in the tests now). *No self-test call was ever added to screen code; `runDeclensionSelfTest` is only called from the test file.*
 - [x] `ReferenceTables.tsx` in the feature folder, on `src/shared/ui` and the tokens in `src/index.css`; gender colours `gender-m/f/n/pl`.
@@ -175,11 +175,20 @@ CLAUDE.md
 - **The tab depends on owner-run SQL.** Between deploy and SQL the drill works as practice only.
 - **Caps are guesses.** 150 answers per run and 30 runs per day may need tuning after real use.
 
+## 7a. Review fixes (2026-11-17)
+- **Grammar** ported from the source (3.1).
+- **Offline results were dropped:** supabase-js reports "no network" as an error (status 0), not an exception, and every error counted as a final rejection. Now only the function's own refusals (HTTP 400/403) are final; no answer, a timeout, 401, 404 and 5xx stay queued (`classifyFinishResponse` in `queue.ts`, unit-tested). A run finished while a flush is waiting is no longer overwritten.
+- **Reference tables in Persian** showed "-eder" for "der -e" (two LTR spans in an RTL cell); each cell is one LTR run now. The «ein / kein» table has a Plural column («keine -en»); the strong table is called «ohne Artikel».
+- **Question card:** the `gender-*` class on the whole card underlined every button; removed. The phrase row is LTR in the Persian interface, so it reads article → adjective → noun.
+- **Start button** shows a spinner and can't start two runs; the start request gives up after 10 s (the run is then practice).
+- **SQL:** `finish_adjective_run` refuses suspended users and locks the row. The negative SQL tests caught their own `FAILED` exception and could never fail; fixed, plus a suspended-finish test.
+- **Records tab** loads lazily.
+
 ## 8. Execution status
 | Section | Status | Notes |
 |---|---|---|
 | 3.0 Preparation | ☑ | Branched from `main` (PR #28 already merged); baseline recorded. |
-| 3.1 Move the code | ☑ | Written fresh (no local source folder on this machine) instead of copied; everything else done. |
+| 3.1 Move the code | ☑ | First written fresh; replaced in review by a port of the source engine (see 3.1). |
 | 3.2 Drill screen | ☑ | Done as specified. |
 | 3.3 App integration | ☑ | Done; no gallery entries needed (no new shared/ui components). |
 | 3.4 Database | ☑ | Migration + schema.sql + SQL tests + owner guide; verified with a local PostgreSQL. Not run anywhere near production. |

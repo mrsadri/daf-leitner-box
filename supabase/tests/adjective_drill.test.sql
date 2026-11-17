@@ -33,7 +33,7 @@ do $$ begin
   perform set_config('test.uid', '00000000-0000-0000-0000-0000000000a2', false);
   perform public.start_adjective_run();
   raise exception 'FAILED: a suspended user could start a run';
-exception when others then raise notice 'ok: a suspended user cannot start a run';
+exception when others then if sqlerrm like 'FAILED:%' then raise; end if; raise notice 'ok: a suspended user cannot start a run';
 end $$;
 select set_config('test.uid', '00000000-0000-0000-0000-0000000000a1', false);
 reset role;
@@ -52,7 +52,7 @@ begin
   begin
     perform public.finish_adjective_run(v_id, 5, 10);
     raise exception 'FAILED: finished immediately (too early) without error';
-  exception when others then raise notice 'ok: finishing right after starting is rejected (too early)';
+  exception when others then if sqlerrm like 'FAILED:%' then raise; end if; raise notice 'ok: finishing right after starting is rejected (too early)';
   end;
 end $$;
 reset role;
@@ -73,26 +73,26 @@ select set_config('test.uid', '00000000-0000-0000-0000-0000000000a1', false);
 do $$ begin
   perform public.finish_adjective_run('11111111-0000-0000-0000-000000000001', 5, 10);
   raise exception 'FAILED: a run older than 24h was accepted';
-exception when others then raise notice 'ok: a run older than 24h is rejected (too late)';
+exception when others then if sqlerrm like 'FAILED:%' then raise; end if; raise notice 'ok: a run older than 24h is rejected (too late)';
 end $$;
 
 do $$ begin
   perform public.finish_adjective_run('11111111-0000-0000-0000-000000000002', 10, 5);
   raise exception 'FAILED: score greater than answered was accepted';
-exception when others then raise notice 'ok: score > answered is rejected';
+exception when others then if sqlerrm like 'FAILED:%' then raise; end if; raise notice 'ok: score > answered is rejected';
 end $$;
 
 do $$ begin
   perform public.finish_adjective_run('11111111-0000-0000-0000-000000000002', 151, 151);
   raise exception 'FAILED: answered above the 150 cap was accepted';
-exception when others then raise notice 'ok: answered > 150 is rejected';
+exception when others then if sqlerrm like 'FAILED:%' then raise; end if; raise notice 'ok: answered > 150 is rejected';
 end $$;
 
 do $$ begin
   perform set_config('test.uid', '00000000-0000-0000-0000-0000000000a4', false);
   perform public.finish_adjective_run('11111111-0000-0000-0000-000000000002', 5, 10);
   raise exception 'FAILED: a different user finished someone else''s run';
-exception when others then raise notice 'ok: a run can only be finished by its owner';
+exception when others then if sqlerrm like 'FAILED:%' then raise; end if; raise notice 'ok: a run can only be finished by its owner';
 end $$;
 select set_config('test.uid', '00000000-0000-0000-0000-0000000000a1', false);
 
@@ -106,9 +106,25 @@ select pg_temp.check(true, 'sending the same finished result twice is accepted (
 do $$ begin
   perform public.finish_adjective_run('11111111-0000-0000-0000-000000000002', 9, 10);
   raise exception 'FAILED: a finished run accepted a different result';
-exception when others then raise notice 'ok: a finished run rejects a different result (not re-scored)';
+exception when others then if sqlerrm like 'FAILED:%' then raise; end if; raise notice 'ok: a finished run rejects a different result (not re-scored)';
 end $$;
 
+reset role;
+
+-- ---------------- finishing: a suspended user ----------------
+set role service_role;
+insert into public.adjective_drill_runs (id, user_id, started_at) values
+  ('11111111-0000-0000-0000-000000000005', '00000000-0000-0000-0000-0000000000a2', now() - interval '6 minutes');
+reset role;
+
+set role authenticated;
+do $$ begin
+  perform set_config('test.uid', '00000000-0000-0000-0000-0000000000a2', false);
+  perform public.finish_adjective_run('11111111-0000-0000-0000-000000000005', 5, 10);
+  raise exception 'FAILED: a suspended user finished a run';
+exception when others then if sqlerrm like 'FAILED:%' then raise; end if; raise notice 'ok: a suspended user cannot finish a run (%)', sqlerrm;
+end $$;
+select set_config('test.uid', '00000000-0000-0000-0000-0000000000a1', false);
 reset role;
 
 -- ---------------- daily start limit ----------------
@@ -127,7 +143,7 @@ select pg_temp.check((select count(*) = 30 from public.adjective_drill_runs wher
 do $$ begin
   perform public.start_adjective_run();
   raise exception 'FAILED: a 31st start today was accepted';
-exception when others then raise notice 'ok: more than 30 starts in a UTC day is rejected';
+exception when others then if sqlerrm like 'FAILED:%' then raise; end if; raise notice 'ok: more than 30 starts in a UTC day is rejected';
 end $$;
 reset role;
 

@@ -517,7 +517,11 @@ as $$
 declare
   r record;
 begin
-  select * into r from public.adjective_drill_runs where id = p_id and user_id = auth.uid();
+  if not public.is_active_user() then
+    raise exception 'account suspended' using errcode = '42501';
+  end if;
+  -- locked, so two finishes of the same run at the same moment can't both pass the checks below
+  select * into r from public.adjective_drill_runs where id = p_id and user_id = auth.uid() for update;
   if not found then
     raise exception 'run not found' using errcode = '42501';
   end if;

@@ -65,7 +65,7 @@ end;
 $$;
 
 -- ---------------------------------------------------------------------
--- finish_adjective_run(): accepted only for the caller's own, not-yet-finished run, at least 295s
+-- finish_adjective_run(): refuses suspended users; accepted only for the caller's own, not-yet-finished run, at least 295s
 -- after it started and within 24h of starting. A repeated call with the same score/answered that was
 -- already recorded returns success instead of raising, so sending the result twice is harmless.
 -- ---------------------------------------------------------------------
@@ -78,7 +78,11 @@ as $$
 declare
   r record;
 begin
-  select * into r from public.adjective_drill_runs where id = p_id and user_id = auth.uid();
+  if not public.is_active_user() then
+    raise exception 'account suspended' using errcode = '42501';
+  end if;
+  -- locked, so two finishes of the same run at the same moment can't both pass the checks below
+  select * into r from public.adjective_drill_runs where id = p_id and user_id = auth.uid() for update;
   if not found then
     raise exception 'run not found' using errcode = '42501';
   end if;

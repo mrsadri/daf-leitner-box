@@ -8,11 +8,14 @@ the owner. Nothing here is run from the development machine.
   review event, or Leitner score is touched — this feature's scores are entirely separate.
 - **Four new functions:** `start_adjective_run`, `finish_adjective_run`, `get_adjective_board`,
   `get_my_adjective_bests`. All `SECURITY DEFINER`; the table has no insert/update policy, so writes only
-  happen through them.
+  happen through them. Suspended accounts can neither start nor finish a run.
 - **Flag:** `adjective_drill_enabled = true` is added (seeded **on**). It is the kill switch for the drill:
   while off, the app shows no home card, `?go=adjective` falls back to the home page, and the «صفت‌ها» tab
   in «رقابت» is hidden. Until this migration runs, the app already works fine — every run is practice only
   and the «صفت‌ها» tab shows its error state (the functions don't exist yet).
+- **When to run it:** any time after the PR is merged, before or after the deploy. It only adds objects
+  that the current live app never touches, so running it first is harmless and means the very first runs
+  are recorded.
 - **Account deletion:** `adjective_drill_runs.user_id` cascades with `auth.users`, so the existing
   `admin_delete_user` already removes a deleted user's runs. No change needed there.
 
@@ -23,6 +26,19 @@ the owner. Nothing here is run from the development machine.
 
 **Migration file** (GitHub, public; after the merge it is on `main`):
 https://raw.githubusercontent.com/mrsadri/daf-leitner-box/main/supabase/migrations/20261117_adjective_drill.sql
+
+## 0. Before running (read-only)
+
+Check that the file on GitHub `main` is the reviewed one: it must contain `for update` and
+`'account suspended'` twice (once in `start_adjective_run`, once in `finish_adjective_run`).
+
+```sql
+select
+  to_regclass('public.app_flags')            is not null as app_flags_exists,     -- expected: true
+  to_regclass('public.adjective_drill_runs') is null     as drill_table_is_new;   -- expected: true (false only if run before)
+```
+
+If `app_flags_exists` is false, **stop** and report: the migration needs that table.
 
 ## 1. Database migration
 
@@ -43,6 +59,15 @@ Check the flag (should return `true`):
 ```sql
 select value from public.app_flags where key = 'adjective_drill_enabled';
 ```
+
+Check the table (should return `true`, `0`):
+
+```sql
+select (select relrowsecurity from pg_class where oid = 'public.adjective_drill_runs'::regclass) as rls_on,
+       (select count(*) from public.adjective_drill_runs) as runs;
+```
+
+Nothing else changed: the counts of `cards`, `review_events` and `profiles` are the same as before.
 
 ## 2. Live check
 
