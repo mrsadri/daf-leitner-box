@@ -98,7 +98,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ profile, onOpenSetting
       )}
 
       {topTab === 'adjective' && showAdjective ? (
-        <AdjectiveBoard showOnLeaderboard={profile.showOnLeaderboard} />
+        <AdjectiveBoard userId={profile.id} showOnLeaderboard={profile.showOnLeaderboard} />
       ) : (
       <>
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">

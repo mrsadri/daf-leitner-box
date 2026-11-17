@@ -7,9 +7,10 @@ import { Crown, Medal, AlertTriangle, EyeOff, RefreshCw } from 'lucide-react';
 import { buttonClass } from '../../shared/ui';
 import { Auto } from '../../shared/ui/Text';
 import { useI18n } from '../../i18n/I18nProvider';
-import { fetchBoard, type AdjectiveBoardRow, type AdjectivePeriod } from './drillSync';
+import { fetchBoard, flushQueue, type AdjectiveBoardRow, type AdjectivePeriod } from './drillSync';
 
 interface Props {
+  userId: string;
   showOnLeaderboard: boolean;
 }
 
@@ -30,7 +31,7 @@ const RankBadge: React.FC<{ rank: number }> = ({ rank }) => {
   return <span className="font-mono-num text-sm font-bold text-slate-600 dark:text-slate-400">{num(rank)}</span>;
 };
 
-export function AdjectiveBoard({ showOnLeaderboard }: Props) {
+export function AdjectiveBoard({ userId, showOnLeaderboard }: Props) {
   const { t, num } = useI18n();
   const b = t.adjective.board;
   const [period, setPeriod] = useState<AdjectivePeriod>('all');
@@ -42,6 +43,8 @@ export function AdjectiveBoard({ showOnLeaderboard }: Props) {
   const load = useCallback(async (p: AdjectivePeriod) => {
     setStatus('loading');
     try {
+      // Send any pending finished runs first, so this caller's own row is current.
+      await flushQueue(userId);
       const board = await fetchBoard(p);
       setRows(board.rows);
       setMyBestAll(board.myBestAll);
@@ -51,7 +54,7 @@ export function AdjectiveBoard({ showOnLeaderboard }: Props) {
       console.error(e);
       setStatus('error');
     }
-  }, []);
+  }, [userId]);
 
   useEffect(() => { load(period); }, [period, load]);
 

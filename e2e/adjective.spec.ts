@@ -4,7 +4,7 @@
  * the run. A second test checks the leave-mid-run confirmation when navigating away via the navbar.
  */
 import { test, expect } from '@playwright/test';
-import { openApp, tabBar, noHorizontalScroll } from './helpers';
+import { openApp, noHorizontalScroll } from './helpers';
 
 const RECORDS_TAB = { fa: /صفت‌ها/, en: /adjectives/i };
 const VIEW_RECORDS_BUTTON = { fa: /مشاهده جدول رکوردها/, en: /view the records board/i };
