@@ -65,6 +65,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* Brand */}
         <button
           onClick={() => onTabChange('dashboard')}
+          data-testid="nav-brand"
           className="flex items-center gap-2 min-w-0 xl:shrink-0 text-start group focus:outline-none"
         >
           <div className="w-9 h-9 shrink-0 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-sm group-hover:bg-indigo-700 transition-colors">
