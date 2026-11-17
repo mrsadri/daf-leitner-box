@@ -1,17 +1,14 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  declinePhrase, generateRound, datPluralSuffix, SELF_TEST_CASES, runDeclensionSelfTest,
+  declinePhrase, generateRound, drawSessionWords, datPluralSuffix, phraseText, SELF_TEST_CASES, runDeclensionSelfTest,
   NOUNS, ADJECTIVES, CASES
 } from '../src/features/adjective/grammar.ts';
 
 // Every self-test case becomes its own test, so a failure names the exact case that broke.
 for (const tc of SELF_TEST_CASES) {
   test(`declension: ${tc.name}`, () => {
-    const phrase = declinePhrase(tc.params);
-    assert.equal(phrase.article?.full ?? null, tc.expected.article ?? null);
-    assert.equal(phrase.adjective?.full ?? null, tc.expected.adjective ?? null);
-    assert.equal(phrase.noun.full, tc.expected.noun);
+    assert.equal(phraseText(declinePhrase(tc.params)), tc.expected);
   });
 }
 
@@ -70,6 +67,11 @@ test('generateRound: always produces a noun and a grammatically valid article ty
     if (r.articleType === 'none' && r.number === 'sg') {
       assert.ok(r.noun.noArticle, 'a singular article-less round must use a mass noun');
     }
+    if (r.noun.noArticle) {
+      assert.equal(r.number, 'sg', 'a mass noun is never plural');
+      assert.notEqual(r.articleType, 'indefinite', 'no "eine Milch"');
+    }
+    if (r.articleType === 'none') assert.notEqual(r.adjective, null, 'a round without an article always has an adjective');
     if (r.adjective !== null) assert.ok(ADJECTIVES.includes(r.adjective));
     // The round's own phrase must match recomputing declinePhrase from its params.
     const recomputed = declinePhrase(r);
@@ -81,4 +83,33 @@ test('generateRound: both "no adjective" and "with adjective" rounds occur', () 
   const rounds = Array.from({ length: 300 }, () => generateRound());
   assert.ok(rounds.some(r => r.adjective === null), 'expected at least one no-adjective round in 300 tries');
   assert.ok(rounds.some(r => r.adjective !== null), 'expected at least one round with an adjective in 300 tries');
+});
+
+test('generateRound: every article type occurs, «kein» included, singular and plural', () => {
+  const rounds = Array.from({ length: 600 }, () => generateRound());
+  for (const type of ['definite', 'indefinite', 'negative', 'none'] as const) {
+    assert.ok(rounds.some(r => r.articleType === type), `expected a ${type} round in 600 tries`);
+  }
+  assert.ok(rounds.some(r => r.articleType === 'negative' && r.number === 'pl'), 'expected a «keine» plural round');
+});
+
+test('drawSessionWords: 2 n-Deklination nouns, 2 mass nouns, 6 others and 10 adjectives, no duplicates', () => {
+  const w = drawSessionWords();
+  assert.equal(w.nouns.length, 10);
+  assert.equal(new Set(w.nouns.map(n => n.id)).size, 10);
+  assert.equal(w.nouns.filter(n => n.weakSingular).length, 2);
+  assert.equal(w.nouns.filter(n => n.noArticle).length, 2);
+  assert.equal(w.adjectives.length, 10);
+  assert.equal(new Set(w.adjectives).size, 10);
+  for (let i = 0; i < 50; i++) {
+    const r = generateRound(w);
+    assert.ok(w.nouns.includes(r.noun));
+    if (r.adjective !== null) assert.ok(w.adjectives.includes(r.adjective));
+  }
+});
+
+test('banks: unique noun ids, every countable noun has a plural, adjectives with a changing stem are left out', () => {
+  assert.equal(new Set(NOUNS.map(n => n.id)).size, NOUNS.length);
+  for (const n of NOUNS) if (!n.noArticle) assert.ok(n.plural, `${n.singular} needs a plural`);
+  for (const bad of ['teuer', 'hoch', 'dunkel', 'sauer', 'lila', 'rosa']) assert.ok(!ADJECTIVES.includes(bad), bad);
 });

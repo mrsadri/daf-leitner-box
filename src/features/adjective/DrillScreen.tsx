@@ -14,7 +14,7 @@ import { useI18n } from '../../i18n/I18nProvider';
 import { isDemoMode } from '../../shared/lib/demo';
 import { speechService } from '../../shared/lib/speechService';
 import {
-  generateRound, declinePhrase, phraseText, roundContext,
+  generateRound, drawSessionWords, declinePhrase, phraseText, roundContext,
   ARTICLE_ENDING_OPTIONS, ADJECTIVE_ENDING_OPTIONS, NOUN_ENDING_OPTIONS,
   type Round
 } from './grammar';
@@ -66,6 +66,8 @@ export default function DrillScreen({ userId, onRunningChange, onViewRecords }: 
   const [practice, setPractice] = useState(false);
   const [tick, setTick] = useState(0);
   const [confirmLeave, setConfirmLeave] = useState(false);
+  // True while the server is asked for a run id: the start button shows it and can't start a second run
+  const [starting, setStarting] = useState(false);
 
   const endsAtRef = useRef(0);
   const runIdRef = useRef<string | null>(null);
@@ -73,6 +75,8 @@ export default function DrillScreen({ userId, onRunningChange, onViewRecords }: 
   const answeredRef = useRef(0);
   const mistakesRef = useRef<Mistake[]>([]);
   const finishedRef = useRef(false);
+  // This run's words (as in the prototype: a few nouns and adjectives per run, so they come back and stick)
+  const wordsRef = useRef(drawSessionWords());
 
   const voiceAvailable = speechService.isSupported() && speechService.currentVoice() !== null;
 
@@ -111,7 +115,7 @@ export default function DrillScreen({ userId, onRunningChange, onViewRecords }: 
 
   const nextRound = () => {
     if (isExpired(endsAtRef.current)) { doFinish(); return; }
-    setRound(generateRound());
+    setRound(generateRound(wordsRef.current));
     setSelections({});
     setRoundPhase('answering');
   };
@@ -162,6 +166,8 @@ export default function DrillScreen({ userId, onRunningChange, onViewRecords }: 
   }, [selections, roundPhase, phase]);
 
   const start = async () => {
+    if (starting) return;
+    setStarting(true);
     finishedRef.current = false;
     scoreRef.current = 0;
     answeredRef.current = 0;
@@ -170,10 +176,12 @@ export default function DrillScreen({ userId, onRunningChange, onViewRecords }: 
     setAnswered(0);
     setNewRecord(false);
     const id = await startRun();
+    setStarting(false);
     runIdRef.current = id;
     setPractice(!isDemoMode && id === null);
     endsAtRef.current = createDeadline();
-    setRound(generateRound());
+    wordsRef.current = drawSessionWords();
+    setRound(generateRound(wordsRef.current));
     setSelections({});
     setRoundPhase('answering');
     setPhase('running');
@@ -201,7 +209,7 @@ export default function DrillScreen({ userId, onRunningChange, onViewRecords }: 
         </header>
         <Card className="flex items-center justify-between gap-4">
           <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{a.start.duration}</span>
-          <Button onClick={() => void start()} data-testid="adjective-start-button">{a.start.startButton}</Button>
+          <Button onClick={() => void start()} loading={starting} data-testid="adjective-start-button">{a.start.startButton}</Button>
         </Card>
         {!voiceAvailable && (
           <p className="text-caption text-slate-500 dark:text-slate-400">{a.start.noVoice}</p>
@@ -265,9 +273,10 @@ export default function DrillScreen({ userId, onRunningChange, onViewRecords }: 
 
       {practice && <p className="text-caption text-amber-700 dark:text-amber-400">{a.practiceBanner}</p>}
 
-      <Card className={`space-y-4 gender-${round.number === 'pl' ? 'pl' : round.gender}`}>
+      <Card className="space-y-4">
         <De className="text-caption text-ink-soft block">{roundContext(round)}</De>
-        <div className="flex flex-wrap items-end gap-5">
+        {/* German word order (article, adjective, noun) also in the Persian interface */}
+        <div dir="ltr" className="flex flex-wrap items-end gap-5">
           {round.phrase.article && (
             <EndingGroup
               label={a.slot.article}
