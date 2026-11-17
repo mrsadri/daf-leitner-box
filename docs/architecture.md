@@ -38,6 +38,25 @@ content/stories/images.json, names ─┘    (pages, word links, noun gender, qu
 - **Media.** Pictures are WebP files in `public/story-media/images` (hashed names, cached for a year).
 - **Kill switch:** `app_flags.stories_enabled`.
 
+## Adjective declension contest
+```
+src/features/adjective/grammar.ts (noun/adjective banks, ending tables) ─> generateRound ─> DrillScreen
+                                                                                                  │
+                                                                                         drillSync.ts
+                                                                                                  │
+                                      Supabase: start_adjective_run / finish_adjective_run / get_adjective_board
+```
+- **Separate from the Leitner box.** This score, the drill's records, never changes the Leitner score, the
+  weekly rank, the streak or silver cards; wrong answers are not turned into cards.
+- **Timer.** A fixed end time (`timer.ts`), not accumulated ticks, so a background tab buys no extra time.
+- **Offline.** A run that can't be started plays as practice (not recorded). A finished run waits in a
+  per-user queue (`queue.ts`) until the server accepts it, retried on reconnect; a rejection (not owned, too
+  early, over the daily limit, older than 24h) drops it instead of retrying.
+- **Records.** `get_adjective_board` ranks by best score (ties by the earlier best run), like
+  `get_leaderboard`; `get_my_adjective_bests` gives the caller's own best-ever and best-this-week. Shown as
+  the «صفت‌ها» tab in «رقابت», next to the existing Leitner board.
+- **Kill switch:** `app_flags.adjective_drill_enabled`.
+
 ## Supabase objects by feature
 | Feature | Tables / functions |
 |---|---|
@@ -47,6 +66,7 @@ content/stories/images.json, names ─┘    (pages, word links, noun gender, qu
 | Overdue rule | `overdue_demotions`, nightly job |
 | Silver cards | `get_silver_status` (from `review_events`) |
 | Stories | `story_progress`, `app_flags` (`stories_enabled`) |
+| Adjective drill | `adjective_drill_runs`, `get_adjective_board`, `get_my_adjective_bests`, `app_flags` (`adjective_drill_enabled`) |
 
 Removed in 2026-11 (clean-up: `supabase/migrations/20261117_cleanup_insights_dictation.sql`):
 - public insight sharing;

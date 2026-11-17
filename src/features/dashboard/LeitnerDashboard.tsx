@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import { LeitnerCard, BOX_CONFIGS } from '../../core/types';
 import { isCardDue, getTodayString, isNounCard } from '../../core/leitnerEngine';
 import { vocabText } from '../../shared/vocab/vocabText';
-import { Play, CheckCircle2, HelpCircle, BookOpen, Target, BookHeart } from 'lucide-react';
+import { Play, CheckCircle2, HelpCircle, BookOpen, Target, BookHeart, SpellCheck2 } from 'lucide-react';
 import { Dialog, Button } from '../../shared/ui';
 import { useI18n } from '../../i18n/I18nProvider';
 import { De, Auto } from '../../shared/ui/Text';
@@ -26,6 +26,8 @@ interface LeitnerDashboardProps {
   onOpenSettings?: () => void;
   /** Opens Stories (absent while the Stories kill switch is off) */
   onOpenStories?: () => void;
+  /** Opens the adjective drill (absent while its kill switch is off) */
+  onOpenAdjective?: () => void;
   /** Book words (for the metro map of the lessons) */
   catalog: LeitnerCard[];
   /** Open the word list filtered to a lesson (tapping a station on the metro map) */
@@ -39,6 +41,7 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
   onStartNewWordsLearning,
   onOpenSettings,
   onOpenStories,
+  onOpenAdjective,
   catalog,
   onOpenLesson
 }) => {
@@ -72,6 +75,21 @@ export const LeitnerDashboard: React.FC<LeitnerDashboardProps> = ({
           <span className="min-w-0">
             <span className="block font-story-title text-xl text-ink">{t.stories.dashboardTitle}</span>
             <span className="block text-sm text-ink-soft">{t.stories.dashboardBody}</span>
+          </span>
+        </button>
+      )}
+
+      {onOpenAdjective && (
+        <button
+          type="button"
+          onClick={onOpenAdjective}
+          data-testid="dashboard-adjective"
+          className="w-full flex items-center gap-4 text-start bg-paper border border-paper-edge rounded-card p-4 hover:border-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 min-h-16"
+        >
+          <SpellCheck2 className="w-8 h-8 text-indigo-600 dark:text-indigo-400 shrink-0" aria-hidden />
+          <span className="min-w-0">
+            <span className="block font-story-title text-xl text-ink">{t.adjective.dashboardTitle}</span>
+            <span className="block text-sm text-ink-soft">{t.adjective.dashboardBody}</span>
           </span>
         </button>
       )}

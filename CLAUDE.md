@@ -6,6 +6,7 @@ Guidance for AI agents (and people) working in this repository. Read it before c
 A Leitner-box web app for German learners at the Austrian Cultural Forum Tehran (course *DaF kompakt*, A1–B1). The interface is in Persian (RTL, default) and English. It covers:
 - reviewing the book's 3,400 words, plus the learner's own cards (decisions, motivation, …);
 - Stories: 60 short graded stories with a quiz;
+- an adjective declension drill («صرف صفت»), a separate 5-minute contest with its own records board;
 - silver cards and a leaderboard.
 
 Live: https://daf-leitner-box.vercel.app. Supabase handles sign-in (Google), the database and row-level security. The front end is a static Vite/React app on Vercel.
@@ -45,7 +46,7 @@ bash scripts/test-sql.sh                                  # SQL tests on a throw
 src/app/            entry (App), signed-in shell (LeitnerApp), Navbar, data hook, session effects
 src/core/           leitnerEngine (cards, rules), cloudSync (Supabase queue), types, moveBack, dates, csvParser
 src/features/<f>/   one folder per feature: dashboard, review, learn, vocab (word bank + MyCards), stories,
-                    silver, leaderboard, onboarding, settings, admin, auth
+                    adjective (declension drill), silver, leaderboard, onboarding, settings, admin, auth
 src/shared/ui/      design system (Button, Dialog, Card, Badge, fields, …) + Text helpers, SwipeCard, Icon3D
 src/shared/vocab/   German knowledge used by several features (Perfekt, plural, conjugation, card texts)
 src/shared/lib/     supabase client, demo mode, speech, sound, haptics
@@ -80,6 +81,9 @@ e2e/                Playwright tests;  tests/ unit tests;  docs/ setup guides an
 - **Stories progress** goes to `public.story_progress` (one row per story `SNN-QN`, own rows only).
   - The server copy is merged before anything is sent, and progress never goes backwards.
   - Kill switch: `app_flags.stories_enabled`. A missing flag means on.
+- **Adjective drill runs** go to `public.adjective_drill_runs` (one row per run, own rows only); writes
+  only through `start_adjective_run`/`finish_adjective_run`. Entirely separate from the Leitner score.
+  - Kill switch: `app_flags.adjective_drill_enabled`. A missing flag means on.
 - **Story media** is served by Vercel from `/story-media/` (hashed names, cached for a year by `vercel.json`).
 - **Local builds without Supabase settings.** A production build without `VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY` treats Supabase as not configured at build time and drops the whole signed-in app.
   - To measure bundle sizes, build with placeholder values: `VITE_SUPABASE_URL=https://example.supabase.co VITE_SUPABASE_ANON_KEY=x npx vite build`.

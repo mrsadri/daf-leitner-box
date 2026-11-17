@@ -99,6 +99,7 @@ export const en: Messages = {
       review: 'Review',
       catalog: 'Words',
       stories: 'Stories',
+      adjective: 'Adjective drill',
       leaderboard: 'Leaderboard',
       settings: 'Settings',
       admin: 'Users'
@@ -108,6 +109,7 @@ export const en: Messages = {
       review: 'Review',
       catalog: 'Words',
       stories: 'Stories',
+      adjective: 'Adjectives',
       leaderboard: 'Ranking',
       settings: 'Settings',
       admin: 'Users'
@@ -340,6 +342,62 @@ export const en: Messages = {
     }
   },
 
+  adjective: {
+    dashboardTitle: 'Adjective declension contest',
+    dashboardBody: 'In 5 minutes, pick the right ending for the article, the adjective and the noun in different cases.',
+    referenceTitle: 'Adjective ending tables (review before you start)',
+    start: {
+      title: 'Adjective declension contest',
+      body: 'An article (sometimes none), an adjective (sometimes none) and a noun are shown in a case. Pick the right ending for each part. A phrase scores a point only when every ending is right. This score is entirely separate from your Leitner score, weekly rank, streak and silver cards.',
+      duration: 'Duration: 5 minutes',
+      noVoice: 'No German voice was found on this device; the contest runs without sound.',
+      startButton: 'Start the contest'
+    },
+    slot: {
+      article: 'Article',
+      adjective: 'Adjective',
+      noun: 'Noun'
+    },
+    next: 'Next',
+    correct: 'Correct',
+    incorrect: 'Incorrect',
+    leaveConfirm: {
+      title: 'Leave the contest?',
+      body: 'This run will not be recorded and will not appear on the records board.',
+      confirm: 'Leave and abandon the run',
+      cancel: 'Keep playing'
+    },
+    finished: {
+      title: 'Contest finished!',
+      newRecord: 'New record! 🎉',
+      scoreLine: (score: number, answered: number) => `${n(score)} correct out of ${n(answered)} answered`,
+      mistakesTitle: 'To review:',
+      mistakesEmpty: 'Every phrase was right! Great job.',
+      yourAnswer: 'Your answer:',
+      correctAnswer: 'Correct answer:',
+      again: 'Play again',
+      viewRecords: 'View the records board'
+    },
+    practiceBanner: 'This run is practice only and will not be recorded (no connection, or the daily start limit is reached).',
+    board: {
+      title: 'Adjective declension records',
+      overallRecord: (name: string, score: number) => `Record for this period: ${name} (${n(score)})`,
+      myBestEver: (score: number) => `My best ever: ${n(score)}`,
+      myBestWeek: (score: number) => `My best this week: ${n(score)}`,
+      none: '–',
+      colRank: 'Rank',
+      colUser: 'User',
+      colBest: 'Best score',
+      colTop3: 'Top 3 scores',
+      loading: 'Loading records…',
+      error: 'Could not load the records. Please check your connection.',
+      refresh: 'Refresh',
+      empty: 'No records in this period yet.',
+      hiddenNotice: 'Your name is hidden from others (you still see your own rank).',
+      start: 'Start the contest'
+    }
+  },
+
   reflections: {
     badge: 'Review your goals and decisions with Leitner',
     title: 'Decisions, goals & motivational quotes',
@@ -392,6 +450,8 @@ export const en: Messages = {
   },
 
   leaderboard: {
+    topTabLeitner: 'Leitner',
+    topTabAdjective: 'Adjectives',
     title: 'Leaderboard',
     explainer: 'Score = the sum of (cards in each box × that box number). Box 0 scores nothing and each mastered card is worth 6. The weekly score is how much that score changed in the last 7 days. Only numbers are shown; nobody can see the content of your cards.',
     refresh: 'Refresh',
