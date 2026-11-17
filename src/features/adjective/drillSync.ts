@@ -5,23 +5,18 @@
  *     drill still runs, as practice, and its result is never sent
  *   - a finished run's result waits in a per-user localStorage queue until it is accepted; a network
  *     failure keeps it queued for the next flush (start-up, coming back online), a server rejection
- *     (not owned, too early, out of range, older than 24h) removes it for good
+ *     (not owned, too early, out of range, older than 24h) removes it for good (queue.ts)
  *   - demo mode: runs and a small fake board live in localStorage only, no Supabase calls
  */
 import { requireSupabase, supabase } from '../../shared/lib/supabase';
 import { isDemoMode } from '../../shared/lib/demo';
+import { isTooOld, keepAfterOutcome, type PendingFinish, type FlushOutcome } from './queue';
+import { mapBoardRow, mapMyBests, type AdjectiveBoardRow } from './boardMapping';
+
+export type { AdjectiveBoardRow } from './boardMapping';
 
 const queueKey = (uid: string) => `daf_adjective_queue_${uid}`;
 const demoRunsKey = 'daf_adjective_demo_runs';
-const MAX_AGE_MS = 24 * 60 * 60 * 1000;
-
-interface PendingFinish {
-  id: string;
-  score: number;
-  answered: number;
-  /** When this entry was queued on this device, for the client-side 24h drop rule. */
-  queuedAt: number;
-}
 
 function readQueue(uid: string): PendingFinish[] {
   try {
@@ -73,13 +68,15 @@ export async function flushQueue(uid: string): Promise<void> {
   if (q.length === 0) return;
   const keep: PendingFinish[] = [];
   for (const p of q) {
-    if (Date.now() - p.queuedAt > MAX_AGE_MS) continue; // too old: the server would reject it anyway
+    if (isTooOld(p, Date.now())) continue; // too old: the server would reject it anyway
+    let outcome: FlushOutcome;
     try {
       const { error } = await db.rpc('finish_adjective_run', { p_id: p.id, p_score: p.score, p_answered: p.answered });
-      if (error) continue; // rejected for good (not ours, too early, out of range, ...): drop it
+      outcome = error ? 'rejected' : 'accepted';
     } catch {
-      keep.push(p); // offline or a network error: try again later
+      outcome = 'network-error';
     }
+    if (keepAfterOutcome(outcome)) keep.push(p);
   }
   writeQueue(uid, keep);
 }
@@ -111,17 +108,6 @@ export function updateLocalBest(uid: string, score: number): boolean {
 
 export type AdjectivePeriod = 'all' | 'week';
 
-export interface AdjectiveBoardRow {
-  userId: string;
-  displayName: string;
-  avatarUrl: string | null;
-  best: number;
-  top3: number[];
-  bestAt: string;
-  rank: number;
-  isMe: boolean;
-}
-
 export interface AdjectiveBoard {
   rows: AdjectiveBoardRow[];
   myBestAll: number | null;
@@ -136,22 +122,9 @@ export async function fetchBoard(period: AdjectivePeriod, limit = 100): Promise<
     db.rpc('get_my_adjective_bests')
   ]);
   if (boardRes.error) throw boardRes.error;
-  const rows = ((boardRes.data || []) as Record<string, unknown>[]).map((r): AdjectiveBoardRow => ({
-    userId: String(r.user_id),
-    displayName: String(r.display_name),
-    avatarUrl: (r.avatar_url as string | null) ?? null,
-    best: Number(r.best),
-    top3: ((r.top3 as number[] | null) || []).map(Number),
-    bestAt: String(r.best_at),
-    rank: Number(r.rank),
-    isMe: Boolean(r.is_me)
-  }));
-  const bestsRow = ((bestsRes.data || [])[0] || {}) as Record<string, unknown>;
-  return {
-    rows,
-    myBestAll: bestsRow.best_all === null || bestsRow.best_all === undefined ? null : Number(bestsRow.best_all),
-    myBestWeek: bestsRow.best_week === null || bestsRow.best_week === undefined ? null : Number(bestsRow.best_week)
-  };
+  const rows = ((boardRes.data || []) as Record<string, unknown>[]).map(mapBoardRow);
+  const { myBestAll, myBestWeek } = mapMyBests((bestsRes.data || [])[0]);
+  return { rows, myBestAll, myBestWeek };
 }
 
 // ---------------------------------------------------------------------------

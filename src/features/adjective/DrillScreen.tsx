@@ -21,8 +21,7 @@ import {
 import { EndingGroup } from './EndingGroup';
 import { ReferenceTables } from './ReferenceTables';
 import { startRun, queueFinish, flushQueue, updateLocalBest } from './drillSync';
-
-const DURATION_MS = 5 * 60 * 1000;
+import { createDeadline, remainingMs, isExpired, formatClock } from './timer';
 
 type Phase = 'start' | 'running' | 'finished';
 type RoundPhase = 'answering' | 'feedback';
@@ -96,7 +95,7 @@ export default function DrillScreen({ userId, onRunningChange, onViewRecords }: 
     if (phase !== 'running') return;
     const iv = setInterval(() => {
       setTick(x => x + 1);
-      if (Date.now() >= endsAtRef.current) doFinish();
+      if (isExpired(endsAtRef.current)) doFinish();
     }, 250);
     return () => clearInterval(iv);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -111,7 +110,7 @@ export default function DrillScreen({ userId, onRunningChange, onViewRecords }: 
   }, [phase]);
 
   const nextRound = () => {
-    if (Date.now() >= endsAtRef.current) { doFinish(); return; }
+    if (isExpired(endsAtRef.current)) { doFinish(); return; }
     setRound(generateRound());
     setSelections({});
     setRoundPhase('answering');
@@ -138,7 +137,7 @@ export default function DrillScreen({ userId, onRunningChange, onViewRecords }: 
     if (needsAdjective && selections.adjective === undefined) return;
     if (selections.noun === undefined) return;
 
-    if (Date.now() >= endsAtRef.current) { doFinish(); return; }
+    if (isExpired(endsAtRef.current)) { doFinish(); return; }
 
     const correct =
       (!needsArticle || selections.article === round.phrase.article!.ending) &&
@@ -173,7 +172,7 @@ export default function DrillScreen({ userId, onRunningChange, onViewRecords }: 
     const id = await startRun();
     runIdRef.current = id;
     setPractice(!isDemoMode && id === null);
-    endsAtRef.current = Date.now() + DURATION_MS;
+    endsAtRef.current = createDeadline();
     setRound(generateRound());
     setSelections({});
     setRoundPhase('answering');
@@ -249,10 +248,7 @@ export default function DrillScreen({ userId, onRunningChange, onViewRecords }: 
   }
 
   // ----- Running -----
-  const remaining = Math.max(0, endsAtRef.current - Date.now());
-  const seconds = Math.ceil(remaining / 1000);
-  const mm = String(Math.floor(seconds / 60)).padStart(2, '0');
-  const ss = String(seconds % 60).padStart(2, '0');
+  const clock = formatClock(remainingMs(endsAtRef.current));
   void tick; // re-render driver for the clock above
 
   return (
@@ -262,7 +258,7 @@ export default function DrillScreen({ userId, onRunningChange, onViewRecords }: 
           {t.common.back}
         </Button>
         <div className="flex items-center gap-4">
-          <span className="font-mono-num text-lg font-bold text-slate-900 dark:text-white" dir="ltr">{mm}:{ss}</span>
+          <span className="font-mono-num text-lg font-bold text-slate-900 dark:text-white" dir="ltr">{clock}</span>
           <span className="font-mono-num text-sm font-semibold text-indigo-600 dark:text-indigo-400">{num(score)}/{num(answered)}</span>
         </div>
       </div>
