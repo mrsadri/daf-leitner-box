@@ -10,6 +10,7 @@ SETUP_FOR_CLAUDE_DESKTOP.md
 # Not needed for `vite build` (it reads src/ and public/ only), and must not leave this machine:
 # the copyrighted textbook and everything derived from it, local generation output
 DaF-kompakt-work
+adjektivdeklination-training
 *.pdf
 build
 dist
