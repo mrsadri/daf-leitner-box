@@ -20,6 +20,7 @@ import { SilverCardEarned } from '../silver/SilverCards';
 import { Icon3D } from '../../shared/ui/Icon3D';
 import { VocabDetails, ExampleBox, ARTICLE_COLOR } from '../../shared/vocab/VocabCardParts';
 import { Volume2, RotateCw, Check, X, Sparkles, ArrowLeft, BookOpen, Quote, Edit3 } from 'lucide-react';
+import { buttonClass, cx } from '../../shared/ui';
 import { isDialogOpen } from '../../shared/ui/Dialog';
 import { useI18n } from '../../i18n/I18nProvider';
 import { De, Auto } from '../../shared/ui/Text';
@@ -296,14 +297,14 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
           {nounsOnly && (
             <button
               onClick={() => setNounsOnly(false)}
-              className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold transition-colors"
+              className={buttonClass('secondary', 'md')}
             >
               {t.review.showAllCards}
             </button>
           )}
           <button
             onClick={onFinishSession}
-            className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold transition-colors"
+            className={buttonClass('primary', 'md')}
           >
             {t.review.backToDashboard}
           </button>
@@ -352,7 +353,7 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
             {onStartNewWordsLearning && (
               <button
                 onClick={onStartNewWordsLearning}
-                className="flex-1 flex items-center justify-center gap-2 py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold shadow-xs transition-colors"
+                className={cx(buttonClass('primary', 'md'), 'flex-1')}
               >
                 <BookOpen className="w-4 h-4" />
                 <span>{t.review.continueYes}</span>

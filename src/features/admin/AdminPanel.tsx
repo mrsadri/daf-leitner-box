@@ -3,7 +3,7 @@
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ShieldCheck, RefreshCw, AlertTriangle, Search, PauseCircle, PlayCircle, Trash2, Loader2 } from 'lucide-react';
-import { Dialog, Button, fieldClass } from '../../shared/ui';
+import { Dialog, Button, fieldClass, buttonClass } from '../../shared/ui';
 import { adminListUsers, adminSetSuspended, adminDeleteUser, AdminUserRow } from '../../core/cloudSync';
 import { UserProfile } from '../../core/types';
 import { useI18n } from '../../i18n/I18nProvider';
@@ -169,7 +169,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ profile }) => {
           <button
             onClick={load}
             disabled={status === 'loading'}
-            className="flex items-center justify-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold transition-colors shrink-0 disabled:opacity-50"
+            className={buttonClass('secondary', 'sm')}
           >
             <RefreshCw className={`w-4 h-4 ${status === 'loading' ? 'animate-spin' : ''}`} />
             <span>{t.admin.refresh}</span>

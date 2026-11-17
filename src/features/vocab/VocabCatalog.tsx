@@ -12,6 +12,7 @@ import { ConjugationButton } from '../../shared/vocab/ConjugationDialog';
 import { PluralInfo } from '../../shared/vocab/PluralInfo';
 import { ARTICLE_COLOR } from '../../shared/vocab/VocabCardParts';
 import { Search, Volume2, Plus, Check } from 'lucide-react';
+import { buttonClass, cx } from '../../shared/ui';
 import { useI18n } from '../../i18n/I18nProvider';
 import { De, Auto } from '../../shared/ui/Text';
 import { MyCards } from './MyCards';
@@ -166,7 +167,7 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
           {selectedLektion !== 'all' && !showMine && (
             <button
               onClick={handleAddEntireLesson}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-xs shrink-0 transition-colors"
+              className={cx(buttonClass('primary', 'sm'), 'shrink-0')}
             >
               <Plus className="w-4 h-4" />
               <span>{t.catalog.addLesson(selectedLektion)}</span>
@@ -231,7 +232,7 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
               </button>
               <button
                 onClick={handleAddSelectedToLeitner}
-                className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow-xs"
+                className={buttonClass('primary', 'sm')}
               >
                 {t.catalog.addSelected(selectedIds.size)}
               </button>

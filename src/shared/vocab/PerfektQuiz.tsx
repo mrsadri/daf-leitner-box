@@ -3,6 +3,7 @@
  */
 import React, { useEffect, useRef, useState } from 'react';
 import { CheckCircle2, XCircle, AlertCircle, PencilLine, Lightbulb } from 'lucide-react';
+import { buttonClass, cx } from '../ui';
 import { checkPerfekt, PerfektResult } from './perfekt';
 import { useI18n } from '../../i18n/I18nProvider';
 import { De } from '../ui/Text';
@@ -126,7 +127,7 @@ export const PerfektQuiz: React.FC<PerfektQuizProps> = ({ accepted, onGraded, pr
         <button
           type="submit"
           disabled={graded || !value.trim()}
-          className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white rounded-xl text-sm font-semibold transition-colors shrink-0"
+          className={cx(buttonClass('primary', 'md'), 'shrink-0')}
         >
           {t.perfekt.check}
         </button>

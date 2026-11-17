@@ -14,6 +14,7 @@ import { PerfektQuiz } from '../../shared/vocab/PerfektQuiz';
 import { VocabDetails, ExampleBox, ARTICLE_COLOR } from '../../shared/vocab/VocabCardParts';
 import { PerfektExplanation } from '../../shared/vocab/PerfektGuide';
 import { Volume2, RotateCw, ArrowLeft, BookOpen, CheckCircle2, Sparkles, X, ChevronLeft, Undo2, Check, RotateCcw, ArrowRight, Hand } from 'lucide-react';
+import { buttonClass } from '../../shared/ui';
 import { isDialogOpen } from '../../shared/ui/Dialog';
 import { useI18n } from '../../i18n/I18nProvider';
 import { De, Auto } from '../../shared/ui/Text';
@@ -256,7 +257,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
           {unlearnedWords.length > 0 && (
             <button
               onClick={goToPreviousWord}
-              className="flex items-center gap-1.5 px-5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold"
+              className={buttonClass('secondary', 'md')}
             >
               <ChevronLeft className="w-4 h-4 rtl:-scale-x-100" />
               {t.newWords.backToLast}
@@ -264,7 +265,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
           )}
           <button
             onClick={onFinish}
-            className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-xs"
+            className={buttonClass('primary', 'md')}
           >
             {t.newWords.backToDashboard}
           </button>
