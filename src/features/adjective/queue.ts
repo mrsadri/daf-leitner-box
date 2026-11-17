@@ -21,6 +21,18 @@ export function isTooOld(entry: PendingFinish, now: number, maxAgeMs: number = Q
   return now - entry.queuedAt > maxAgeMs;
 }
 
+/**
+ * What a finish_adjective_run response means for the queue. supabase-js does not throw on a network
+ * failure: it resolves with an error and HTTP status 0. Only the function's own refusals are final:
+ * 400 (raise exception: too early, too late, out of range, finished with other values) and 403 (errcode
+ * 42501: not the caller's run, suspended). Everything else is tried again later: no answer, a timeout,
+ * 401 (an expired session that is still being refreshed), 404 (the function isn't there yet) or a 5xx.
+ */
+export function classifyFinishResponse(res: { error: unknown; status?: number }): FlushOutcome {
+  if (!res.error) return 'accepted';
+  return res.status === 400 || res.status === 403 ? 'rejected' : 'network-error';
+}
+
 /** Whether a queued entry should stay queued after an attempt with this outcome. */
 export function keepAfterOutcome(outcome: FlushOutcome): boolean {
   return outcome === 'network-error';

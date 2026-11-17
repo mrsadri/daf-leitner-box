@@ -1,14 +1,16 @@
 /**
  * Leaderboard: all-time and weekly points, the user's own rank, silver cards; users can hide themselves in settings.
  */
-import React, { useCallback, useEffect, useState } from 'react';
-import { Trophy, RefreshCw, Flame, Crown, Medal, AlertTriangle, EyeOff } from 'lucide-react';
+import React, { Suspense, lazy, useCallback, useEffect, useState } from 'react';
+import { Trophy, RefreshCw, Flame, Crown, Medal, AlertTriangle, EyeOff, Loader2 } from 'lucide-react';
 import { buttonClass } from '../../shared/ui';
 import { fetchLeaderboard, LeaderboardRow, cloudSync } from '../../core/cloudSync';
 import { UserProfile } from '../../core/types';
 import { useI18n } from '../../i18n/I18nProvider';
 import { Auto } from '../../shared/ui/Text';
-import { AdjectiveBoard } from '../adjective/AdjectiveBoard';
+
+// The adjective records load only when that tab is opened
+const AdjectiveBoard = lazy(() => import('../adjective/AdjectiveBoard').then(m => ({ default: m.AdjectiveBoard })));
 
 export type LeaderboardTopTab = 'leitner' | 'adjective';
 
@@ -98,7 +100,9 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ profile, onOpenSetting
       )}
 
       {topTab === 'adjective' && showAdjective ? (
-        <AdjectiveBoard userId={profile.id} showOnLeaderboard={profile.showOnLeaderboard} />
+        <Suspense fallback={<div className="py-12 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-slate-400" aria-hidden /></div>}>
+          <AdjectiveBoard userId={profile.id} showOnLeaderboard={profile.showOnLeaderboard} />
+        </Suspense>
       ) : (
       <>
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">

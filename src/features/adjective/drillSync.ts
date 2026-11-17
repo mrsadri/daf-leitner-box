@@ -10,13 +10,15 @@
  */
 import { requireSupabase, supabase } from '../../shared/lib/supabase';
 import { isDemoMode } from '../../shared/lib/demo';
-import { isTooOld, keepAfterOutcome, type PendingFinish, type FlushOutcome } from './queue';
+import { isTooOld, keepAfterOutcome, classifyFinishResponse, type PendingFinish, type FlushOutcome } from './queue';
 import { mapBoardRow, mapMyBests, type AdjectiveBoardRow } from './boardMapping';
 
 export type { AdjectiveBoardRow } from './boardMapping';
 
 const queueKey = (uid: string) => `daf_adjective_queue_${uid}`;
 const demoRunsKey = 'daf_adjective_demo_runs';
+/** How long the start button waits for a run id before the run goes ahead as practice. */
+const START_TIMEOUT_MS = 10_000;
 
 function readQueue(uid: string): PendingFinish[] {
   try {
@@ -41,7 +43,7 @@ export async function startRun(): Promise<string | null> {
   if (isDemoMode) return `demo_${Date.now()}`;
   if (!supabase) return null;
   try {
-    const { data, error } = await supabase.rpc('start_adjective_run');
+    const { data, error } = await supabase.rpc('start_adjective_run').abortSignal(AbortSignal.timeout(START_TIMEOUT_MS));
     if (error || !data) return null;
     return data as string;
   } catch {
@@ -71,14 +73,15 @@ export async function flushQueue(uid: string): Promise<void> {
     if (isTooOld(p, Date.now())) continue; // too old: the server would reject it anyway
     let outcome: FlushOutcome;
     try {
-      const { error } = await db.rpc('finish_adjective_run', { p_id: p.id, p_score: p.score, p_answered: p.answered });
-      outcome = error ? 'rejected' : 'accepted';
+      outcome = classifyFinishResponse(await db.rpc('finish_adjective_run', { p_id: p.id, p_score: p.score, p_answered: p.answered }));
     } catch {
       outcome = 'network-error';
     }
     if (keepAfterOutcome(outcome)) keep.push(p);
   }
-  writeQueue(uid, keep);
+  // A run that finished while this flush was waiting on the network was queued meanwhile: keep it too
+  const sent = new Set(q.map(p => p.id));
+  writeQueue(uid, [...keep, ...readQueue(uid).filter(p => !sent.has(p.id))]);
 }
 
 /** Clears this device's pending queue (called on sign-out, so the next account doesn't inherit it). */

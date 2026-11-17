@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { isTooOld, keepAfterOutcome, QUEUE_MAX_AGE_MS, type PendingFinish } from '../src/features/adjective/queue.ts';
+import { isTooOld, keepAfterOutcome, classifyFinishResponse, QUEUE_MAX_AGE_MS, type PendingFinish } from '../src/features/adjective/queue.ts';
 import { mapBoardRow, mapMyBests } from '../src/features/adjective/boardMapping.ts';
 
 const entry = (queuedAt: number): PendingFinish => ({ id: 'r1', score: 5, answered: 10, queuedAt });
@@ -59,4 +59,15 @@ test('mapBoardRow: a missing top3 becomes an empty array, not a crash', () => {
 test('mapMyBests: nulls stay null, numeric strings become numbers', () => {
   assert.deepEqual(mapMyBests({ best_all: '14', best_week: null }), { myBestAll: 14, myBestWeek: null });
   assert.deepEqual(mapMyBests(undefined), { myBestAll: null, myBestWeek: null });
+});
+
+test('classifyFinishResponse: no network (status 0) and server errors are retried, only a 4xx refusal is final', () => {
+  assert.equal(classifyFinishResponse({ error: null, status: 204 }), 'accepted');
+  assert.equal(classifyFinishResponse({ error: { message: 'TypeError: Failed to fetch' }, status: 0 }), 'network-error');
+  assert.equal(classifyFinishResponse({ error: { message: 'aborted' } }), 'network-error');
+  assert.equal(classifyFinishResponse({ error: { message: 'bad gateway' }, status: 502 }), 'network-error');
+  assert.equal(classifyFinishResponse({ error: { message: 'JWT expired' }, status: 401 }), 'network-error');
+  assert.equal(classifyFinishResponse({ error: { message: 'function not found' }, status: 404 }), 'network-error');
+  assert.equal(classifyFinishResponse({ error: { code: 'P0001', message: 'finished too early' }, status: 400 }), 'rejected');
+  assert.equal(classifyFinishResponse({ error: { code: '42501', message: 'run not found' }, status: 403 }), 'rejected');
 });
