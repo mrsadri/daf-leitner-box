@@ -47,7 +47,7 @@ function AuthGate() {
         const {data:{subscription}}=supabase!.auth.onAuthStateChange((_event,nextSession)=>callback(nextSession));
         return ()=>subscription.unsubscribe();
       },
-      onSession:setSession,
+      onSession:nextSession=>{setFailed(false);setSession(nextSession);},
       onError:()=>setFailed(true),
     });
   // eslint-disable-next-line react/exhaustive-effect-dependencies -- The explicit retry token deliberately resubscribes and reloads Auth state.

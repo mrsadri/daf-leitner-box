@@ -21,7 +21,7 @@ Passing local acceptance is not the same as deployment. Tasks 13, 21, 22, 23 and
 
 ## Evidence
 
-- 226 Node tests; 68 demo browser tests; 14 SQL suites; 3 Deno tests.
+- 227 Node tests; 68 demo browser tests; 14 SQL suites; 3 Deno tests.
 - TypeScript/oxlint: zero warnings. Configured production build and schema/type/question/helper checks pass.
 - Native restore fixture: 10,011 cards, 5 users, 705 reviews, 1 story row. Backup 239,464 bytes; dump 0.081s; restore 0.118s; validation 0.08s. This is same-cluster synthetic evidence, not a production RTO/RPO.
 - Candidate-index benchmark p50: 60.26 → 59.45ms; p95: 63.99 → 60.52ms. No production index was added.

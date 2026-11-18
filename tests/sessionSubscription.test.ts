@@ -24,3 +24,11 @@ test('late errors cannot replace a newer sign-out or update a disposed mount',as
   await settle();if(dispose)off();else event(null);reject(new Error('stale'));await settle();assert.equal(errors,0);off();
  }
 });
+
+
+test('a subscription still accepts a fresh Auth event after its initial load fails',async()=>{
+ let event!: (value:string|null)=>void;const updates:(string|null)[]=[];let errors=0;
+ const off=subscribeSession<string>({load:async()=>{throw new Error('offline');},listen:callback=>{event=callback;return ()=>{};},onSession:session=>updates.push(session),onError:()=>{errors++;}});
+ await settle();assert.equal(errors,1);event('recovered-user');
+ assert.deepEqual(updates,['recovered-user']);off();
+});
