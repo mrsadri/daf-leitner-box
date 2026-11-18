@@ -12,7 +12,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 ## Coverage and status register
 
-**Correction:** 12 tasks remain incomplete overall. See [exact remaining requirements](06-incomplete-tasks.md). “Implemented locally” in earlier notes never establishes full task completion.
+**Current follow-up:** see [backlog acceptance evidence](09-backlog-acceptance.md). Five requested tasks pass local acceptance; the candidate still needs review/release. Tasks 13, 21, 22, 23 and 25 retain substantive external requirements.
 
 
 | ID | Priority | Phase | Task | Effort | Status |
@@ -24,24 +24,24 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 | 05 | P1 | C | [Define conflict handling for cards and settings across devices](#task-05) | L | Implemented locally |
 | 06 | P1 | C | [Make competitive results server-verifiable](#task-06) | L | Implemented locally |
 | 07 | P1 | D | [Validate push destinations before the privileged worker fetches them](#task-07) | M | Partial — acceptance pending |
-| 08 | P1 | B | [Bind sync state and pending requests to a single user session](#task-08) | M | Partial — acceptance pending |
+| 08 | P1 | B | [Bind sync state and pending requests to a single user session](#task-08) | M | Local acceptance passed; candidate review/release pending |
 | 09 | P1 | B | [Allow updates at the card quota and make limits concurrency-safe](#task-09) | M | Implemented locally |
 | 10 | P1 | A | [Run database authorization and migration tests in CI](#task-10) | M | Verified locally and in GitHub CI |
 | 11 | P2 | A | [Create one reproducible, versioned schema installation path](#task-11) | M | Partial — acceptance pending |
 | 12 | P2 | C | [Give story progress a current, constrained data model](#task-12) | M | Implemented locally; hosted data audit pending |
-| 13 | P2 | E | [Measure and reduce leaderboard aggregation cost](#task-13) | M | Partial — acceptance pending |
-| 14 | P2 | D | [Make reminder delivery bounded and safe to retry](#task-14) | M | Partial — acceptance pending |
+| 13 | P2 | E | [Measure and reduce leaderboard aggregation cost](#task-13) | M | Partial — semantic checks pass; staging measurement pending |
+| 14 | P2 | D | [Make reminder delivery bounded and safe to retry](#task-14) | M | Local acceptance passed; candidate review/release pending |
 | 15 | P2 | C | [Generate database types and validate persisted/imported data](#task-15) | M | Implemented locally |
-| 16 | P2 | D | [Add recoverable startup and screen error states](#task-16) | M | Partial — acceptance pending |
+| 16 | P2 | D | [Add recoverable startup and screen error states](#task-16) | M | Local acceptance passed; candidate review/release pending |
 | 17 | P2 | D | [Close lint warnings and split responsibilities at unstable boundaries](#task-17) | M | Implemented locally |
 | 18 | P1 | B | [Preview backup imports before replacing current cards](#task-18) | M | Implemented locally |
-| 19 | P2 | E | [Make unsynced work visible and actionable](#task-19) | M | Partial — acceptance pending |
-| 20 | P2 | E | [Simplify mobile navigation and preserve location in the URL](#task-20) | M | Partial — acceptance pending |
-| 21 | P2 | E | [Reduce reader tab stops and test nested dialog behavior](#task-21) | M | Partial — acceptance pending |
-| 22 | P2 | D | [Version browser security headers and verify deployed responses](#task-22) | M | Partial — acceptance pending |
-| 23 | P2 | A | [Track the current picomatch advisory and harden dependency maintenance](#task-23) | S | Open — dependency remediation pending |
+| 19 | P2 | E | [Make unsynced work visible and actionable](#task-19) | M | Local acceptance passed; candidate review/release pending |
+| 20 | P2 | E | [Simplify mobile navigation and preserve location in the URL](#task-20) | M | Local acceptance passed; candidate review/release pending |
+| 21 | P2 | E | [Reduce reader tab stops and test nested dialog behavior](#task-21) | M | Partial — keyboard checks pass; screen-reader observation pending |
+| 22 | P2 | D | [Version browser security headers and verify deployed responses](#task-22) | M | Partial — live headers/assets pass; OAuth/push/CSP disposition pending |
+| 23 | P2 | A | [Track the current picomatch advisory and harden dependency maintenance](#task-23) | S | Open — five audit findings; compatible upstream remediation pending |
 | 24 | P2 | E | [Clarify or expand what the backup actually contains](#task-24) | M | Implemented locally |
-| 25 | P2 | E | [Define offline availability and recovery expectations](#task-25) | M/L | Partial — restore pending; offline feature deferred |
+| 25 | P2 | E | [Define offline availability and recovery expectations](#task-25) | M/L | Partial — synthetic restore passes; hosted recovery targets pending |
 
 <a id="task-01"></a>
 
@@ -52,7 +52,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P1 · **Phase:** B · **Effort:** M  
 **Depends on:** G0; D1 for policy changes  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Implemented locally  
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Implemented locally
 **Original evidence:** Verified in source.
 
 **Why:** Users can lose streak, weekly-score, and silver-card credit even though their card updates were already uploaded.
@@ -79,7 +79,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P1 · **Phase:** C · **Effort:** L  
 **Depends on:** 10, 11; agreed contract with 05/06; D1–D3  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Implemented locally  
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Implemented locally
 **Original evidence:** Verified design gap.
 
 **Why:** Retries can inflate ranking and rewards; a partial failure can leave card state and review history inconsistent.
@@ -107,7 +107,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P1 · **Phase:** B · **Effort:** S  
 **Depends on:** G0  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Implemented locally  
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Implemented locally
 **Original evidence:** Reproduced with actual store logic and a mocked transport.
 
 **Why:** A learner can advance a page or complete a quiz and see the update locally without it reaching another device.
@@ -134,7 +134,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P1 · **Phase:** C · **Effort:** M  
 **Depends on:** 10, 11; agreed contract with 12; D4  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Implemented locally  
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Implemented locally
 **Original evidence:** Verified design gap; cross-device behavior inferred.
 
 **Why:** The documented guarantee that progress never goes backwards does not hold across concurrent devices.
@@ -161,7 +161,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P1 · **Phase:** C · **Effort:** L  
 **Depends on:** 10, 11; shared design with 02; D2  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Implemented locally  
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Implemented locally
 **Original evidence:** Verified design gap.
 
 **Why:** A stale offline device can undo newer reviews, settings, or server-side overdue demotions.
@@ -188,7 +188,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P1 · **Phase:** C · **Effort:** L  
 **Depends on:** 10, 11; shared design with 02; D3  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Implemented locally  
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Implemented locally
 **Original evidence:** Verified trust-boundary gap.
 
 **Why:** A signed-in user can fabricate their own competitive results and distort everyone’s rankings.
@@ -216,7 +216,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P1 · **Phase:** D · **Effort:** M  
 **Depends on:** G0; isolated endpoint test setup  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Partial — acceptance pending  
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Partial — acceptance pending
 **Original evidence:** Potential SSRF risk from source; not exploited.
 
 **Why:** The worker can become an outbound-request surface. Actual reachability depends on the web-push library and platform network controls; private-network access or secret disclosure was not demonstrated.
@@ -243,15 +243,15 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P1 · **Phase:** B · **Effort:** M  
 **Depends on:** G0  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Partial — acceptance pending  
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Local acceptance passed; candidate review/release pending
 **Original evidence:** Source-derived risk requiring an integration test.
 
 **Why:** Account changes or expired sessions could leave stale operations or startup results attached to the next session. This is a lifecycle risk, not a demonstrated cross-account breach.
 
-- [ ] **08.1** Reproduce account switching, token expiry, delayed startup, and unmount with pending writes. **AI: GPT-6.2 Astra · High.**
+- [x] **08.1** Reproduce account switching, token expiry, delayed startup, and unmount with pending writes. **AI: GPT-6.2 Astra · High.**
 - [x] **08.2** Bind queues, transport, and callbacks to a session instance or generation; cancel stale work. **AI: GPT-6.2 Astra · High.**
 - [x] **08.3** Define sign-out handling per feature; preserve or intentionally discard pending work only with clear user-facing semantics. **AI: GPT-6.2 Astra · High.**
-- [ ] **08.V** Pass and record [acceptance check V08](03-verification-checklist.md#v08). **AI: GPT-6.2 Astra · High.**
+- [x] **08.V** Pass and record [acceptance check V08](03-verification-checklist.md#v08). **AI: GPT-6.2 Astra · High.**
 
 **Acceptance:** Switch A→signed-out→B while A has pending writes and a delayed startup request; no A content may enter B’s engine or outgoing queue.
 
@@ -270,7 +270,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P1 · **Phase:** B · **Effort:** M  
 **Depends on:** 10; disposable SQL environment  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Implemented locally  
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Implemented locally
 **Original evidence:** Verified trigger defect.
 
 **Why:** Reaching the supported limit can prevent ordinary progress synchronization.
@@ -297,7 +297,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P1 · **Phase:** A · **Effort:** M  
 **Depends on:** G0  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Partial — acceptance pending  
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Partial — acceptance pending
 **Original evidence:** Verified coverage gap.
 
 **Why:** Frontend tests can stay green while a database migration breaks permissions or data integrity.
@@ -324,7 +324,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P2 · **Phase:** A · **Effort:** M  
 **Depends on:** G0; use 10 to verify the result  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Partial — acceptance pending  
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Partial — acceptance pending
 **Original evidence:** Verified maintainability gap.
 
 **Why:** A new environment can differ from a long-lived deployment, and editing duplicate definitions can introduce drift.
@@ -351,7 +351,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P2 · **Phase:** C · **Effort:** M  
 **Depends on:** 10, 11; D4; design together with 04  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Implemented locally; hosted data audit pending  
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Implemented locally; hosted data audit pending
 **Original evidence:** Verified schema gap.
 
 **Why:** The schema is harder to understand, accepts inconsistent rows, and does not synchronize all locally represented quiz information.
@@ -378,14 +378,14 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P2 · **Phase:** E · **Effort:** M  
 **Depends on:** 10, 11; representative staging data  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Partial — acceptance pending  
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Partial — semantic checks pass; staging measurement pending
 **Original evidence:** Optimization candidate; no production timings collected.
 
 **Why:** Latency and database cost may grow with historical events, even though the returned leaderboard is small.
 
 - [ ] **13.1** Seed representative staging volumes and capture EXPLAIN ANALYZE plus p50/p95 timings. **AI: GPT-6.2 Sol · High.**
 - [x] **13.2** Identify the actual scan cost before selecting date-led indexes, partial indexes, or daily aggregates. **AI: GPT-6.2 Sol · High.**
-- [ ] **13.3** Compare query plans and results before/after; verify hidden users, tie ranks, streaks, and silver counts. **AI: GPT-6.2 Sol · High.**
+- [x] **13.3** Compare query plans and results before/after; verify hidden users, tie ranks, streaks, and silver counts. **AI: GPT-6.2 Sol · High.**
 - [ ] **13.V** Pass and record [acceptance check V13](03-verification-checklist.md#v13). **AI: GPT-6.2 Sol · High.**
 
 **Acceptance:** Record p50/p95 timings and query plans at realistic volumes; demonstrate improvement without changing ranking results.
@@ -405,15 +405,15 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P2 · **Phase:** D · **Effort:** M  
 **Depends on:** 07, 10, 11  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Partial — acceptance pending  
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Local acceptance passed; candidate review/release pending
 **Original evidence:** Verified design gap.
 
 **Why:** One slow endpoint can delay the run; retries can annoy learners or increase delivery cost.
 
 - [x] **14.1** Define notification job identity, claim ownership, retry policy, and per-device outcomes. **AI: GPT-6.2 Astra · High.**
 - [x] **14.2** Add atomic claims, bounded concurrency, request timeouts, and privacy-safe operational metrics. **AI: GPT-6.2 Astra · High.**
-- [ ] **14.3** Simulate overlapping invocations and crashes around delivery/state updates; document any unavoidable duplicate-delivery window. **AI: GPT-6.2 Astra · High.**
-- [ ] **14.V** Pass and record [acceptance check V14](03-verification-checklist.md#v14). **AI: GPT-6.2 Astra · High.**
+- [x] **14.3** Simulate overlapping invocations and crashes around delivery/state updates; document any unavoidable duplicate-delivery window. **AI: GPT-6.2 Astra · High.**
+- [x] **14.V** Pass and record [acceptance check V14](03-verification-checklist.md#v14). **AI: GPT-6.2 Astra · High.**
 
 **Acceptance:** Overlap two invocations and inject a timeout/crash; verify bounded duration and controlled duplicate behavior.
 
@@ -432,7 +432,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P2 · **Phase:** C · **Effort:** M  
 **Depends on:** 11; agree evolving RPC contracts with 02/04/06  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Implemented locally  
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Implemented locally
 **Original evidence:** Verified maintainability gap.
 
 **Why:** Schema drift and malformed cached/backed-up settings can reach runtime despite TypeScript checks.
@@ -459,7 +459,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P2 · **Phase:** D · **Effort:** M  
 **Depends on:** G0  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Partial — acceptance pending  
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Local acceptance passed; candidate review/release pending
 **Original evidence:** Verified gap.
 
 **Why:** A transient failure can look like an empty catalog, a stuck loader, or a blank app.
@@ -467,7 +467,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 - [x] **16.1** Define loading, ready, recoverable-error, and retry states for session, catalog, and lazy screens. **AI: GPT-6.2 Sol · High.**
 - [x] **16.2** Add feature error boundaries and startup rejection handling; distinguish missing catalog data from an empty list. **AI: GPT-6.2 Sol · High.**
 - [x] **16.3** Inject failures and verify understandable Persian/English recovery controls without discarding queued progress. **AI: GPT-6.2 Sol · High.**
-- [ ] **16.V** Pass and record [acceptance check V16](03-verification-checklist.md#v16). **AI: GPT-6.2 Sol · High.**
+- [x] **16.V** Pass and record [acceptance check V16](03-verification-checklist.md#v16). **AI: GPT-6.2 Sol · High.**
 
 **Acceptance:** Fail session initialization, catalog loading, and a lazy chunk independently; users receive a clear retry path and other screens remain usable where possible.
 
@@ -486,7 +486,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P2 · **Phase:** D · **Effort:** M  
 **Depends on:** Passing baseline; stabilize 08 before sync refactoring  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Implemented locally  
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Implemented locally
 **Original evidence:** Observed: lint succeeds with 19 warnings.
 
 **Why:** Behavior changes are harder to isolate and effect regressions are easy to miss.
@@ -513,7 +513,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P1 · **Phase:** B · **Effort:** M  
 **Depends on:** G0; D5; shared validation contract with 15 (do not wait for all generated types)  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Implemented locally  
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Implemented locally
 **Original evidence:** Verified destructive UX path.
 
 **Why:** Choosing an old or wrong file can remove current progress and propagate that change to the cloud.
@@ -540,15 +540,15 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P2 · **Phase:** E · **Effort:** M  
 **Depends on:** 03, 08; status contracts for 02/04/05  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Partial — acceptance pending  
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Local acceptance passed; candidate review/release pending
 **Original evidence:** Verified UI limitation.
 
 **Why:** Users can assume work is synchronized when a feature’s queue is still failing, particularly on touch devices without hover.
 
 - [x] **19.1** Expose pending count, last success, errors, and retry state consistently for cards, stories, and drills. **AI: GPT-6.2 Sol · Medium.**
 - [x] **19.2** Add visible status and retry controls with meaningful accessible announcements. **AI: GPT-6.2 Sol · Medium.**
-- [ ] **19.3** Test storage-full, offline, rejected, and partially completed saves; explain pending work before sign-out. **AI: GPT-6.2 Sol · Medium.**
-- [ ] **19.V** Pass and record [acceptance check V19](03-verification-checklist.md#v19). **AI: GPT-6.2 Sol · Medium.**
+- [x] **19.3** Test storage-full, offline, rejected, and partially completed saves; explain pending work before sign-out. **AI: GPT-6.2 Sol · Medium.**
+- [x] **19.V** Pass and record [acceptance check V19](03-verification-checklist.md#v19). **AI: GPT-6.2 Sol · Medium.**
 
 **Acceptance:** Simulated offline and rejected saves produce visible, accurate feedback for cards, stories, and drills.
 
@@ -567,7 +567,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P2 · **Phase:** E · **Effort:** M  
 **Depends on:** Working browser validation; D7  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Partial — acceptance pending  
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Local acceptance passed; candidate review/release pending
 **Original evidence:** Source-based UX recommendation; visual validation pending.
 
 **Why:** Labels may be hard to scan on small screens, and browser Back/refresh cannot reliably restore a learner’s location.
@@ -575,7 +575,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 - [x] **20.1** Review current mobile navigation at 320/390px, with large text, in Persian and English. **AI: GPT-6.2 Sol · Medium.**
 - [x] **20.2** Choose a compact primary-navigation structure through observed usability; retain access to every destination. **AI: GPT-6.2 Sol · Medium.**
 - [x] **20.3** Add URL-backed navigation and focus handling; preserve drill-abandon confirmation and validate Back/forward/reload/deep links. **AI: GPT-6.2 Sol · Medium.**
-- [ ] **20.V** Pass and record [acceptance check V20](03-verification-checklist.md#v20). **AI: GPT-6.2 Sol · Medium.**
+- [x] **20.V** Pass and record [acceptance check V20](03-verification-checklist.md#v20). **AI: GPT-6.2 Sol · Medium.**
 
 **Acceptance:** At 320/390px and large text, primary destinations are clear; Back, forward, refresh, and a shared story link behave predictably.
 
@@ -594,15 +594,15 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P2 · **Phase:** E · **Effort:** M  
 **Depends on:** Working browser and screen-reader validation  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Partial — acceptance pending  
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Partial — keyboard checks pass; screen-reader observation pending
 **Original evidence:** Verified implementation patterns; usability impact needs browser testing.
 
 **Why:** Keyboard readers can face dozens of stops per paragraph; nested dialogs can compete for Escape/focus handling.
 
 - [ ] **21.1** Observe reader keyboard traversal and screen-reader output before selecting the interaction. **AI: GPT-6.2 Sol · High.**
 - [x] **21.2** Add a clear path to reading/page controls and intentional word navigation; keep word lookup keyboard accessible. **AI: GPT-6.2 Sol · High.**
-- [ ] **21.3** Manage the topmost modal, background interaction, Escape, and focus restoration; test nested dialogs in both languages. **AI: GPT-6.2 Sol · High.**
-- [ ] **21.V** Pass and record [acceptance check V21](03-verification-checklist.md#v21). **AI: GPT-6.2 Sol · High.**
+- [x] **21.3** Manage the topmost modal, background interaction, Escape, and focus restoration; test nested dialogs in both languages. **AI: GPT-6.2 Sol · High.**
+- [x] **21.V** Pass and record [acceptance check V21](03-verification-checklist.md#v21). **AI: GPT-6.2 Sol · High.**
 
 **Acceptance:** A reader can reach page controls efficiently; Escape closes only the topmost dialog and focus returns correctly.
 
@@ -621,12 +621,12 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P2 · **Phase:** D · **Effort:** M  
 **Depends on:** Working staging deployment; resource inventory  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Partial — acceptance pending  
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Partial — live headers/assets pass; OAuth/push/CSP disposition pending
 **Original evidence:** Repository configuration gap; live headers unverified.
 
 **Why:** Explicit headers reduce the impact of script injection and unwanted embedding for an app with browser-held sessions and private cards.
 
-- [ ] **22.1** Inventory deployed/staging response headers and required resource origins. **AI: GPT-6.2 Astra · High.**
+- [x] **22.1** Inventory deployed/staging response headers and required resource origins. **AI: GPT-6.2 Astra · High.**
 - [x] **22.2** Version a report-only CSP and other appropriate headers, then review violations before enforcement. **AI: GPT-6.2 Astra · High.**
 - [ ] **22.3** Test OAuth, Supabase calls, images, fonts, workers, push, framing protection, and the policy rollback. **AI: GPT-6.2 Astra · High.**
 - [ ] **22.V** Pass and record [acceptance check V22](03-verification-checklist.md#v22). **AI: GPT-6.2 Astra · High.**
@@ -648,7 +648,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P2 · **Phase:** A · **Effort:** S  
 **Depends on:** G0; fresh advisory check  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Open — dependency remediation pending  
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Open — five audit findings; compatible upstream remediation pending
 **Original evidence:** Confirmed by npm audit and upstream advisory.
 
 **Why:** Build/development tools still need security maintenance, but six affected packages should not be mistaken for six independent application vulnerabilities.
@@ -675,7 +675,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P2 · **Phase:** E · **Effort:** M  
 **Depends on:** 18; D5; schema decisions from 12  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Implemented locally  
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Implemented locally
 **Original evidence:** Verified scope mismatch risk.
 
 **Why:** A user may interpret a general backup as a complete copy and discover missing progress during recovery.
@@ -702,7 +702,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P2 · **Phase:** E · **Effort:** M/L  
 **Depends on:** 10, 11; D6; coordinate cache policy with 22  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Partial — restore pending; offline feature deferred  
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Partial — synthetic restore passes; hosted recovery targets pending
 **Original evidence:** Verified design limitation; deployment checks pending.
 
 **Why:** Learners may confuse offline persistence with being able to reopen the app offline; operators also need a tested recovery path.

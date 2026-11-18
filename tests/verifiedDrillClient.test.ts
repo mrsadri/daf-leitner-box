@@ -13,7 +13,7 @@ test('verified drill sends issued answers and adopts the server score rather tha
   const calls:{name:string;args:Record<string,unknown>}[]=[];let lost=true;
   const db={rpc(name:string,args:Record<string,unknown>={}){
     calls.push({name,args});let data:unknown=null,error:unknown=null,status=200;
-    if(name==='start_verified_adjective_run')data={id,durationMs:300000,questions:Array.from({length:150},(_,ordinal)=>({ordinal,params}))};
+    if(name==='start_scoped_adjective_run')data={id,durationMs:300000,questions:Array.from({length:150},(_,ordinal)=>({ordinal,params}))};
     if(name==='answer_verified_adjective'){
       if(lost){lost=false;error={message:'response lost'};status=0;}else data={accepted:true,correct:true};
     }
@@ -21,6 +21,7 @@ test('verified drill sends issued answers and adopts the server score rather tha
     const response={data,error,status};return Object.assign(Promise.resolve(response),{abortSignal:()=>Promise.resolve(response)});
   }};
   assert.equal(await api.startRun('owner',db),id);
+  assert.deepEqual(calls.find(c=>c.name==='start_scoped_adjective_run')?.args,{p_expected_user:'owner'});
   assert.equal(api.issuedRound(id,0).phrase.article.full,'der');
   assert.equal(await api.submitRunAnswer(id,0,{article:'er',adjective:'e',noun:''}),true);
   const answers=calls.filter(c=>c.name==='answer_verified_adjective');assert.equal(answers.length,2);assert.deepEqual(answers[0].args,answers[1].args);

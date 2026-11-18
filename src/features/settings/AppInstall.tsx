@@ -194,19 +194,20 @@ export const InstallBanner: React.FC<{ onShowHow: () => void }> = ({ onShowHow }
   };
 
   return (
-    <div className="flex items-center gap-3 p-3.5 bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 rounded-2xl text-xs">
+    <div data-testid="install-banner" className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-3 p-3.5 bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 rounded-2xl text-xs">
       <Smartphone className="w-5 h-5 text-indigo-600 shrink-0" />
-      <div className="flex-1 min-w-0">
+      <div data-testid="install-banner-copy" className="min-w-0">
         <p className="font-bold text-indigo-900 dark:text-indigo-200">{t.pwa.bannerTitle}</p>
         <p className="text-indigo-700 dark:text-indigo-300">{t.pwa.bannerBody}</p>
       </div>
       <button
         onClick={() => (canPromptInstall() ? promptInstall() : onShowHow())}
-        className={cx(buttonClass('primary', 'sm'), 'shrink-0')}
+        data-testid="install-banner-action"
+        className={cx(buttonClass('primary', 'sm'), 'col-span-3 row-start-2 w-full')}
       >
         {canPromptInstall() ? t.pwa.installButton : t.pwa.bannerHow}
       </button>
-      <button onClick={dismiss} aria-label={t.pwa.dismiss} className="p-1 text-indigo-400 hover:text-indigo-700 shrink-0">
+      <button onClick={dismiss} aria-label={t.pwa.dismiss} className="col-start-3 row-start-1 p-1 text-indigo-400 hover:text-indigo-700 shrink-0">
         <X className="w-4 h-4" />
       </button>
     </div>

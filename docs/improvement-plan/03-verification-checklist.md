@@ -12,7 +12,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 ## Current evidence
 
-See [progress](04-progress.md) for current counts/commands and [owner handoff](05-owner-handoff.md) for remaining gates. No hosted verification or independent review is claimed.
+See [progress](04-progress.md) for current counts/commands and [owner handoff](05-owner-handoff.md) for remaining gates. PR #32 release evidence is recorded separately; the new follow-up uses local acceptance and anonymous public HTTP checks. No independent human review is claimed.
 
 ## Environment and baseline
 
@@ -128,10 +128,10 @@ See [progress](04-progress.md) for current counts/commands and [owner handoff](0
 **Verification AI:** GPT-6.2 Astra · High
 
 
-- [ ] Switch A→signed-out→B while A has pending writes and a delayed startup request; no A content may enter B’s engine or outgoing queue. **AI: GPT-6.2 Astra · High.**
-- [ ] Evidence recorded and assessed against the original confidence level: Source-derived risk requiring an integration test. **AI: GPT-6.2 Astra · High.**
+- [x] Switch A→signed-out→B while A has pending writes and a delayed startup request; no A content may enter B’s engine or outgoing queue. **AI: GPT-6.2 Astra · High.**
+- [x] Evidence recorded and assessed against the original confidence level: Source-derived risk requiring an integration test. **AI: GPT-6.2 Astra · High.**
 
-**Result:** Pending · **Commit/environment:** — · **Evidence:** — · **Reviewer:** —  
+**Result:** Local acceptance pass · **Commit/environment:** candidate `codex/backlog-acceptance`; synthetic transports/PostgreSQL/demo browser · **Evidence:** [follow-up report](09-backlog-acceptance.md) · **Reviewer:** coding agent; not a human screen-reader review
 [Implementation tasks](02-todo.md#task-08)
 
 <a id="v09"></a>
@@ -206,10 +206,10 @@ See [progress](04-progress.md) for current counts/commands and [owner handoff](0
 **Verification AI:** GPT-6.2 Astra · High
 
 
-- [ ] Overlap two invocations and inject a timeout/crash; verify bounded duration and controlled duplicate behavior. **AI: GPT-6.2 Astra · High.**
-- [ ] Evidence recorded and assessed against the original confidence level: Verified design gap. **AI: GPT-6.2 Astra · High.**
+- [x] Overlap two invocations and inject a timeout/crash; verify bounded duration and controlled duplicate behavior. **AI: GPT-6.2 Astra · High.**
+- [x] Evidence recorded and assessed against the original confidence level: Verified design gap. **AI: GPT-6.2 Astra · High.**
 
-**Result:** Pending · **Commit/environment:** — · **Evidence:** — · **Reviewer:** —  
+**Result:** Local acceptance pass · **Commit/environment:** candidate `codex/backlog-acceptance`; synthetic transports/PostgreSQL/demo browser · **Evidence:** [follow-up report](09-backlog-acceptance.md) · **Reviewer:** coding agent; not a human screen-reader review
 [Implementation tasks](02-todo.md#task-14)
 
 <a id="v15"></a>
@@ -232,10 +232,10 @@ See [progress](04-progress.md) for current counts/commands and [owner handoff](0
 **Verification AI:** GPT-6.2 Sol · High
 
 
-- [ ] Fail session initialization, catalog loading, and a lazy chunk independently; users receive a clear retry path and other screens remain usable where possible. **AI: GPT-6.2 Sol · High.**
-- [ ] Evidence recorded and assessed against the original confidence level: Verified gap. **AI: GPT-6.2 Sol · High.**
+- [x] Fail session initialization, catalog loading, and a lazy chunk independently; users receive a clear retry path and other screens remain usable where possible. **AI: GPT-6.2 Sol · High.**
+- [x] Evidence recorded and assessed against the original confidence level: Verified gap. **AI: GPT-6.2 Sol · High.**
 
-**Result:** Pending · **Commit/environment:** — · **Evidence:** — · **Reviewer:** —  
+**Result:** Local acceptance pass · **Commit/environment:** candidate `codex/backlog-acceptance`; synthetic transports/PostgreSQL/demo browser · **Evidence:** [follow-up report](09-backlog-acceptance.md) · **Reviewer:** coding agent; not a human screen-reader review
 [Implementation tasks](02-todo.md#task-16)
 
 <a id="v17"></a>
@@ -271,10 +271,10 @@ See [progress](04-progress.md) for current counts/commands and [owner handoff](0
 **Verification AI:** GPT-6.2 Sol · High
 
 
-- [ ] Simulated offline and rejected saves produce visible, accurate feedback for cards, stories, and drills. **AI: GPT-6.2 Sol · High.**
-- [ ] Evidence recorded and assessed against the original confidence level: Verified UI limitation. **AI: GPT-6.2 Sol · High.**
+- [x] Simulated offline and rejected saves produce visible, accurate feedback for cards, stories, and drills. **AI: GPT-6.2 Sol · High.**
+- [x] Evidence recorded and assessed against the original confidence level: Verified UI limitation. **AI: GPT-6.2 Sol · High.**
 
-**Result:** Pending · **Commit/environment:** — · **Evidence:** — · **Reviewer:** —  
+**Result:** Local acceptance pass · **Commit/environment:** candidate `codex/backlog-acceptance`; synthetic transports/PostgreSQL/demo browser · **Evidence:** [follow-up report](09-backlog-acceptance.md) · **Reviewer:** coding agent; not a human screen-reader review
 [Implementation tasks](02-todo.md#task-19)
 
 <a id="v20"></a>
@@ -284,10 +284,10 @@ See [progress](04-progress.md) for current counts/commands and [owner handoff](0
 **Verification AI:** GPT-6.2 Sol · High
 
 
-- [ ] At 320/390px and large text, primary destinations are clear; Back, forward, refresh, and a shared story link behave predictably. **AI: GPT-6.2 Sol · High.**
-- [ ] Evidence recorded and assessed against the original confidence level: Source-based UX recommendation; visual validation pending. **AI: GPT-6.2 Sol · High.**
+- [x] At 320/390px and large text, primary destinations are clear; Back, forward, refresh, and a shared story link behave predictably. **AI: GPT-6.2 Sol · High.**
+- [x] Evidence recorded and assessed against the original confidence level: Source-based UX recommendation; visual validation pending. **AI: GPT-6.2 Sol · High.**
 
-**Result:** Pending · **Commit/environment:** — · **Evidence:** — · **Reviewer:** —  
+**Result:** Local acceptance pass · **Commit/environment:** candidate `codex/backlog-acceptance`; synthetic transports/PostgreSQL/demo browser · **Evidence:** [follow-up report](09-backlog-acceptance.md) · **Reviewer:** coding agent; not a human screen-reader review
 [Implementation tasks](02-todo.md#task-20)
 
 <a id="v21"></a>
@@ -297,10 +297,10 @@ See [progress](04-progress.md) for current counts/commands and [owner handoff](0
 **Verification AI:** GPT-6.2 Sol · High
 
 
-- [ ] A reader can reach page controls efficiently; Escape closes only the topmost dialog and focus returns correctly. **AI: GPT-6.2 Sol · High.**
-- [ ] Evidence recorded and assessed against the original confidence level: Verified implementation patterns; usability impact needs browser testing. **AI: GPT-6.2 Sol · High.**
+- [x] A reader can reach page controls efficiently; Escape closes only the topmost dialog and focus returns correctly. **AI: GPT-6.2 Sol · High.**
+- [x] Evidence recorded and assessed against the original confidence level: Verified implementation patterns; usability impact needs browser testing. **AI: GPT-6.2 Sol · High.**
 
-**Result:** Pending · **Commit/environment:** — · **Evidence:** — · **Reviewer:** —  
+**Result:** Local acceptance pass · **Commit/environment:** candidate `codex/backlog-acceptance`; synthetic transports/PostgreSQL/demo browser · **Evidence:** [follow-up report](09-backlog-acceptance.md) · **Reviewer:** coding agent; not a human screen-reader review
 [Implementation tasks](02-todo.md#task-21)
 
 <a id="v22"></a>

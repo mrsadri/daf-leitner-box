@@ -328,6 +328,7 @@ export const en: Messages = {
     retry: 'Try again',
     saveStatus: { pending: 'Story progress is waiting to save.', saving: 'Saving story progress…', error: 'Story progress has not synced. Try again.' },
     pendingCount: (count: number) => `${n(count)} story saves waiting.`,
+    wordNavigation: 'Word lookup',
     keyboardWords: 'Use left and right arrows to choose a word, Enter to look it up, and Tab to leave the text.',
     tapHint: 'Tap any word to see what it means.',
     legend: { m: 'masculine (der)', f: 'feminine (die)', n: 'neuter (das)', pl: 'plural', lesson: 'lesson word' },

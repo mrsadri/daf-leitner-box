@@ -12,10 +12,10 @@ const GENDER_CLASS = { m: 'gender-m', f: 'gender-f', n: 'gender-n', pl: 'gender-
 const wordClass = 'rounded-sm px-[1px] -mx-[1px] cursor-pointer hover:bg-amber-200/60 dark:hover:bg-amber-500/25 focus-visible:outline-2 focus-visible:outline-amber-500';
 
 export const StoryText: React.FC<{ page: Page; onWord: (w: WordSegment | string) => void; className?: string }> = ({ page, onWord, className = '' }) => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const hint = useId();
   return (
-  <div data-word-navigation role="toolbar" tabIndex={0} aria-describedby={hint}
+  <div data-word-navigation role="toolbar" aria-label={t.stories.wordNavigation} aria-keyshortcuts="ArrowLeft ArrowRight Home End" tabIndex={0} aria-describedby={hint}
     onKeyDown={e => {
       if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
       const words = [...e.currentTarget.querySelectorAll<HTMLElement>('[role=button]')];
@@ -25,7 +25,7 @@ export const StoryText: React.FC<{ page: Page; onWord: (w: WordSegment | string)
         : Math.max(0, Math.min(words.length - 1, index + (e.key === 'ArrowRight' ? 1 : -1)));
       e.preventDefault(); e.stopPropagation(); words[next].focus();
     }} dir="ltr" lang="de" className={`font-story text-ink text-xl sm:text-[1.375rem] leading-[1.9] space-y-4 text-start ${className}`}>
-    <span id={hint} className="sr-only">{t.stories.keyboardWords}</span>
+    <span id={hint} lang={lang} dir={lang === 'fa' ? 'rtl' : 'ltr'} className="sr-only">{t.stories.keyboardWords}</span>
     {page.map((para, i) => (
       <p key={i}>
         {para.map((seg, j) => {

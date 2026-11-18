@@ -26,6 +26,8 @@ const issuedRuns = new Map<string, IssuedRun>();
 const syncListeners = new Map<string, Set<() => void>>();
 const lastResults = new Map<string, VerifiedResult>();
 const queueErrors = new Set<string>();
+const sessionRevisions=new Map<string,number>();
+const revisionOf=(uid:string)=>sessionRevisions.get(uid)??0;
 const inFlight = new Map<string, Promise<VerifiedResult[]>>();
 const notify = (uid: string) => syncListeners.get(uid)?.forEach(fn => fn());
 export function onDrillSync(uid: string, fn: () => void) {
@@ -45,20 +47,23 @@ export function submitRunAnswer(id: string, ordinal: number, answers: { article?
   const run = issuedRuns.get(id);
   if (!run) return Promise.resolve(false);
   const db = run.db;
+  const active=()=>issuedRuns.get(id)===run;
   let accepted = false;
   run.pending++; notify(run.userId);
   const work = run.chain.then(async () => {
     for (let attempt=0; attempt<2; attempt++) {
+      if(!active())return;
       try {
         const result = await db.rpc('answer_verified_adjective', { p_run:id, p_ordinal:ordinal,
           p_answers: { article:answers.article??null, adjective:answers.adjective??null, noun:answers.noun??null } })
           .abortSignal(AbortSignal.timeout(5000));
+        if(!active())return;
         if (!result.error) { accepted = true; return; }
         if (result.status === 400 || result.status === 403) return;
       } catch { /* one retry uses the same immutable answer identity */ }
     }
   });
-  run.chain = work.catch(() => {}).finally(() => { run.pending--; if (!accepted) queueErrors.add(run.userId); notify(run.userId); });
+  run.chain = work.catch(() => {}).finally(() => { run.pending--; if(active()){if (!accepted) queueErrors.add(run.userId); notify(run.userId);} });
   return run.chain.then(() => accepted);
 }
 
@@ -83,10 +88,11 @@ function writeQueue(uid: string, q: PendingFinish[]) {
 export async function startRun(uid: string, db = supabase): Promise<string | null> {
   if (isDemoMode) return `demo_${Date.now()}`;
   if (!db) return null;
+  const generation=revisionOf(uid);
   try {
     const began = Date.now();
-    const { data, error } = await db.rpc('start_verified_adjective_run').abortSignal(AbortSignal.timeout(START_TIMEOUT_MS));
-    if (error || !data) return null;
+    const { data, error } = await db.rpc('start_scoped_adjective_run', {p_expected_user:uid}).abortSignal(AbortSignal.timeout(START_TIMEOUT_MS));
+    if (generation!==revisionOf(uid)||error || !data) return null;
     const result = data as unknown as { id: string; questions: { ordinal:number; params:DeclineParams }[]; durationMs:number };
     if (typeof result.id !== 'string' || result.questions.length !== 150) return null;
     const questions = result.questions.map(q => ({ ...q.params, id:`verified_${q.ordinal}`, phrase:declinePhrase(q.params) }));
@@ -112,22 +118,26 @@ export function queueFinish(uid: string, result: { id: string; score: number; an
 /** Sends every queued result. Safe to call repeatedly (idempotent on the server) and concurrently. */
 export function flushQueue(uid: string, db = supabase): Promise<VerifiedResult[]> {
   const existing = inFlight.get(uid); if (existing) return existing;
-  const promise = flushQueueImpl(uid, db).catch(error => { queueErrors.add(uid); throw error; }).finally(() => { inFlight.delete(uid); notify(uid); });
+  const generation=revisionOf(uid);
+  const promise = flushQueueImpl(uid, db, generation).catch(error => { if(generation===revisionOf(uid))queueErrors.add(uid); throw error; }).finally(() => { if(inFlight.get(uid)===promise)inFlight.delete(uid); if(generation===revisionOf(uid))notify(uid); });
   inFlight.set(uid,promise); return promise;
 }
-async function flushQueueImpl(uid: string, db: typeof supabase): Promise<VerifiedResult[]> {
+async function flushQueueImpl(uid: string, db: typeof supabase, generation:number): Promise<VerifiedResult[]> {
   if (isDemoMode || !db) return [];
   const accepted: VerifiedResult[] = [];
   const q = readQueue(uid);
   if (q.length === 0) return [];
   const keep: PendingFinish[] = [];
   for (const p of q) {
+    if(generation!==revisionOf(uid))return [];
     if (isTooOld(p, Date.now())) continue; // too old: the server would reject it anyway
     let outcome: FlushOutcome;
     try {
       await issuedRuns.get(p.id)?.chain;
+      if(generation!==revisionOf(uid))return [];
       if (p.protocol === 'verified') {
         const result = await db.rpc('finish_verified_adjective_run', { p_id:p.id });
+        if(generation!==revisionOf(uid))return [];
         outcome = classifyFinishResponse(result);
         if (result.error?.message.includes('finished too early')) outcome='network-error';
         if (!result.error && result.data?.[0]) {
@@ -140,6 +150,7 @@ async function flushQueueImpl(uid: string, db: typeof supabase): Promise<Verifie
     if (keepAfterOutcome(outcome)) keep.push(p);
   }
   // A run that finished while this flush was waiting on the network was queued meanwhile: keep it too
+  if(generation!==revisionOf(uid))return [];
   const sent = new Set(q.map(p => p.id));
   writeQueue(uid, [...keep, ...readQueue(uid).filter(p => !sent.has(p.id))]);
   if (keep.length) { queueErrors.add(uid); notify(uid); }
@@ -148,9 +159,11 @@ async function flushQueueImpl(uid: string, db: typeof supabase): Promise<Verifie
 
 /** Clears this device's pending queue (called on sign-out, so the next account doesn't inherit it). */
 export function clearQueue(uid: string): void {
-  writeQueue(uid, []);
+  sessionRevisions.set(uid,revisionOf(uid)+1);
+  inFlight.delete(uid);
   for (const [id,run] of issuedRuns) if (run.userId===uid) issuedRuns.delete(id);
-  lastResults.delete(uid); queueErrors.delete(uid); notify(uid);
+  lastResults.delete(uid); queueErrors.delete(uid);
+  writeQueue(uid, []);
 }
 
 const bestKey = (uid: string) => `daf_adjective_best_${uid}`;

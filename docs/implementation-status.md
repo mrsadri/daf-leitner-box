@@ -1,3 +1,7 @@
+## New backlog candidate
+
+See [acceptance follow-up](improvement-plan/09-backlog-acceptance.md). Auth/drill lifecycle fixes, mobile layout repair, full worker tests, ranking semantic checks and a native synthetic restore rehearsal are prepared on `codex/backlog-acceptance`. These new candidate changes are not deployed; earlier PR #32 release evidence remains historical below.
+
 # Implementation progress — 18 November 2026
 
 All current changes are in `/Users/masih/Documents/Codex/2026-11-18/i-x20/daf-leitner-box`.
