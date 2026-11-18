@@ -47,3 +47,23 @@ test('app dialog: new card opens from the header and closes with Esc', async ({ 
   await expect(opener).toBeFocused();
   expect(errors).toEqual([]);
 });
+
+
+for(const lang of ['fa','en'] as const) {
+test(`nested dialogs close only the top layer and restore its opener (${lang})`, async ({page})=>{
+ await page.addInitScript(l=>localStorage.setItem('daf_lang',l),lang);
+ await page.goto('/?gallery=1');
+ await page.getByTestId('open-dialog').click();
+ const parent=page.getByRole('dialog',{name:'Dialog title',exact:true});
+ const opener=parent.getByRole('button',{name:'Open nested dialog'});
+ await opener.click();
+ await expect(page.getByRole('dialog',{name:'Nested dialog',exact:true})).toBeVisible();
+ await page.keyboard.press('Escape');
+ await expect(page.getByRole('dialog',{name:'Nested dialog',exact:true})).toHaveCount(0);
+ await expect(parent).toBeVisible();
+ await expect(opener).toBeFocused();
+ await page.keyboard.press('Escape');
+ await expect(parent).toHaveCount(0);
+});
+
+}

@@ -15,3 +15,8 @@ test('old dictation rows are ignored', () => {
   assert.equal(isStoryId('S10-Q6'), true);
   assert.equal(fromRow({ story_id: 'story-01', finished_count: 3, total_count: 9, completed_at: null, last_active_at: 'x' }), null);
 });
+
+test('quiz scores round trip with the story row', () => {
+  const p = { storyId: 'S01-Q1', page: 2, totalPages: 3, score: 2, completedAt: '2026-11-18T10:00:00Z', updatedAt: '2026-11-18T10:00:00Z' };
+  assert.deepEqual(fromRow(toRow(p, 'v2')), p);
+});

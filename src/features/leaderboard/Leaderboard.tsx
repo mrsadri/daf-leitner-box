@@ -65,6 +65,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ profile, onOpenSetting
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react/set-state-in-effect -- A period change starts an external query; its loading state is intentional.
     load(period);
   }, [period, load]);
 

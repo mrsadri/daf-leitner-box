@@ -11,6 +11,7 @@ import { supabase, isSupabaseConfigured } from '../shared/lib/supabase';
 import { isDemoMode, DEMO_USER } from '../shared/lib/demo';
 import { LoginScreen, SetupRequired } from '../features/auth/LoginScreen';
 import { useI18n } from '../i18n/I18nProvider';
+import { RecoveryMessage } from '../shared/ui/RecoveryBoundary';
 import { FullScreenLoader } from '../shared/ui/FullScreenLoader';
 import { LeitnerApp } from './LeitnerApp';
 
@@ -32,19 +33,26 @@ function AuthGate() {
   // undefined = still checking the stored session
   const [session, setSession] = useState<Session | null | undefined>(undefined);
 
+  const [failed, setFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
-    supabase!.auth.getSession().then(({ data }) => setSession(data.session));
+    let live = true;
+    supabase!.auth.getSession().then(({ data, error }) => { if (!live) return; if (error) setFailed(true); else setSession(data.session); }).catch(() => { if (live) setFailed(true); });
     const { data: { subscription } } = supabase!.auth.onAuthStateChange((_event, s) => setSession(s));
-    return () => subscription.unsubscribe();
-  }, []);
+    return () => { live = false; subscription.unsubscribe(); };
+  // eslint-disable-next-line react/exhaustive-effect-dependencies -- The explicit retry token deliberately resubscribes and reloads Auth state.
+  }, [attempt]);
 
   useEffect(() => {
     // Remove ?code=… / ?error=… left by the OAuth redirect once the session is established
     if (session && window.location.search) {
-      window.history.replaceState(null, '', window.location.pathname);
+      const url = new URL(window.location.href);
+      for (const key of ['code', 'error', 'error_description', 'error_code']) url.searchParams.delete(key);
+      window.history.replaceState(null, '', url);
     }
   }, [session]);
 
+  if (failed) return <RecoveryMessage onRetry={() => { setFailed(false); setAttempt(a => a + 1); }} />;
   if (session === undefined) return <FullScreenLoader text={t.app.checkingSignIn} />;
   if (!session) return <LoginScreen />;
   // Keyed by user id so switching accounts starts from a clean state

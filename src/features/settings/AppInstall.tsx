@@ -88,6 +88,7 @@ export const NotificationSection: React.FC<NotificationSectionProps> = ({ notify
     let alive = true;
     getPushStatus().then(s => alive && setStatus(s));
     return () => { alive = false; };
+  // eslint-disable-next-line react/exhaustive-effect-dependencies -- The PWA subscription tick intentionally refreshes browser notification permission state.
   }, [tick]);
 
   if (status === null || status === 'unavailable') return null;

@@ -17,6 +17,7 @@ const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title
 export default function Gallery() {
   const [dir, setDir] = useState<'rtl' | 'ltr'>('rtl');
   const [seg, setSeg] = useState<'a' | 'b' | 'c'>('a');
+  const [nested, setNested] = useState(false);
   const [dialog, setDialog] = useState<null | 'center' | 'sheet'>(null);
 
   return (
@@ -108,6 +109,7 @@ export default function Gallery() {
         </Section>
       </div>
 
+      {nested && <Dialog title="Nested dialog" onClose={() => setNested(false)}><Button onClick={() => setNested(false)}>Close nested</Button></Dialog>}
       {dialog && (
         <Dialog
           title="Dialog title"
@@ -118,6 +120,7 @@ export default function Gallery() {
           footer={<><Button variant="ghost" onClick={() => setDialog(null)}>Cancel</Button><Button data-autofocus onClick={() => setDialog(null)}>Confirm</Button></>}
         >
           <TextField label="A field inside" />
+          <Button onClick={() => setNested(true)}>Open nested dialog</Button>
         </Dialog>
       )}
     </div>

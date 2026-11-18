@@ -35,6 +35,7 @@ export const MetroMap: React.FC<{ catalog: LeitnerCard[]; cards: LeitnerCard[]; 
     // Relative to what is visible, so it works the same in LTR and RTL (whose scroll origins differ)
     const b = box.getBoundingClientRect(), e = el.getBoundingClientRect();
     box.scrollLeft += (e.left + e.width / 2) - (b.left + b.width / 2);
+  // eslint-disable-next-line react/exhaustive-effect-dependencies -- Recenter the external scroller when the active station or its layout changes.
   }, [current, stations.length]);
 
   if (!stations.length) return null;

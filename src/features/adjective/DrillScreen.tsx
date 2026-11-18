@@ -20,7 +20,7 @@ import {
 } from './grammar';
 import { EndingGroup } from './EndingGroup';
 import { ReferenceTables } from './ReferenceTables';
-import { startRun, queueFinish, flushQueue, updateLocalBest } from './drillSync';
+import { startRun, queueFinish, flushQueue, updateLocalBest, issuedRound, runDeadline, submitRunAnswer, onDrillSync, drillSyncInfo } from './drillSync';
 import { createDeadline, remainingMs, isExpired, formatClock } from './timer';
 
 type Phase = 'start' | 'running' | 'finished';
@@ -67,6 +67,9 @@ export default function DrillScreen({ userId, onRunningChange, onViewRecords }: 
   const [tick, setTick] = useState(0);
   const [confirmLeave, setConfirmLeave] = useState(false);
   // True while the server is asked for a run id: the start button shows it and can't start a second run
+  const [verification, setVerification] = useState<'pending' | 'accepted' | 'partial'>('pending');
+  const questionIndex = useRef(0);
+  const roundPhaseRef = useRef<RoundPhase>('answering');
   const [starting, setStarting] = useState(false);
 
   const endsAtRef = useRef(0);
@@ -78,6 +81,14 @@ export default function DrillScreen({ userId, onRunningChange, onViewRecords }: 
   // This run's words (as in the prototype: a few nouns and adjectives per run, so they come back and stick)
   const wordsRef = useRef(drawSessionWords());
 
+  useEffect(() => onDrillSync(userId, () => {
+    const info = drillSyncInfo(userId);
+    if (info.error) setVerification('partial');
+    if (finishedRef.current && info.lastResult?.id === runIdRef.current) {
+      setScore(info.lastResult.score); setAnswered(info.lastResult.answered); setVerification('accepted');
+    }
+  }), [userId]);
+
   const voiceAvailable = speechService.isSupported() && speechService.currentVoice() !== null;
 
   const doFinish = () => {
@@ -87,9 +98,16 @@ export default function DrillScreen({ userId, onRunningChange, onViewRecords }: 
     onRunningChange(false);
     let gotRecord = false;
     if (runIdRef.current) {
-      queueFinish(userId, { id: runIdRef.current, score: scoreRef.current, answered: answeredRef.current });
-      if (!isDemoMode) void flushQueue(userId);
-      gotRecord = updateLocalBest(userId, scoreRef.current);
+      try { queueFinish(userId, { id: runIdRef.current, score: scoreRef.current, answered: answeredRef.current }); }
+      catch { setVerification('partial'); return; }
+      if (!isDemoMode) {
+        const id = runIdRef.current;
+        void flushQueue(userId).then(results => {
+          if (runIdRef.current !== id || !finishedRef.current) return;
+          const receipt = results.find(result => result.id === id);
+          if (receipt) { setScore(receipt.score); setAnswered(receipt.answered); setVerification('accepted'); setNewRecord(updateLocalBest(userId,receipt.score)); }
+        }).catch(() => setVerification('partial'));
+      } else gotRecord = updateLocalBest(userId, scoreRef.current);
     }
     setNewRecord(gotRecord);
   };
@@ -115,7 +133,13 @@ export default function DrillScreen({ userId, onRunningChange, onViewRecords }: 
 
   const nextRound = () => {
     if (isExpired(endsAtRef.current)) { doFinish(); return; }
-    setRound(generateRound(wordsRef.current));
+    if (roundPhaseRef.current !== 'feedback') return;
+    const next = questionIndex.current + 1;
+    const verified = issuedRound(runIdRef.current, next);
+    if (!isDemoMode && runIdRef.current && !verified) return;
+    questionIndex.current = next;
+    roundPhaseRef.current = 'answering';
+    setRound(verified ?? generateRound(wordsRef.current));
     setSelections({});
     setRoundPhase('answering');
   };
@@ -134,7 +158,7 @@ export default function DrillScreen({ userId, onRunningChange, onViewRecords }: 
 
   // Score the round once every visible slot has an answer.
   useEffect(() => {
-    if (phase !== 'running' || roundPhase !== 'answering') return;
+    if (phase !== 'running' || roundPhase !== 'answering' || roundPhaseRef.current !== 'answering') return;
     const needsArticle = round.phrase.article !== null;
     const needsAdjective = round.phrase.adjective !== null;
     if (needsArticle && selections.article === undefined) return;
@@ -148,6 +172,13 @@ export default function DrillScreen({ userId, onRunningChange, onViewRecords }: 
       (!needsAdjective || selections.adjective === round.phrase.adjective!.ending) &&
       selections.noun === round.phrase.noun.ending;
 
+    roundPhaseRef.current = 'feedback';
+    if (!isDemoMode && runIdRef.current) {
+      const id = runIdRef.current;
+      void submitRunAnswer(id, questionIndex.current, selections).then(accepted => {
+        if (!accepted && runIdRef.current === id) setVerification('partial');
+      });
+    }
     answeredRef.current += 1;
     if (correct) {
       scoreRef.current += 1;
@@ -169,19 +200,20 @@ export default function DrillScreen({ userId, onRunningChange, onViewRecords }: 
     if (starting) return;
     setStarting(true);
     finishedRef.current = false;
+    questionIndex.current = 0; roundPhaseRef.current = 'answering'; setVerification('pending');
     scoreRef.current = 0;
     answeredRef.current = 0;
     mistakesRef.current = [];
     setScore(0);
     setAnswered(0);
     setNewRecord(false);
-    const id = await startRun();
+    const id = await startRun(userId);
     setStarting(false);
     runIdRef.current = id;
     setPractice(!isDemoMode && id === null);
-    endsAtRef.current = createDeadline();
+    endsAtRef.current = runDeadline(id) ?? createDeadline();
     wordsRef.current = drawSessionWords();
-    setRound(generateRound(wordsRef.current));
+    setRound(issuedRound(id,0) ?? generateRound(wordsRef.current));
     setSelections({});
     setRoundPhase('answering');
     setPhase('running');
@@ -227,6 +259,7 @@ export default function DrillScreen({ userId, onRunningChange, onViewRecords }: 
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{a.finished.title}</h1>
           {newRecord && <p className="text-lg font-bold text-amber-600 dark:text-amber-400">{a.finished.newRecord}</p>}
           <p className="text-xl font-mono-num font-bold text-indigo-600 dark:text-indigo-400">{a.finished.scoreLine(score, answered)}</p>
+          {!isDemoMode && !practice && <p role="status" className="text-sm">{a.verification[verification]}</p>}
           {practice && <p className="text-caption text-amber-700 dark:text-amber-400">{a.practiceBanner}</p>}
         </Card>
 
@@ -271,6 +304,7 @@ export default function DrillScreen({ userId, onRunningChange, onViewRecords }: 
         </div>
       </div>
 
+      {!isDemoMode && !practice && answered >= 150 && <p role="status" className="text-sm">{a.questionLimit}</p>}
       {practice && <p className="text-caption text-amber-700 dark:text-amber-400">{a.practiceBanner}</p>}
 
       <Card className="space-y-4">

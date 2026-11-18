@@ -63,8 +63,8 @@ for (const lang of ['fa', 'en'] as const) {
 
     // Story 2 is open, also after a reload
     await page.reload();
-    await tabBar(page).getByRole('button', { name: lang === 'fa' ? /داستان/ : /stories/i }).click();
-    await page.getByTestId('book-cover').first().click();
+    await expect(page).toHaveURL(/story=S01-Q1/);
+    await page.goto('/?go=stories&book=1');
     await expect(page.getByTestId('story-item').nth(0)).toHaveAttribute('data-state', 'done');
     await expect(page.getByTestId('story-item').nth(1)).toHaveAttribute('data-state', 'open');
 
@@ -75,5 +75,21 @@ for (const lang of ['fa', 'en'] as const) {
 
 test('a deep link from an old dictation reminder opens Stories', async ({ page }) => {
   await openApp(page, 'en', '/?go=dictation');
+  await expect(page.getByTestId('stories-shelf')).toBeVisible();
+});
+
+
+test('story URLs support browser history and reject locked or invalid links', async ({ page }) => {
+  await openApp(page, 'en', '/?go=stories&book=1');
+  await expect(page.getByTestId('stories-book')).toBeVisible();
+  await page.getByTestId('story-item').first().click();
+  await expect(page).toHaveURL(/story=S01-Q1/);
+  await page.goBack();
+  await expect(page.getByTestId('stories-book')).toBeVisible();
+  await page.goForward();
+  await expect(page.getByTestId('story-cover')).toBeVisible();
+  await page.goto('/?go=stories&book=1&story=S01-Q6');
+  await expect(page.getByTestId('stories-book')).toBeVisible();
+  await page.goto('/?go=stories&book=999');
   await expect(page.getByTestId('stories-shelf')).toBeVisible();
 });

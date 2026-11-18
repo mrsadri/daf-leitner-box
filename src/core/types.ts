@@ -10,6 +10,8 @@ export type ArtikelType = 'der' | 'die' | 'das' | '–';
 export type ReflectionCategory = 'decision' | 'motivation' | 'habit' | 'goal' | 'note';
 
 export interface LeitnerCard {
+  /** Server timestamp used only for conflict reconciliation, never as learning content. */
+  syncStamp?: string;
   id: string;
   type: CardType;
   box: number; // 0, 1, 2, 3, 4, 5, or 6 (Mastered)
@@ -115,6 +117,8 @@ export interface AppSettings {
 export const MASTERED_BOX = 6;
 
 export interface ReviewEvent {
+  /** Stable identity retained across offline queue reloads and retries. */
+  operationId?: string;
   cardId: string;
   cardType: CardType;
   correct: boolean;

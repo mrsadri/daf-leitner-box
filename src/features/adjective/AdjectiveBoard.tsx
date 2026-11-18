@@ -56,6 +56,7 @@ export function AdjectiveBoard({ userId, showOnLeaderboard }: Props) {
     }
   }, [userId]);
 
+  // eslint-disable-next-line react/set-state-in-effect -- The stable fetch callback marks a new remote query as loading before awaiting it.
   useEffect(() => { load(period); }, [period, load]);
 
   const overall = rows[0];

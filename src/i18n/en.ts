@@ -27,6 +27,8 @@ export const en: Messages = {
   },
 
   common: {
+    recoveryDownload: 'Download local recovery data',
+    recoveryError: 'Something could not be loaded. Your saved progress is kept. Please try again.',
     language: 'Language',
     close: 'Close',
     cancel: 'Cancel',
@@ -78,6 +80,12 @@ export const en: Messages = {
   },
 
   sync: {
+    storageError: 'Browser storage is full or unavailable. Some changes are only in memory. Keep this tab open, free storage, then retry before signing out or reloading.',
+    signOutWarning: 'Card and story changes saved on this device remain for your next sign-in. Changes only in memory can be lost. Pending contest finishes and the current contest will be discarded on sign-out. Wait for server confirmation if you want them counted.',
+    quotaError: 'The server card limit is 10,000. Remove unused cards before retrying; your pending changes are kept on this device.',
+    lastSaved: (date: string) => `Last saved to the server: ${date}.`,
+    details: (pending: number, rejected: number, conflicts: number) => `${n(pending)} changes waiting to sync. ${n(rejected)} reviews kept as personal history without competitive credit. ${n(conflicts)} conflicts kept for recovery; the server version is shown.`,
+
     idle: 'All changes saved',
     syncing: 'Saving…',
     error: 'Save failed; retrying',
@@ -318,6 +326,9 @@ export const en: Messages = {
     loading: 'Loading…',
     loadError: 'The stories could not be loaded. Check your internet connection.',
     retry: 'Try again',
+    saveStatus: { pending: 'Story progress is waiting to save.', saving: 'Saving story progress…', error: 'Story progress has not synced. Try again.' },
+    pendingCount: (count: number) => `${n(count)} story saves waiting.`,
+    keyboardWords: 'Use left and right arrows to choose a word, Enter to look it up, and Tab to leave the text.',
     tapHint: 'Tap any word to see what it means.',
     legend: { m: 'masculine (der)', f: 'feminine (die)', n: 'neuter (das)', pl: 'plural', lesson: 'lesson word' },
     dashboardTitle: 'Stories',
@@ -343,6 +354,9 @@ export const en: Messages = {
   },
 
   adjective: {
+    questionLimit: 'All 150 issued questions are answered. The result will be finalized when the timer ends.',
+    verification: { pending:'Ranked result is pending server validation. Only answers received before the deadline count.', accepted:'The result above is confirmed by the server.', partial:'Some answers could not be verified. The ranked result will count only answers received on time.' },
+
     dashboardTitle: 'Adjective declension contest',
     dashboardBody: 'In 5 minutes, pick the right ending for the article, the adjective and the noun in different cases.',
     referenceTitle: 'Adjective ending tables (review before you start)',
@@ -514,6 +528,15 @@ export const en: Messages = {
     rateFast: 'Fast',
     rate: (x: number) => `${n(x)}×`,
     backupTitle: 'Backup & restore (JSON)',
+    importConfirmTitle: 'Replace your cards?',
+    importConfirmBody: 'Import replaces your current cards and settings. Cards missing from the backup will be removed and this change will sync to your account. A recovery copy is saved on this device first.',
+    conflictsDownload: 'Download conflict recovery file (if available)',
+    recoveryDownload: 'Download pre-import recovery copy (if available)',
+    importDiff: (added: number, matched: number, removed: number) => `${n(added)} new; ${n(matched)} matching IDs may be updated; ${n(removed)} removed in replace mode (kept in merge mode). Invalid cards are skipped.`,
+    importMerge: 'Merge cards',
+    importReplace: 'Replace cards',
+    importCounts: (current: number, incoming: number) => `${n(current)} current cards; ${n(incoming)} cards in the selected file.`,
+    backupScope: 'Version 2 backups include cards, settings and locally saved story progress. Contest results and review history are excluded. Imported stories retain the furthest progress.',
     backupBody: 'All your progress, boxes, words and decisions are saved to your account and synced across devices. You can also download a JSON backup. Restoring a backup replaces the cards currently in your account.',
     download: (x: number) => `Download backup (${plural(x, 'card', 'cards')})`,
     upload: 'Restore from JSON file',

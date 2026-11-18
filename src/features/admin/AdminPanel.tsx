@@ -82,6 +82,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ profile }) => {
   const { t, num, date, relative } = useI18n();
   const formatDate = (iso: string | null) => (iso ? date(iso, { dateStyle: 'medium', timeStyle: 'short' }) : '—');
   const ago = (iso: string | null) => (iso ? relative(...relativeParts(iso)) : '');
+  const [statsTime, setStatsTime] = useState(() => Date.now());
   const [rows, setRows] = useState<AdminUserRow[]>([]);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [query, setQuery] = useState('');
@@ -93,6 +94,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ profile }) => {
     setStatus('loading');
     try {
       setRows(await adminListUsers());
+      setStatsTime(Date.now());
       setStatus('ready');
     } catch (e) {
       console.error(e);
@@ -101,6 +103,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ profile }) => {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react/set-state-in-effect -- Mounting starts an external administrator query with an explicit loading state.
     load();
   }, [load]);
 
@@ -111,13 +114,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ profile }) => {
   }, [rows, query]);
 
   const stats = useMemo(() => {
-    const weekAgo = Date.now() - 7 * DAY_MS;
+    const weekAgo = statsTime - 7 * DAY_MS;
     return {
       total: rows.length,
       active7d: rows.filter(r => r.last_seen && new Date(r.last_seen).getTime() >= weekAgo).length,
       suspended: rows.filter(r => r.suspended_at).length
     };
-  }, [rows]);
+  }, [rows, statsTime]);
 
   const toggleSuspend = async (row: AdminUserRow) => {
     const suspend = !row.suspended_at;

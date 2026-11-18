@@ -18,3 +18,4 @@ for f in "$ROOT"/supabase/migrations/*.sql; do run -f "$f"; done
 # Migrations must be safe to run twice
 for f in "$ROOT"/supabase/migrations/*.sql; do run -f "$f"; done
 for t in "$ROOT"/supabase/tests/*.test.sql; do echo "== $(basename "$t")"; run -f "$t" 2>&1 | grep -E "ok:|FAILED|ERROR|PASSED" ; done
+bash "$ROOT/scripts/test-sql-concurrency.sh" "$PG" "$PORT"

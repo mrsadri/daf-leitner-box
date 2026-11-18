@@ -4,7 +4,7 @@
  *  1. Leaderboard: someone passed the user on the all-time leaderboard → "N people passed you, you're
  *     now #R". Only users who are visible on the leaderboard, have a score and didn't turn it off
  *     (profiles.settings.notifyOvertake). At most once per local day, 10:00–21:00 local time.
- *     Needs public.leaderboard_ranks() (migrations/20261030_overdue_overtake.sql).
+ *     Needs public.verified_leaderboard_ranks() and reliability migrations.
  *  2. Inactivity reminder: more than 24 h without opening the app → a random motivational line,
  *     at most once per 24 h and at most 3 times per absence, only 10:00–21:00 local time,
  *     never within 2 h of a leaderboard notification. Resets when the user comes back.
@@ -319,7 +319,7 @@ async function handle(req: Request): Promise<Response> {
   const standings = new Map<string, Standing>();
   let ranksAvailable = false;
   if (!body.testUserId) {
-    const { data, error } = await db.rpc('leaderboard_ranks');
+    const { data, error } = await db.rpc('verified_leaderboard_ranks');
     if (error) console.error('leaderboard_ranks unavailable', error.message);
     else {
       ranksAvailable = true;
@@ -330,35 +330,54 @@ async function handle(req: Request): Promise<Response> {
 
   const now = new Date();
   const removed: number[] = [];
-  const report = { overtakeSent: 0, inactivitySent: 0, testSent: 0, removed: 0, failed: 0, dryRun: !!body.dryRun, planned: [] as string[] };
+  const report = { overtakeSent: 0, inactivitySent: 0, testSent: 0, delivered:0, uncertain:0, removed: 0, failed: 0, dryRun: !!body.dryRun, planned: [] as string[] };
 
-  const send = async (sub: Subscription, payload: object): Promise<boolean> => {
+  const send = async (sub: Subscription, payload: object, key?: string): Promise<boolean> => {
     if (body.dryRun) return true;
+    let attempt = 0;
+    if (key) {
+      const { data, error } = await db.rpc('claim_push_delivery', { p_subscription:sub.id, p_user:sub.user_id, p_key:key });
+      if (error) throw error;
+      if (['sent','unknown','expired','exhausted','gone'].includes(data?.state)) return true;
+      if (data?.state !== 'claimed') return false;
+      attempt = data.attempt;
+    }
+    const record = async (status: number | null) => {
+      const outcome = deliveryOutcome(status);
+      if (key) {
+        const { error } = await db.rpc('finish_push_delivery', { p_subscription:sub.id,p_key:key,p_attempt:attempt,p_state:outcome,p_status:status });
+        if (error) throw error;
+      }
+      return outcome;
+    };
     try {
+      if (!validPushEndpoint(sub.endpoint)) { await record(410); removed.push(sub.id); report.failed++; return true; }
       // web-push encrypts and signs (RFC 8291 / VAPID); Deno's fetch sends (tested under Deno)
       const req = webpush.generateRequestDetails(
         { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
         JSON.stringify(payload),
         { TTL: 3600 }
       );
-      const res = await fetch(req.endpoint, { method: req.method, headers: req.headers, body: req.body });
-      if (res.ok) return true;
+      const res = await sendPushRequest(req);
+      const outcome = await record(res.status);
+      if (outcome === 'sent') { report.delivered++; return true; }
       if (res.status === 404 || res.status === 410) removed.push(sub.id);   // subscription expired / revoked
       else {
         report.failed++;
-        console.error('push failed', res.status, await res.text().catch(() => ''));
+        console.error('push failed', res.status);
       }
-      return false;
+      return outcome === 'expired';
     } catch (err) {
+      await record(null).catch(() => {});
+      report.uncertain++;
       report.failed++;
       console.error('push failed', (err as Error).message);
-      return false;
+      return true; // uncertain: do not automatically repeat an externally visible send
     }
   };
-  const sendAll = async (userSubs: Subscription[], payloadFor: (lang: Lang) => object) => {
-    let delivered = false;
-    for (const sub of userSubs) delivered = (await send(sub, payloadFor(asLang(sub.lang)))) || delivered;
-    return delivered;
+  const sendAll = async (userSubs: Subscription[], payloadFor: (lang: Lang) => object, key: string) => {
+    const outcomes = await mapBounded(userSubs, 3, sub => send(sub,payloadFor(asLang(sub.lang)),key));
+    return outcomes.length > 0 && outcomes.every(Boolean);
   };
 
   // Test mode: one notification to the given user's devices
@@ -371,7 +390,18 @@ async function handle(req: Request): Promise<Response> {
     for (const [userId, userSubs] of byUser) {
       const user = profiles.get(userId);
       if (!user || user.suspended) continue;
-      const state = states.get(userId) ?? null;
+      if (!body.dryRun) {
+        const { data: claimed, error } = await db.rpc('claim_reminder_user', { p_user: userId });
+        if (error) throw error;
+        if (!claimed) continue;
+      }
+      // A long invocation may have loaded stale bookkeeping before obtaining its lease.
+      const freshState = await db.from('push_state').select('*').eq('user_id',userId).maybeSingle();
+      const freshProfile = await db.from('profiles').select('suspended_at').eq('id',userId).maybeSingle();
+      if (freshState.error) throw freshState.error;
+      if (freshProfile.error) throw freshProfile.error;
+      if (!freshProfile.data || freshProfile.data.suspended_at) continue;
+      const state = (freshState.data as PushState | null) ?? states.get(userId) ?? null;
       // The most recently used device decides the time zone for quiet hours and "today"
       const main = userSubs.reduce((a, b) => (a.updated_at > b.updated_at ? a : b));
       const firstSubscribedAt = userSubs.map(s => s.created_at).sort()[0];
@@ -384,7 +414,7 @@ async function handle(req: Request): Promise<Response> {
         baseline = o.baseline;
         if (o.send) {
           report.planned.push(`overtake (+${o.passedBy}, #${o.rank}) → ${userId}`);
-          if (await sendAll(userSubs, lang => overtakePayload(lang, o.passedBy, o.rank))) {
+          if (await sendAll(userSubs, lang => overtakePayload(lang, o.passedBy, o.rank), `overtake:${userId}:${localTime(now,main.timezone).date}:${state?.overtake_rank ?? 0}:${o.rank}`)) {
             report.overtakeSent++;
             overtakeSentAt = now.toISOString();
           } else {
@@ -402,7 +432,7 @@ async function handle(req: Request): Promise<Response> {
       if (decision.send) {
         report.planned.push(`inactivity #${decision.count} → ${userId}`);
         const quote = Math.floor(Math.random() * QUOTES.fa.length);
-        if (await sendAll(userSubs, lang => inactivityPayload(lang, quote))) {
+        if (await sendAll(userSubs, lang => inactivityPayload(lang, quote), `inactive:${userId}:${user.last_seen_at ?? firstSubscribedAt}:${decision.count}`)) {
           report.inactivitySent++;
           inactivitySentAt = now.toISOString();
         }
@@ -437,3 +467,51 @@ Deno.serve(req => handle(req).catch(err => {
   console.error(err);
   return new Response(JSON.stringify({ error: String(err) }), { status: 500, headers: { 'Content-Type': 'application/json' } });
 }));
+
+// BEGIN delivery.ts (generated by scripts/build-edge-function.py, do not edit here)
+
+export function deliveryOutcome(status: number | null): 'sent' | 'failed' | 'expired' | 'unknown' {
+  if (status === null) return 'unknown';
+  if (status >= 200 && status < 300) return 'sent';
+  if (status === 404 || status === 410) return 'expired';
+  return 'failed';
+}
+export async function mapBounded<T,R>(items: T[], limit: number, operation: (item:T) => Promise<R>): Promise<R[]> {
+  if (!Number.isInteger(limit) || limit<1) throw new Error('Invalid concurrency');
+  const results = new Array<R>(items.length); let next=0;
+  await Promise.all(Array.from({length:Math.min(limit,items.length)},async()=>{
+    while(next<items.length){const index=next++;results[index]=await operation(items[index]);}
+  }));
+  return results;
+}
+
+// END delivery.ts
+
+// BEGIN pushEndpoint.ts (generated by scripts/build-edge-function.py, do not edit here)
+
+export function validPushEndpoint(endpoint: string): boolean {
+  try {
+    const url = new URL(endpoint);
+    if (url.protocol !== 'https:' || url.username || url.password || url.port || url.hash) return false;
+    const host = url.hostname.toLowerCase();
+    return host === 'fcm.googleapis.com' || host === 'updates.push.services.mozilla.com'
+      || host.endsWith('.push.services.mozilla.com') || host === 'web.push.apple.com'
+      || host.endsWith('.notify.windows.com');
+  } catch { return false; }
+}
+
+/** Keep the privileged request policy in the same tested boundary as destination validation. */
+export async function sendPushRequest(
+  request: { endpoint:string; method:string; headers:HeadersInit; body?:BodyInit|null },
+  fetcher: typeof fetch = fetch,
+): Promise<Response> {
+  if (!validPushEndpoint(request.endpoint)) throw new Error('Unsupported push destination');
+  const response = await fetcher(request.endpoint, {
+    method:request.method, headers:request.headers, body:request.body,
+    redirect:'error', signal:AbortSignal.timeout(10000),
+  });
+  if (response.redirected || (response.status >= 300 && response.status < 400)) throw new Error('Push redirects are forbidden');
+  return response;
+}
+
+// END pushEndpoint.ts

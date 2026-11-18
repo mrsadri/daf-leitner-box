@@ -45,7 +45,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
   onCardAdded
 }) => {
   const { t, lang } = useI18n();
-  const [unlearnedWords, setUnlearnedWords] = useState<LeitnerCard[]>([]);
+  const [unlearnedWords] = useState<LeitnerCard[]>(() => leitnerEngine.getUnlearnedWords());
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [isFlipped, setIsFlipped] = useState<boolean>(false);
   const [selectedArticleGuess, setSelectedArticleGuess] = useState<'der' | 'die' | 'das' | null>(null);
@@ -54,7 +54,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
   const [addedIds, setAddedIds] = useState<Set<string>>(() => new Set());
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
 
-  const [hadWordsAtStart, setHadWordsAtStart] = useState<boolean>(false);
+  const [hadWordsAtStart] = useState<boolean>(() => unlearnedWords.length > 0);
   const [perfektResult, setPerfektResult] = useState<PerfektResult | null>(null);
   // Read once per session, so the layout never switches in the middle of a card
   const [flipMode] = useState<boolean>(() => !!leitnerEngine.getSettings().newWordsFlipCard);
@@ -63,13 +63,6 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
   const [showSwipeHint, setShowSwipeHint] = useState<boolean>(() => coarsePointer() && !readSwipeHintDone());
   const [bannerHidden, setBannerHidden] = useState<boolean>(readBannerHidden);
   const shownIndexRef = useRef<number>(0);
-
-  useEffect(() => {
-    const list = leitnerEngine.getUnlearnedWords();
-    setUnlearnedWords(list);
-    setHadWordsAtStart(list.length > 0);
-    setCurrentIndex(0);
-  }, []);
 
   const currentWord = unlearnedWords[currentIndex];
   const quizArticle = currentWord ? getQuizArticle(currentWord) : null;
@@ -82,38 +75,36 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
     ? (quizArticle ? `${quizArticle} ${stripArticleFromWord(currentWord.wort)}` : (currentWord.wort || ''))
     : '';
 
+  const speakingRef = useRef(false);
   const handleSpeak = useCallback(async (text: string) => {
-    if (!text || isSpeaking) return;
+    if (!text || speakingRef.current) return;
+    speakingRef.current = true;
     setIsSpeaking(true);
-    await speechService.speak(text, leitnerEngine.getSettings().speechRate);
-    setIsSpeaking(false);
-  }, [isSpeaking]);
+    try { await speechService.speak(text, leitnerEngine.getSettings().speechRate); }
+    finally { speakingRef.current = false; setIsSpeaking(false); }
+  }, []);
 
   useEffect(() => {
-    if (currentWord && leitnerEngine.getSettings().autoSpeak && !isFlipped) {
+    if (currentWord && leitnerEngine.getSettings().autoSpeak) {
       // Two-sided card: speak the stripped word so speech doesn't spoil the article.
       // One-sided card: the article is visible anyway, so say it too.
       handleSpeak((flipMode ? frontWordDisplay : fullWordDisplay) || '');
     }
-    setIsFlipped(false);
-    setSelectedArticleGuess(null);
-    setPerfektResult(null);
-
     // Moving on from the bottom of a long card: bring the top of the next word back into view
     if (shownIndexRef.current !== currentIndex) {
       shownIndexRef.current = currentIndex;
       const top = sessionTopRef.current;
       if (top && top.getBoundingClientRect().top < 0) top.scrollIntoView({ block: 'start', behavior: 'smooth' });
     }
-  }, [currentIndex, currentWord?.id]);
+  }, [currentIndex, currentWord, flipMode, frontWordDisplay, fullWordDisplay, handleSpeak]);
 
-  const handleFlip = () => {
+  const handleFlip = useCallback(() => {
     if (!flipMode) return;
     soundService.playFlip();
-    setIsFlipped(!isFlipped);
-  };
+    setIsFlipped(value => !value);
+  }, [flipMode]);
 
-  const handleArticleSelect = (art: 'der' | 'die' | 'das') => {
+  const handleArticleSelect = useCallback((art: 'der' | 'die' | 'das') => {
     if (!currentWord || !quizArticle || selectedArticleGuess) return;
     const isMatch = art === quizArticle;
     setSelectedArticleGuess(art);
@@ -122,7 +113,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
     } else {
       soundService.playWrong();
     }
-  };
+  }, [currentWord, quizArticle, selectedArticleGuess]);
 
   const handleAddToBox0 = () => {
     if (!currentWord) return;
@@ -146,13 +137,16 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
   };
 
   // Past the last word, currentIndex === unlearnedWords.length shows the end screen (from where "back" still works)
+  const resetCard = useCallback(() => { setIsFlipped(false); setSelectedArticleGuess(null); setPerfektResult(null); }, []);
   const goToNextWord = () => {
+    resetCard();
     setCurrentIndex(i => Math.min(i + 1, unlearnedWords.length));
   };
 
-  const goToPreviousWord = () => {
+  const goToPreviousWord = useCallback(() => {
+    resetCard();
     setCurrentIndex(i => Math.max(i - 1, 0));
-  };
+  }, [resetCard]);
 
   /** Right = got it (or next, on a word already added), left = skip */
   const handleSwipe = (dir: SwipeDir) => {
@@ -233,7 +227,7 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentWord, isFlipped, isNoun, currentIndex, flipMode, fullWordDisplay, handleSpeak, addedIds]);
+  }, [currentWord, isFlipped, isNoun, flipMode, fullWordDisplay, handleSpeak, handleFlip, handleArticleSelect, goToPreviousWord]);
 
 
   const kbd = 'px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-xs font-mono-num font-bold';

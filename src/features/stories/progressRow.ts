@@ -7,6 +7,7 @@
 import type { StoryProgress } from './types';
 
 export interface StoryProgressRow {
+  quiz_score?: number | null;
   story_id: string;
   finished_count: number;
   total_count: number;
@@ -21,6 +22,7 @@ export const isStoryId = (id: string) => /^S\d{2}-Q[1-6]$/.test(id);
 
 export function toRow(p: StoryProgress, contentVersion: string | null): StoryProgressRow {
   return {
+    quiz_score: p.score ?? null,
     story_id: p.storyId,
     finished_count: p.page + 1,
     total_count: p.totalPages,
@@ -31,7 +33,7 @@ export function toRow(p: StoryProgress, contentVersion: string | null): StoryPro
   };
 }
 
-export function fromRow(r: Pick<StoryProgressRow, 'story_id' | 'finished_count' | 'total_count' | 'completed_at' | 'last_active_at'>): StoryProgress | null {
+export function fromRow(r: Pick<StoryProgressRow, 'story_id' | 'finished_count' | 'total_count' | 'completed_at' | 'last_active_at'> & { quiz_score?: number | null }): StoryProgress | null {
   if (!isStoryId(r.story_id)) return null;
   return {
     storyId: r.story_id,
@@ -39,5 +41,6 @@ export function fromRow(r: Pick<StoryProgressRow, 'story_id' | 'finished_count' 
     totalPages: r.total_count ?? 0,
     completedAt: r.completed_at ?? null,
     updatedAt: r.last_active_at,
+    ...(r.quiz_score == null ? {} : { score: r.quiz_score }),
   };
 }

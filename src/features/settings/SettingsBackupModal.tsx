@@ -3,13 +3,14 @@
  * app install and reminders, sign out.
  */
 import React, { useState, useRef, useEffect } from 'react';
+import { backupSummary, parseStoryBackup } from '../../core/backup';
 import { AppSettings, LeitnerCard, UserProfile } from '../../core/types';
 import { leitnerEngine } from '../../core/leitnerEngine';
 import { cloudSync } from '../../core/cloudSync';
 import { soundService } from '../../shared/lib/soundService';
 import { speechService } from '../../shared/lib/speechService';
 import { Download, Upload, Volume2, ShieldCheck, Check, AlertTriangle, UserRound, LogOut, Trophy, Languages } from 'lucide-react';
-import { buttonClass, cx } from '../../shared/ui';
+import { Dialog, Button, buttonClass, cx } from '../../shared/ui';
 import { useI18n } from '../../i18n/I18nProvider';
 import { Switch } from '../../shared/ui/Switch';
 import { LanguageSwitch } from '../../shared/ui/LanguageSwitch';
@@ -40,6 +41,7 @@ export const SettingsBackupModal: React.FC<SettingsBackupModalProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importStatus, setImportStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [importMessage, setImportMessage] = useState('');
+  const [pendingImport, setPendingImport] = useState<string | null>(null);
   const [resetConfirm, setResetConfirm] = useState(false);
   const [displayName, setDisplayName] = useState(profile.displayName);
   const [profileStatus, setProfileStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
@@ -86,10 +88,29 @@ export const SettingsBackupModal: React.FC<SettingsBackupModalProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (file.size > 10 * 1024 * 1024) { setImportStatus('error'); return; }
     const reader = new FileReader();
     reader.onload = (event) => {
       const content = event.target?.result as string;
-      const result = leitnerEngine.importData(content);
+      try {
+        const parsed = JSON.parse(content);
+        if (!parsed || !Array.isArray(parsed.cards) || parsed.cards.length > 10000 || (parsed.version && !['1.0','2.0'].includes(parsed.version))) throw new Error('Invalid backup');
+        parseStoryBackup(parsed.stories);
+        setPendingImport(content);
+      } catch { setImportStatus('error'); }
+    };
+    reader.onerror = () => setImportStatus('error');
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
+  const confirmImport = (mode: 'merge' | 'replace' = 'replace') => {
+      if (!pendingImport) return;
+      // Recovery snapshot must be durable before destructive replacement is allowed.
+      try { localStorage.setItem(`daf_before_import_${profile.id}`, leitnerEngine.exportData()); }
+      catch { setImportStatus('error'); return; }
+      const result = leitnerEngine.importData(pendingImport, mode);
+      setPendingImport(null);
       if (result.ok) {
         soundService.playSuccess();
         setImportStatus('success');
@@ -102,10 +123,14 @@ export const SettingsBackupModal: React.FC<SettingsBackupModalProps> = ({
         setImportStatus('error');
       }
       setTimeout(() => setImportStatus('idle'), 4000);
-    };
-    reader.readAsText(file);
-    // Allow importing the same file again later
-    e.target.value = '';
+  };
+
+  const downloadRecovery = (conflicts = false) => {
+    const raw = localStorage.getItem(`${conflicts ? 'daf_sync_conflicts_' : 'daf_before_import_'}${profile.id}`);
+    if (!raw) return;
+    const url = URL.createObjectURL(new Blob([raw], { type: 'application/json' }));
+    const link = document.createElement('a'); link.href = url; link.download = conflicts ? 'daf-sync-conflicts.json' : 'daf-before-import.json'; link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
   const handleResetData = () => {
@@ -120,6 +145,8 @@ export const SettingsBackupModal: React.FC<SettingsBackupModalProps> = ({
   const sectionTitle = 'text-base font-bold text-slate-900 dark:text-white flex items-center gap-2';
   const row = 'flex items-start justify-between gap-4 py-3 border-b border-slate-100 dark:border-slate-800 last:border-b-0';
 
+  const summary = pendingImport ? backupSummary(cards, JSON.parse(pendingImport).cards) : null;
+
   return (
     <div className="max-w-3xl mx-auto space-y-6 pb-12">
 
@@ -128,6 +155,14 @@ export const SettingsBackupModal: React.FC<SettingsBackupModalProps> = ({
         <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">{t.settings.subtitle}</p>
       </div>
 
+      {pendingImport && <Dialog title={t.settings.importConfirmTitle} onClose={() => setPendingImport(null)}
+        description={t.settings.importConfirmBody}
+        footer={<><Button variant="secondary" onClick={() => setPendingImport(null)}>{t.common.cancel}</Button>
+          <Button variant="secondary" onClick={() => confirmImport('merge')}>{t.settings.importMerge}</Button>
+          <Button variant="danger" onClick={() => confirmImport('replace')}>{t.settings.importReplace}</Button></>}>
+        <p>{t.settings.importCounts(cards.length, JSON.parse(pendingImport).cards.length)}</p>
+        {summary && <p>{t.settings.importDiff(summary.added, summary.matched, summary.removed)}</p>}
+      </Dialog>}
       {/* Language */}
       <div className={section}>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -332,6 +367,7 @@ export const SettingsBackupModal: React.FC<SettingsBackupModalProps> = ({
           <span>{t.settings.backupTitle}</span>
         </h2>
         <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{t.settings.backupBody}</p>
+        <p className="text-xs">{t.settings.backupScope}</p>
 
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
           <button
@@ -367,6 +403,10 @@ export const SettingsBackupModal: React.FC<SettingsBackupModalProps> = ({
           </div>
         )}
       </div>
+
+      <Button variant="secondary" onClick={() => downloadRecovery()}>{t.settings.recoveryDownload}</Button>
+
+      <Button variant="secondary" onClick={() => downloadRecovery(true)}>{t.settings.conflictsDownload}</Button>
 
       {/* Danger zone */}
       <div className="bg-red-50/50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 rounded-2xl p-5 sm:p-6 space-y-4">
