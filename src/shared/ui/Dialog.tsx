@@ -39,6 +39,11 @@ function updateBackground() {
 export const isDialogOpen = (): boolean => dialogStack.length > 0;
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+let lastPointerTarget: HTMLElement | null = null;
+if (typeof document !== 'undefined') document.addEventListener('pointerdown', event => {
+  lastPointerTarget = event.target instanceof Element ? event.target.closest<HTMLElement>(FOCUSABLE) : null;
+}, true);
+if (typeof document !== 'undefined') document.addEventListener('keydown', () => { lastPointerTarget = null; }, true);
 
 export interface DialogProps {
   onClose: () => void;
@@ -76,9 +81,11 @@ export const Dialog: React.FC<DialogProps> = ({
     const container = panel.current?.parentElement;
     if (!container) return;
     if (!dialogStack.length) originalOverflow = document.body.style.overflow;
+    // WebKit can blur the opener as soon as its parent becomes inert, and mouse-clicked buttons may not focus.
+    const active = document.activeElement as HTMLElement | null;
+    const opener = lastPointerTarget && document.contains(lastPointerTarget) ? lastPointerTarget : active && active !== document.body ? active : null;
     dialogStack.push(container);
     updateBackground();
-    const opener = document.activeElement as HTMLElement | null;
     const first = panel.current?.querySelector<HTMLElement>('[data-autofocus]') ?? panel.current?.querySelector<HTMLElement>(FOCUSABLE);
     (first ?? panel.current)?.focus();
     document.body.style.overflow = 'hidden';
@@ -92,10 +99,11 @@ export const Dialog: React.FC<DialogProps> = ({
       } else if (e.key === 'Tab') {
         const items = [...panel.current.querySelectorAll<HTMLElement>(FOCUSABLE)].filter(el => el.offsetParent !== null);
         if (items.length === 0) { e.preventDefault(); return; }
-        const firstEl = items[0], lastEl = items[items.length - 1];
-        const inside = panel.current.contains(document.activeElement);
-        if (e.shiftKey && (document.activeElement === firstEl || !inside)) { e.preventDefault(); lastEl.focus(); }
-        else if (!e.shiftKey && (document.activeElement === lastEl || !inside)) { e.preventDefault(); firstEl.focus(); }
+        // Own every Tab step: Safari's system keyboard-navigation preference can otherwise skip buttons.
+        e.preventDefault();
+        const index = items.indexOf(document.activeElement as HTMLElement);
+        const next = index < 0 ? (e.shiftKey ? items.length - 1 : 0) : (index + (e.shiftKey ? -1 : 1) + items.length) % items.length;
+        items[next].focus();
       }
     };
     window.addEventListener('keydown', onKey, true);

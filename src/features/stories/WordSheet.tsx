@@ -10,6 +10,7 @@ import { Volume2 } from 'lucide-react';
 import type { LeitnerCard } from '../../core/types';
 import { MASTERED_BOX } from '../../core/types';
 import { leitnerEngine, getQuizArticle } from '../../core/leitnerEngine';
+import { nounVariants, matchingNounVariant } from '../../shared/vocab/nounVariants';
 import { speechService } from '../../shared/lib/speechService';
 import { useI18n } from '../../i18n/I18nProvider';
 import { Dialog, Button, Badge } from '../../shared/ui';
@@ -42,8 +43,14 @@ export const WordSheet: React.FC<Props> = ({ target, onClose, onCardsChanged, on
   const owned: LeitnerCard | undefined = cardId ? leitnerEngine.getCards().find(c => c.id === cardId) : undefined;
   const catalogWord = cardId ? leitnerEngine.getCatalogWord(cardId) : undefined;
   const meaning = catalogWord ? (lang === 'en' ? catalogWord.englisch || catalogWord.persisch : catalogWord.persisch) : '';
-  const lemma = catalogWord?.wort ?? target.word;
-  const article = catalogWord ? getQuizArticle(catalogWord) : null;
+  const variants = catalogWord ? nounVariants(catalogWord) : [];
+  const variant = matchingNounVariant(variants, target.word);
+  const lemma = variant ? `${variant.article ? variant.article + ' ' : ''}${variant.word}` : catalogWord?.wort ?? target.word;
+  const article = variant ? variant.article : variants.length <= 1 && catalogWord ? getQuizArticle(catalogWord) : null;
+  useEffect(() => {
+    if (!target.word) speechService.cancel();
+    return () => speechService.cancel();
+  }, [target.word]);
 
   const show = (text: string, undo: () => void) => {
     if (toastTimer.current) clearTimeout(toastTimer.current);

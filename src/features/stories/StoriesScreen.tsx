@@ -18,7 +18,7 @@ import { WordSheet } from './WordSheet';
 import { Icon3D } from '../../shared/ui/Icon3D';
 import { Reader } from './Reader';
 import { readStoryLocation, writeStoryLocation, type StoryView } from './storyNavigation';
-import type { Book, StoriesIndex, StoryProgress, WordSegment } from './types';
+import type { NarrativeStory, StoriesIndex, StoryProgress, WordSegment } from './types';
 
 interface Props {
   userId: string;
@@ -37,7 +37,7 @@ export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard
   const [reward, setReward] = useState<number | null>(null);
   const [collectionOpen, setCollectionOpen] = useState(false);
   const [index, setIndex] = useState<StoriesIndex | null>(null);
-  const [book, setBook] = useState<Book | null>(null);
+  const [book, setBook] = useState<NarrativeStory | null>(null);
   const [error, setError] = useState(false);
   const [loadAttempt, setLoadAttempt] = useState(0);
   const [requestedView, updateView] = useState<StoryView>(() => readStoryLocation(window.location.href));

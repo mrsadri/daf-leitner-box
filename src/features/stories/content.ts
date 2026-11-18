@@ -1,8 +1,8 @@
 /** Loads the Stories index and books from /data/stories (same origin), once per page load. */
-import type { Book, StoriesIndex } from './types';
+import type { NarrativeStory, StoriesIndex } from './types';
 
 let indexPromise: Promise<StoriesIndex> | null = null;
-const books = new Map<number, Promise<Book>>();
+const books = new Map<number, Promise<NarrativeStory>>();
 
 async function getJson<T>(url: string): Promise<T> {
   const res = await fetch(url);
@@ -15,10 +15,10 @@ export function loadIndex(): Promise<StoriesIndex> {
   return indexPromise;
 }
 
-export function loadBook(n: number): Promise<Book> {
+export function loadBook(n: number): Promise<NarrativeStory> {
   let p = books.get(n);
   if (!p) {
-    p = getJson<Book>(`/data/stories/book-${String(n).padStart(2, '0')}.json`).catch(e => { books.delete(n); throw e; });
+    p = getJson<NarrativeStory>(`/data/stories/book-${String(n).padStart(2, '0')}.json`).catch(e => { books.delete(n); throw e; });
     books.set(n, p);
   }
   return p;

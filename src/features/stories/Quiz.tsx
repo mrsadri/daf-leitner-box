@@ -7,9 +7,9 @@ import { Check, X, BookOpenText } from 'lucide-react';
 import { useI18n } from '../../i18n/I18nProvider';
 import { Button, Dialog, cx } from '../../shared/ui';
 import { StoryText } from './StoryText';
-import type { Story, WordSegment } from './types';
+import type { Scene, WordSegment } from './types';
 
-export const Quiz: React.FC<{ story: Story; onDone: (score: number) => void; onShowPageWord: (w: WordSegment | string) => void }> = ({ story, onDone }) => {
+export const Quiz: React.FC<{ story: Scene; onDone: (score: number) => void; onShowPageWord: (w: WordSegment | string) => void }> = ({ story, onDone }) => {
   const { t } = useI18n();
   const s = t.stories;
   const [i, setI] = useState(0);

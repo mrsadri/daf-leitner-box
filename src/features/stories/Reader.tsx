@@ -10,12 +10,12 @@ import { Button, ProgressDots, isDialogOpen } from '../../shared/ui';
 import { imageUrl } from './content';
 import { StoryText } from './StoryText';
 import { Quiz } from './Quiz';
-import type { Story, WordSegment } from './types';
+import type { Scene, WordSegment } from './types';
 
 type Step = { kind: 'cover' } | { kind: 'page'; i: number } | { kind: 'quiz' } | { kind: 'result'; score: number };
 
 interface Props {
-  story: Story;
+  story: Scene;
   /** Page to open at (continue reading); undefined starts at the cover */
   startPage?: number;
   hasNext: boolean;
@@ -26,7 +26,7 @@ interface Props {
   onBack: () => void;
 }
 
-export const StoryPicture: React.FC<{ story: Story; className?: string }> = ({ story, className = '' }) => {
+export const StoryPicture: React.FC<{ story: Scene; className?: string }> = ({ story, className = '' }) => {
   const { t, lang } = useI18n();
   if (!story.image) {
     return (
