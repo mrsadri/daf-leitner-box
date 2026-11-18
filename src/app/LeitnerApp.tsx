@@ -6,7 +6,6 @@
  */
 import React, { Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react';
 import type { User } from '@supabase/supabase-js';
-import { WifiOff } from 'lucide-react';
 import { getTodayString, isCardDue } from '../core/leitnerEngine';
 import { cloudSync } from '../core/cloudSync';
 import { supabase } from '../shared/lib/supabase';
@@ -46,9 +45,13 @@ const initialGo = new URLSearchParams(window.location.search).get('go');
 
 export function LeitnerApp({ user }: { user: User }) {
   const { t } = useI18n();
-  const { loadError, retryLoad, cards, catalog, settings, profile, setProfile, loadedOffline, syncStatus, syncInfo, refresh, actions } = useLeitnerData(user);
+  const { loadError, retryLoad, cards, catalog, settings, profile, setProfile, syncStatus, refresh, actions } = useLeitnerData(user);
   const { ready } = useSessionEffects({ userId: user.id, profile, settings, setProfile, updateSettings: actions.updateSettings });
 
+  useEffect(() => {
+    if (!supabase) return;
+    void supabase.rpc('set_activity_timezone', { p_zone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+  }, [user.id]);
   const [activeTab, updateActiveTab] = useState<ActiveTab>('dashboard');
   const setActiveTab = useCallback((tab: ActiveTab) => {
     const url = new URL(window.location.href);
@@ -197,21 +200,6 @@ export function LeitnerApp({ user }: { user: User }) {
         syncStatus={syncStatus}
         showStories={showStories}
       />
-
-      {(syncInfo.storageError || syncInfo.pending > 0 || syncInfo.rejected > 0 || syncInfo.conflicts > 0 || syncInfo.drillPending > 0 || syncInfo.drillError || syncStatus === 'error' || syncStatus === 'offline') && (
-        <div role="status" className="px-4 py-3 text-sm bg-amber-50 dark:bg-amber-950/40 flex gap-3 items-center justify-center">
-          <span>{syncInfo.storageError && t.sync.storageError} {syncInfo.errorCode === '54000' && t.sync.quotaError} {t.sync.details(syncInfo.pending + syncInfo.drillPending, syncInfo.rejected, syncInfo.conflicts)} {syncInfo.lastSuccess && t.sync.lastSaved(new Date(syncInfo.lastSuccess).toLocaleString())}</span>
-          <Button variant="secondary" size="sm" onClick={actions.retrySync}>{t.common.retry}</Button>
-        </div>
-      )}
-      {loadedOffline && (
-        <div className="bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs">
-          <div className="max-w-7xl mx-auto px-4 py-2 flex items-center gap-2">
-            <WifiOff className="w-4 h-4 shrink-0" />
-            <span>{t.app.offlineBanner}</span>
-          </div>
-        </div>
-      )}
 
       <main tabIndex={-1} className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
         {isStudyingNewWords ? (

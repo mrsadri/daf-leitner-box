@@ -1,6 +1,7 @@
 /**
  * Pronunciation with the browser's German voice (Web Speech API): voice choice, rate, and a promise per utterance.
  */
+import { speechText } from './speechText';
 import { pickGermanVoice, germanVoices } from './voices';
 
 /**
@@ -27,6 +28,8 @@ function readPreferred(): string | null {
 class SpeechService {
   private synth: SpeechSynthesis | null = null;
   private voices: SpeechSynthesisVoice[] = [];
+  private finishActive: (() => void) | null = null;
+  private generation = 0;
   private listeners = new Set<() => void>();
 
   constructor() {
@@ -92,10 +95,13 @@ class SpeechService {
   public async speak(text: string, rate: number = 0.9): Promise<void> {
     if (!this.synth || !text) return;
     // Only the German part ("Wie heißt du? · اسمت چیه؟", "die Partner / die Partnerinnen")
-    const cleanText = text.split('·')[0].split(' / ')[0].trim();
+    const cleanText = speechText(text);
     if (!cleanText) return;
 
+    const generation = ++this.generation;
+    this.finishActive?.();
     await this.ready();
+    if (generation !== this.generation) return;
     return new Promise(resolve => {
       try {
         this.synth!.cancel();
@@ -109,8 +115,15 @@ class SpeechService {
         }
         utterance.rate = rate;
         utterance.pitch = 1.0;
-        utterance.onend = () => resolve();
-        utterance.onerror = () => resolve();
+        const finish = () => {
+          clearTimeout(timeout);
+          if (this.finishActive === finish) this.finishActive = null;
+          resolve();
+        };
+        const timeout = setTimeout(finish, Math.max(15000, cleanText.length * 200));
+        this.finishActive = finish;
+        utterance.onend = finish;
+        utterance.onerror = finish;
         this.synth!.speak(utterance);
       } catch {
         resolve();

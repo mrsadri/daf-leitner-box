@@ -22,6 +22,11 @@ test('versioned engine backup round trip preserves stories and merge does not re
     const {leitnerEngine:engine} = await import(`data:text/javascript;base64,${Buffer.from(chunk.code).toString('base64')}`);
     const card: LeitnerCard = {id:'existing',type:'vocab',box:0,lastReviewedAt:null,nextReviewDate:'2026-11-18',createdAt:'2026-11-18T10:00:00Z',reviewCount:0,correctCount:0,wrongCount:0};
     engine.hydrate('test-user',[card],null);
+    const first = engine.addCard({...card,id:'daf_01_92',wort:'vergleichen'});
+    const second = engine.addCard({...card,id:'daf_03_138',wort:'vergleichen'});
+    assert.notEqual(first.id,second.id,'same-spelling catalog entries preserve distinct lesson identities');
+    engine.hydrate('test-user',[card],null);
+
     const story={storyId:'S01-Q1',page:2,totalPages:5,completedAt:null,updatedAt:'2026-11-18T10:00:00Z'};
     data.set('daf_stories_progress_test-user',JSON.stringify({'S01-Q1':story}));
     const exported=JSON.parse(engine.exportData());

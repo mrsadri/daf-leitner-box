@@ -35,7 +35,8 @@ export interface StoryImage {
   alt: { fa: string; en: string } | null;
 }
 
-export interface Story {
+export interface Scene {
+  sentenceCount: number;
   id: string;          // S01-Q1
   n: number;           // 1..6 within the book
   title: string;
@@ -45,7 +46,7 @@ export interface Story {
   quiz: QuizItem[];
 }
 
-export interface Book {
+export interface NarrativeStory {
   contentVersion: string;
   id: string;          // B01
   n: number;
@@ -53,10 +54,10 @@ export interface Book {
   lessons: [number, number];
   /** Proper names: never offered as vocabulary */
   names: string[];
-  stories: Story[];
+  stories: Scene[];
 }
 
-export interface BookSummary {
+export interface NarrativeStorySummary {
   id: string;
   n: number;
   title: string;
@@ -65,7 +66,12 @@ export interface BookSummary {
   stories: { id: string; n: number; title: string; image: string | null }[];
 }
 
-export interface StoriesIndex { books: BookSummary[] }
+/** Three domain levels. The legacy book-NN.json wire names and SNN-QN IDs remain stable. */
+export type Story = Scene; // Compatibility name for existing reader imports.
+export type Book = NarrativeStory; // Existing book-NN.json transport name.
+export type BookSummary = NarrativeStorySummary;
+export interface NarrativeBook { id: string; title: string; storyIds: string[] }
+export interface StoriesIndex { book: NarrativeBook; books: BookSummary[] }
 
 /** One story's progress; stored in Supabase story_progress (one row per story) and in localStorage. */
 export interface StoryProgress {

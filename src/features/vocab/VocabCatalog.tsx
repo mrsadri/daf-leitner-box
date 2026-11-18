@@ -96,7 +96,7 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
       const matchesNiveau = selectedNiveau === 'all' || word.niveau === selectedNiveau;
       const matchesWortart = selectedWortart === 'all' || word.wortart === selectedWortart;
 
-      const isInBox = activeCardMap.has(word.id) || (word.wort && activeCardMap.has(word.wort.toLowerCase().trim()));
+      const isInBox = activeCardMap.has(word.id);
       const matchesStatus = statusFilter === 'all' || 
         (statusFilter === 'in_box' && isInBox) || 
         (statusFilter === 'not_in_box' && !isInBox);
@@ -114,7 +114,7 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
 
   const handleSelectAllFiltered = () => {
     const notInBoxFiltered = filteredWords.filter(
-      w => !activeCardMap.has(w.id) && !(w.wort && activeCardMap.has(w.wort.toLowerCase().trim()))
+      w => !activeCardMap.has(w.id)
     );
     if (selectedIds.size === notInBoxFiltered.length && notInBoxFiltered.length > 0) {
       setSelectedIds(new Set());
@@ -144,7 +144,7 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
   const handleAddEntireLesson = () => {
     if (selectedLektion === 'all') return;
     const lessonWords = catalogWords.filter(
-      w => w.lektion === selectedLektion && !activeCardMap.has(w.id) && !(w.wort && activeCardMap.has(w.wort.toLowerCase().trim()))
+      w => w.lektion === selectedLektion && !activeCardMap.has(w.id)
     );
     if (lessonWords.length > 0) {
       soundService.playSuccess();
@@ -261,7 +261,7 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
       {/* Words */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
         {filteredWords.slice(0, PAGE_LIMIT).map((word) => {
-          const active = activeCardMap.get(word.id) || (word.wort ? activeCardMap.get(word.wort.toLowerCase().trim()) : null);
+          const active = activeCardMap.get(word.id);
           const isSelected = selectedIds.has(word.id);
           const article = getQuizArticle(word);
           const text = vocabText(word, lang);

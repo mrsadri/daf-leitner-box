@@ -55,6 +55,11 @@ class Gender(unittest.TestCase):
         self.assertIsNone(noun_gender("Kollegen", "der", "der Kollege", "die Kollegen", "den"))
         self.assertEqual(noun_gender("Kollegen", "der", "der Kollege", "die Kollegen", "zwei"), "pl")
 
+    def test_gender_of_each_slash_variant(self):
+        self.assertEqual(noun_gender("Praktikant", "der", "der Praktikant / die Praktikantin", "die Praktikanten / die Praktikantinnen", None), "m")
+        self.assertEqual(noun_gender("Praktikantin", "der", "der Praktikant / die Praktikantin", "die Praktikanten / die Praktikantinnen", None), "f")
+        self.assertEqual(noun_gender("Praktikantinnen", "der", "der Praktikant / die Praktikantin", "die Praktikanten / die Praktikantinnen", None), "pl")
+
     def test_no_underline_for_odd_articles(self):
         self.assertIsNone(noun_gender("Teil", "der/das", "der/das Teil", "die Teile", None))
         self.assertIsNone(noun_gender("Ferien", "–", "die Ferien", "", None))

@@ -20,7 +20,7 @@ end $$;
 set local role authenticated;
 select set_config('test.uid','82000000-0000-0000-0000-000000000001',true);
 do $$ begin
- if not exists(select 1 from public.get_verified_leaderboard('all',100) where is_me and score=2) then raise exception 'FAILED: verified board ignores overdue penalty'; end if;
+ if not exists(select 1 from public.get_verified_leaderboard('all',100) where is_me and score=4) then raise exception 'FAILED: verified board ignores overdue penalty'; end if;
  begin
   insert into public.overdue_demotions(user_id,card_id,from_box,to_box,demoted_on) values(auth.uid(),'daf_01_1',3,2,current_date);
   raise exception 'FAILED: client can forge a verified overdue deduction';

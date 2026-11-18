@@ -36,7 +36,6 @@ export function AdjectiveBoard({ userId, showOnLeaderboard }: Props) {
   const b = t.adjective.board;
   const [period, setPeriod] = useState<AdjectivePeriod>('all');
   const [rows, setRows] = useState<AdjectiveBoardRow[]>([]);
-  const [myBestAll, setMyBestAll] = useState<number | null>(null);
   const [myBestWeek, setMyBestWeek] = useState<number | null>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
 
@@ -47,7 +46,6 @@ export function AdjectiveBoard({ userId, showOnLeaderboard }: Props) {
       await flushQueue(userId);
       const board = await fetchBoard(p);
       setRows(board.rows);
-      setMyBestAll(board.myBestAll);
       setMyBestWeek(board.myBestWeek);
       setStatus('ready');
     } catch (e) {
@@ -97,7 +95,7 @@ export function AdjectiveBoard({ userId, showOnLeaderboard }: Props) {
         <div>
           <span className="text-xs text-indigo-800 dark:text-indigo-300 block">{t.leaderboard.myRank}</span>
           <span className="text-lg font-bold font-mono-num text-slate-900 dark:text-white block">
-            {myBestAll === null ? b.none : num(myBestAll)}
+            {rows.find(r => r.isMe) ? num(rows.find(r => r.isMe)!.rank) : b.none}
           </span>
         </div>
         <div>

@@ -34,6 +34,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from lib import linker  # noqa: E402
+from lib.sentences import sentence_count
 from lib.gender import noun_gender  # noqa: E402
 from lib.normalize import normalize_text  # noqa: E402
 from lib.pages import group_pages  # noqa: E402
@@ -229,6 +230,7 @@ def build(allow_missing_quiz: bool = False) -> tuple[dict[str, str], list[str], 
             img = images.get(sid)
             stories.append({
                 "id": sid,
+                "sentenceCount": sentence_count(texts),
                 "n": seq.number,
                 "title": seq.title,
                 "situation": {"fa": seq.situation_fa, "en": seq.situation_en},
@@ -246,7 +248,7 @@ def build(allow_missing_quiz: bool = False) -> tuple[dict[str, str], list[str], 
         pct = 100 * totals["linked"] / max(1, totals["words"])
         report.append(f"{book_id} {parsed.title!r}: {len(stories)} stories, {sum(len(s['pages']) for s in stories)} pages, "
                       f"{totals['words']} words, {totals['linked']} linked ({pct:.0f}%), {totals['gender']} with a gender underline")
-    files["index.json"] = dump({"books": books_index})
+    files["index.json"] = dump({"book": {"id": "graz-photo", "title": "راز عکسی از گراتس", "storyIds": [b["id"] for b in books_index]}, "books": books_index})
     caps = sorted(unlinked_caps.items(), key=lambda x: -x[1])
     report.append("")
     report.append("Capitalized words that are neither linked nor in names.json (names to add, or nouns missing from the word list):")
