@@ -29,7 +29,13 @@ self.addEventListener('push', event => {
 
 self.addEventListener('notificationclick', event => {
   event.notification.close();
-  const target = new URL((event.notification.data && event.notification.data.url) || '/', self.location.origin).href;
+  // Payloads are data, not authority to navigate away from the app.
+  let target = self.location.origin + '/';
+  try {
+    const raw = event.notification.data && event.notification.data.url;
+    const candidate = new URL(typeof raw === 'string' ? raw : '/', self.location.origin);
+    if (candidate.origin === self.location.origin && !candidate.username && !candidate.password) target = candidate.href;
+  } catch { /* Malformed payloads open the app home. */ }
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windows => {
       // Reuse an open window of the app if there is one

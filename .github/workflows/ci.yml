@@ -19,6 +19,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run audit:runtime
+      - name: Review full dependency audit against dated build advisory
+        run: |
+          npm audit --json > "$RUNNER_TEMP/dependency-audit.json" || test "$?" -eq 1
+          node --experimental-strip-types scripts/check-dependency-audit.ts "$RUNNER_TEMP/dependency-audit.json"
       - run: python3 -m unittest discover scripts/stories/tests
       - run: python3 scripts/stories/build_stories.py --check
       - run: python3 scripts/build-edge-function.py --check
