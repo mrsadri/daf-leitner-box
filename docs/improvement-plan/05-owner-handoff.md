@@ -1,6 +1,6 @@
 # Remaining gates and owner handoff
 
-Updated 18 November 2026. 13 tasks remain incomplete overall; see [corrected remaining requirements](06-incomplete-tasks.md). Some remaining verification is locally actionable; this file focuses on owner/environment gates. Suggested models remain advisory assignments, not evidence of a separate Astra review.
+Updated 18 November 2026. 12 tasks remain incomplete overall; see [corrected remaining requirements](06-incomplete-tasks.md). Some remaining verification is locally actionable; this file focuses on owner/environment gates. Suggested models remain advisory assignments, not evidence of a separate Astra review.
 
 ## Decisions used
 
@@ -13,7 +13,7 @@ Updated 18 November 2026. 13 tasks remain incomplete overall; see [corrected rem
 ## Required before release
 
 - [ ] **Independent security/data-integrity review — suggested AI: Astra High, with human reviewer.** Review revision/receipt transactions, ranked scoring, grants/RLS, challenge deadlines, queue recovery and worker delivery semantics. No independent reviewer is claimed.
-- [ ] **Hosted CI at the review revision — suggested AI: Sol High.** Run the committed workflow, preserve artifacts and record the PR head. Local checks pass; there is no pushed/committed review revision yet.
+- [x] **Hosted CI at the review revision — suggested AI: Sol High.** Run the committed workflow, preserve artifacts and record the PR head. GitHub CI passed at `33f0583` in run 44278415253; the branch and PR #32 are pushed.
 - [ ] **Installed-schema comparison and staging upgrade — owner, assisted by Astra High.** Local clean/legacy-upgrade equivalence now passes. Compare actual hosted functions/grants/policies/jobs/migrations to Git. Follow `docs/supabase-reliability-setup.md`; local stubs cannot validate hosted Supabase configuration.
 - [ ] **Hosted integration — owner, assisted by Astra High.** OAuth/session refresh, suspended users, PostgREST RPC grants/signatures, two-device conflicts, old clients/queues, verified totals and actual browser push providers.
 - [ ] **Representative hosted performance — owner, assisted by Sol High.** Repeat `scripts/benchmark-leaderboard.mjs` methodology with sanitized representative distributions. Local synthetic evidence found only a small candidate-index improvement; no extra index was shipped.

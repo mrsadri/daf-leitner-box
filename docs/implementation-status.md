@@ -4,7 +4,7 @@ All current changes are in `/Users/masih/Documents/Codex/2026-11-18/i-x20/daf-le
 The earlier `/Users/masih/Documents/ChatGPT/daf/daf-leitner-box` checkout is stale.
 Baseline: `5d9f576758fe5ec93837916a7793d04aa88081f3`. Changes are prepared on `codex/production-readiness`; see the PR for the review head. Nothing is deployed.
 
-Work has addressed all 25 review areas, but **13 tasks remain incomplete overall: 7, 8, 10, 11, 13, 14, 16, 19, 20, 21, 22, 23 and 25**. Further local verification also remains. This does **not** close staging, independent review, upstream remediation or release gates. Unchecked tasks remain explicit in the to-do/checklist; see [owner handoff](05-owner-handoff.md).
+Work has addressed all 25 review areas, but **12 tasks remain incomplete overall: 7, 8, 11, 13, 14, 16, 19, 20, 21, 22, 23 and 25**. Further local verification also remains. This does **not** close staging, independent review, upstream remediation or release gates. Unchecked tasks remain explicit in the to-do/checklist; see [owner handoff](05-owner-handoff.md).
 
 ## Local verification
 
@@ -34,7 +34,7 @@ Work has addressed all 25 review areas, but **13 tasks remain incomplete overall
 | 07 | Partial — acceptance pending | Provider allowlist, registration guard, redirect refusal, ten-second timeout; mocked request-boundary, pure and SQL validation tests. Real provider/runtime tests remain owner staging. |
 | 08 | Partial — acceptance pending | Generation barriers and account-scoped queues/callbacks; delayed-start, old-save/new-account and delayed-sign-out regressions. Sign-out explains preserved cards/stories and discarded pending contests. |
 | 09 | Implemented locally | Native two-connection quota race, existing upsert at limit and atomic delete/insert replacement pass. Quota-specific bilingual feedback preserves pending work. |
-| 10 | Partial — acceptance pending | Native/isolated CI jobs, ten SQL suites, actual multi-connection checks and a negative RLS mutation control. Hosted Actions run requires a pushed review revision. |
+| 10 | Verified locally and in GitHub CI | Hosted build and database jobs passed at `33f0583`; negative RLS control and migration/concurrency checks run in CI. |
 | 11 | Partial — acceptance pending | Shared baseline plus lexical migrations, replay, generated-type drift and clean-install/legacy-upgrade equivalence checks. Historical overlap retained for compatibility; owner compares installed schema before upgrade. |
 | 12 | Implemented locally; hosted data audit pending | Constrained story IDs/counters, atomic page/completion merge, quiz-score synchronization and version compatibility policy. |
 | 13 | Partial — acceptance pending | Verified leaderboard measured with 100 users, 10k cards, 200k events; candidate index p50 59.18→58.60ms, p95 65.08→60.63ms. Plans recorded; no speculative index shipped. |
@@ -70,3 +70,5 @@ The sync client now also passes `p_expected_user`. The database compares it with
 ## Release-candidate follow-up
 
 Catalog and lazy-screen failure/recovery tests now run in both languages; nested-dialog tests also cover both languages. Expired authentication retains the same durable batch for retry. Deno type-check and two real push crypto tests pass with fake transport; pinned Deno dependency checks run in CI. A fifth migration/test connects the existing server overdue penalty to verified points. Hosted and human gates remain open under the owner’s explicit local-testing-only choice. See `docs/release-readiness.md`.
+
+PR [#32](https://github.com/mrsadri/daf-leitner-box/pull/32) is committed and pushed. [GitHub CI](https://github.com/mrsadri/daf-leitner-box/actions/runs/44278415253) passed at `33f0583`. The PR remains a draft because the production holds are not cleared.

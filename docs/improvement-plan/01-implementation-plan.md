@@ -4,7 +4,7 @@ Prepared **18 November 2026**. Covers all **25 recommendations** from the [origi
 
 ## Current implementation status
 
-Implementation work has addressed all 25 areas, but 13 tasks remain incomplete; see [corrected remaining requirements](06-incomplete-tasks.md). [Progress and evidence](04-progress.md) supersede the original work order below; [owner handoff](05-owner-handoff.md) lists remaining staging/release/upstream gates. Approved decisions and compatibility choices are distinguished there. No production rollout has occurred.
+Implementation work has addressed all 25 areas, but 12 tasks remain incomplete; see [corrected remaining requirements](06-incomplete-tasks.md). [Progress and evidence](04-progress.md) supersede the original work order below; [owner handoff](05-owner-handoff.md) lists remaining staging/release/upstream gates. Approved decisions and compatibility choices are distinguished there. No production rollout has occurred.
 
 ## AI model guide
 

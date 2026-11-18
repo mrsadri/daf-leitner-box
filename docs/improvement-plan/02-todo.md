@@ -26,7 +26,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 | 07 | P1 | D | [Validate push destinations before the privileged worker fetches them](#task-07) | M | Partial — acceptance pending |
 | 08 | P1 | B | [Bind sync state and pending requests to a single user session](#task-08) | M | Partial — acceptance pending |
 | 09 | P1 | B | [Allow updates at the card quota and make limits concurrency-safe](#task-09) | M | Implemented locally |
-| 10 | P1 | A | [Run database authorization and migration tests in CI](#task-10) | M | Partial — acceptance pending |
+| 10 | P1 | A | [Run database authorization and migration tests in CI](#task-10) | M | Verified locally and in GitHub CI |
 | 11 | P2 | A | [Create one reproducible, versioned schema installation path](#task-11) | M | Partial — acceptance pending |
 | 12 | P2 | C | [Give story progress a current, constrained data model](#task-12) | M | Implemented locally; hosted data audit pending |
 | 13 | P2 | E | [Measure and reduce leaderboard aggregation cost](#task-13) | M | Partial — acceptance pending |
@@ -305,7 +305,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 - [x] **10.1** Enable a disposable PostgreSQL or Supabase job with deterministic fixtures and no production credentials. **AI: GPT-6.2 Sol · High.**
 - [x] **10.2** Run the existing SQL harness and add role-based tests for anonymous users, owners A/B, suspended users, and admin RPCs. **AI: GPT-6.2 Sol · High.**
 - [x] **10.3** Add migration replay, concurrency, and transport integration tests; prove an intentionally broken ownership rule fails CI. **AI: GPT-6.2 Sol · High.**
-- [ ] **10.V** Pass and record [acceptance check V10](03-verification-checklist.md#v10). **AI: GPT-6.2 Sol · High.**
+- [x] **10.V** Pass and record [acceptance check V10](03-verification-checklist.md#v10). **AI: GPT-6.2 Sol · High.**
 
 **Acceptance:** A deliberately broken owner policy or non-replayable migration causes CI to fail.
 

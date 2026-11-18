@@ -154,10 +154,10 @@ See [progress](04-progress.md) for current counts/commands and [owner handoff](0
 **Verification AI:** GPT-6.2 Sol · High
 
 
-- [ ] A deliberately broken owner policy or non-replayable migration causes CI to fail. **AI: GPT-6.2 Sol · High.**
-- [ ] Evidence recorded and assessed against the original confidence level: Verified coverage gap. **AI: GPT-6.2 Sol · High.**
+- [x] A deliberately broken owner policy or non-replayable migration causes CI to fail. **AI: GPT-6.2 Sol · High.**
+- [x] Evidence recorded and assessed against the original confidence level: Verified coverage gap. **AI: GPT-6.2 Sol · High.**
 
-**Result:** Pending · **Commit/environment:** — · **Evidence:** — · **Reviewer:** —  
+**Result:** Pass · **Commit/environment:** `33f0583`; local isolated/native PostgreSQL and GitHub CI · **Evidence:** [CI run](https://github.com/mrsadri/daf-leitner-box/actions/runs/44278415253) including RLS mutation detection · **Reviewer:** coding agent; independent security review remains a separate gate  
 [Implementation tasks](02-todo.md#task-10)
 
 <a id="v11"></a>
