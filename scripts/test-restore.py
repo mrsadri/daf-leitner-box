@@ -55,7 +55,7 @@ with tempfile.TemporaryDirectory(prefix='daf-restore-') as tmp:
           'backupBytes':backup.stat().st_size,'backupSeconds':round(dumped-started,3),
           'restoreSeconds':round(restored-restore_start,3),'validationSeconds':round(time.monotonic()-restored,3),
           'restoredCounts':actual['counts'],'schemaAndPermissionsEquivalent':True,
-          'postSnapshotWriteAbsent':True,'ownerRecoveryTargetsApproved':False,
+          'postSnapshotWriteAbsent':True,'hostedRecoveryTargetsValidated':False,
           'limitations':'Same-cluster synthetic restore. Does not test hosted backup retention, Auth service recovery, Storage objects, operator RPO/RTO, or independent disaster recovery.'}
         path=os.environ.get('DAF_RESTORE_REPORT')
         if path:Path(path).write_text(json.dumps(report,indent=2)+'\n')
