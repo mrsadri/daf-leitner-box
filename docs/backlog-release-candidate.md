@@ -21,6 +21,7 @@ Base: `519a905` (main after PR37). This candidate implements the owner-approved 
 - 70 Playwright checks passed in Chrome on phone/desktop, Persian/English, including quiz award and recovery/navigation paths.
 - TypeScript/oxlint passed; production build passed.
 - Isolated SQL suites passed with migration replay and negative authorization control, including the new legacy recovery/scene reward/balance regression.
+- Native PostgreSQL assertions, two-connection races and synthetic encrypted dump/restore passed.
 - Clean-install and upgrade schemas, permissions, policies, triggers and functions matched.
 - Generated database types matched. Runtime dependency audit: zero reported vulnerabilities.
 

@@ -1,5 +1,7 @@
 \set ON_ERROR_STOP on
 begin;
+-- Native suites share a cluster; unrelated earlier fixtures must not enter these rank assertions.
+update public.profiles set show_on_leaderboard=false;
 insert into auth.users(id,email) values
  ('83000000-0000-0000-0000-000000000001','board-a@example.test'),
  ('83000000-0000-0000-0000-000000000002','board-b@example.test'),
