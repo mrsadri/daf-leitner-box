@@ -75,19 +75,25 @@ export const NewWordsStudySession: React.FC<NewWordsStudySessionProps> = ({
     ? (quizArticle ? `${quizArticle} ${stripArticleFromWord(currentWord.wort)}` : (currentWord.wort || ''))
     : '';
 
-  const speakingRef = useRef(false);
+  const speechRequest = useRef(0);
+  useEffect(() => {
+    if (!currentWord?.id) speechService.cancel();
+    return () => speechService.cancel();
+  }, [currentWord?.id]);
+
   const handleSpeak = useCallback(async (text: string) => {
-    if (!text || speakingRef.current) return;
-    speakingRef.current = true;
+    if (!text) return;
+    const request = ++speechRequest.current;
     setIsSpeaking(true);
     try { await speechService.speak(text, leitnerEngine.getSettings().speechRate); }
-    finally { speakingRef.current = false; setIsSpeaking(false); }
+    finally { if (request === speechRequest.current) setIsSpeaking(false); }
   }, []);
 
   useEffect(() => {
     if (currentWord && leitnerEngine.getSettings().autoSpeak) {
       // Two-sided card: speak the stripped word so speech doesn't spoil the article.
       // One-sided card: the article is visible anyway, so say it too.
+      // eslint-disable-next-line react/set-state-in-effect -- The browser audio request needs corresponding speaking state.
       handleSpeak((flipMode ? frontWordDisplay : fullWordDisplay) || '');
     }
     // Moving on from the bottom of a long card: bring the top of the next word back into view

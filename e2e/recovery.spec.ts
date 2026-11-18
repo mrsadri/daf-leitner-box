@@ -1,6 +1,9 @@
 import { test, expect } from '@playwright/test';
 import { openApp } from './helpers';
 
+// Fault injection must reach page requests rather than bypass interception via a service worker.
+test.use({ serviceWorkers: 'block' });
+
 test('an empty backup requires confirmation and cancellation preserves cards', async ({page}) => {
   await openApp(page,'en','/?go=settings');
   const before=await page.evaluate(()=>localStorage.getItem('daf_cards_cache_demo-user'));
@@ -16,7 +19,7 @@ test('an empty backup requires confirmation and cancellation preserves cards', a
 for (const lang of ['en','fa'] as const) {
   test(`failed story content can be retried (${lang})`,async ({page})=>{
     let fail=true;
-    await page.route('**/data/stories/index.json',route=>fail?route.abort():route.continue());
+    await page.context().route('**/data/stories/index.json',route=>fail?route.abort():route.continue());
     await openApp(page,lang,'/?go=stories');
     const alert=page.getByRole('alert');
     await expect(alert).toBeVisible();
@@ -73,7 +76,7 @@ test('reader words use arrow navigation and one Tab exits the text',async({page}
 for(const lang of ['en','fa'] as const){
  test(`catalog failure preserves a retry path (${lang})`,async({page})=>{
   let fail=true;
-  await page.route('**/data/wortschatz-daf-kompakt.csv',route=>fail?route.abort():route.continue());
+  await page.context().route('**/data/wortschatz-daf-kompakt.csv',route=>fail?route.abort():route.continue());
   await page.addInitScript(l=>{localStorage.setItem('daf_lang',l);localStorage.setItem('daf_demo_overdue_seen','1');},lang);
   await page.goto('/');
   const alert=page.getByRole('alert');await expect(alert).toBeVisible();
@@ -83,7 +86,7 @@ for(const lang of ['en','fa'] as const){
  test(`lazy story chunk failure recovers after reload (${lang})`,async({page})=>{
   await openApp(page,lang);
   let fail=true;
-  await page.route('**/assets/StoriesScreen-*.js',route=>fail?route.abort():route.continue());
+  await page.context().route('**/assets/StoriesScreen-*.js',route=>fail?route.abort():route.continue());
   const {tabBar}=await import('./helpers');
   await tabBar(page).getByRole('button',{name:lang==='en'?/stories/i:/داستان/}).click();
   const alert=page.getByRole('alert');await expect(alert).toBeVisible();

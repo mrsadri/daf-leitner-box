@@ -1,3 +1,4 @@
+import { speechService } from '../shared/lib/speechService';
 /**
  * The signed-in app: navigation, the active screen, and the dialogs that can open over any screen.
  *
@@ -53,6 +54,7 @@ export function LeitnerApp({ user }: { user: User }) {
     void supabase.rpc('set_activity_timezone', { p_zone: Intl.DateTimeFormat().resolvedOptions().timeZone });
   }, [user.id]);
   const [activeTab, updateActiveTab] = useState<ActiveTab>('dashboard');
+  useEffect(() => () => speechService.cancel(), [activeTab, user.id]);
   const setActiveTab = useCallback((tab: ActiveTab) => {
     const url = new URL(window.location.href);
     if (url.searchParams.get('go') !== tab) {

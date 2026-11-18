@@ -21,6 +21,10 @@ export default defineConfig({
   projects: [
     { name: 'phone', use: { ...devices['Pixel 7'], viewport: { width: 390, height: 844 } } },
     { name: 'desktop', use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 } } },
+    ...(process.env.PW_WEBKIT ? [
+      { name: 'webkit-phone', use: { browserName: 'webkit' as const, viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, colorScheme: 'dark' as const, launchOptions: {} } },
+      { name: 'webkit-desktop', use: { browserName: 'webkit' as const, viewport: { width: 1280, height: 800 }, colorScheme: 'light' as const, launchOptions: {} } },
+    ] : []),
   ],
   webServer: {
     command: 'npx vite build --mode demo --outDir dist-e2e && npx vite preview --outDir dist-e2e --port 4173 --strictPort',

@@ -65,7 +65,9 @@ for (const lang of ['fa', 'en'] as const) {
     await expect(page.getByTestId('next-story')).toBeVisible();
 
     // Story 2 is open, also after a reload
+    const catalogAfterReload = page.waitForResponse(response => response.url().includes('/data/wortschatz-daf-kompakt.csv'));
     await page.reload();
+    await (await catalogAfterReload).finished();
     await expect(page).toHaveURL(/story=S01-Q1/);
     await page.goto('/?go=stories&book=1');
     await expect(page.getByTestId('story-item').nth(0)).toHaveAttribute('data-state', 'done');

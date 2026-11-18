@@ -18,7 +18,8 @@
     "check:edge": "npx --yes deno@2.9.6 check --node-modules-dir=none --lock=supabase/functions/send-reminders/deno.lock --frozen-lockfile supabase/functions/send-reminders/index.ts",
     "test:edge": "ECE_KEYLOG=0 npx --yes deno@2.9.6 test --node-modules-dir=none --lock=supabase/functions/send-reminders/deno.lock --frozen-lockfile --allow-env=ECE_KEYLOG,NODE_DEBUG,DEBUG,CRON_SECRET,VAPID_SUBJECT,VAPID_PUBLIC_KEY,VAPID_PRIVATE_KEY,SUPABASE_URL,SUPABASE_SERVICE_ROLE_KEY supabase/functions/send-reminders/*.test.ts",
     "check:public-release": "node scripts/check-public-release.mjs",
-    "audit:runtime": "npm audit --omit=dev --audit-level=high"
+    "audit:runtime": "npm audit --omit=dev --audit-level=high",
+    "e2e:webkit": "PW_WEBKIT=1 playwright test --project=webkit-phone --project=webkit-desktop"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.119.0",

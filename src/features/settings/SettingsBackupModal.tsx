@@ -7,6 +7,7 @@ import { backupSummary, parseStoryBackup } from '../../core/backup';
 import { AppSettings, LeitnerCard, UserProfile } from '../../core/types';
 import { leitnerEngine } from '../../core/leitnerEngine';
 import { cloudSync } from '../../core/cloudSync';
+import { drillSyncInfo, onDrillSync, flushQueue } from '../adjective/drillSync';
 import { soundService } from '../../shared/lib/soundService';
 import { speechService } from '../../shared/lib/speechService';
 import { Download, Upload, Volume2, ShieldCheck, Check, AlertTriangle, UserRound, LogOut, Trophy, Languages } from 'lucide-react';
@@ -66,6 +67,15 @@ export const SettingsBackupModal: React.FC<SettingsBackupModalProps> = ({
     setVoices(speechService.availableVoices());
     setPreferredVoice(speechService.preferredVoice());
   }), []);
+
+  const readSync = () => ({ ...cloudSync.getSyncInfo(), drillPending: drillSyncInfo(profile.id).pending });
+  const [syncDetails, setSyncDetails] = useState(readSync);
+  useEffect(() => {
+    const update = () => setSyncDetails({ ...cloudSync.getSyncInfo(), drillPending: drillSyncInfo(profile.id).pending });
+    const off = cloudSync.onStatus(update);
+    const offDrill = onDrillSync(profile.id, update);
+    return () => { off(); offDrill(); };
+  }, [profile.id]);
 
   const trimmedName = displayName.trim();
   const nameIsValid = trimmedName.length >= 1 && trimmedName.length <= 40;
@@ -403,6 +413,14 @@ export const SettingsBackupModal: React.FC<SettingsBackupModalProps> = ({
           </div>
         )}
       </div>
+
+      <section className="rounded-card border border-slate-200 dark:border-slate-700 p-4 space-y-3" data-testid="sync-diagnostics">
+        <h3 className="font-semibold">{t.settings.syncDiagnostics}</h3>
+        <p className="text-sm" role="status">{t.sync.details(syncDetails.pending + syncDetails.drillPending, syncDetails.rejected, syncDetails.conflicts)}</p>
+        {syncDetails.storageError && <p role="alert">{t.sync.storageError}</p>}
+        {syncDetails.lastSuccess && <p className="text-caption">{t.sync.lastSaved(new Date(syncDetails.lastSuccess).toLocaleString())}</p>}
+        <Button variant="secondary" onClick={() => { void Promise.allSettled([cloudSync.flush(), flushQueue(profile.id)]); }}>{t.common.retry}</Button>
+      </section>
 
       <Button variant="secondary" onClick={() => downloadRecovery()}>{t.settings.recoveryDownload}</Button>
 

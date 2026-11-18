@@ -95,12 +95,19 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
   const perfektGuide = useMemo(() => (currentCard && hasPerfektQuiz && currentCard.box <= 2 ? perfektGuideOf(currentCard) : null), [currentCard, hasPerfektQuiz]);
   const perfektLocked = hasPerfektQuiz && !perfektResult?.correct;
 
+  const speechRequest = useRef(0);
+  useEffect(() => {
+    if (!currentCard?.id) speechService.cancel();
+    return () => speechService.cancel();
+  }, [currentCard?.id]);
+
   const handleSpeak = useCallback(async (text: string) => {
-    if (!text || isSpeaking) return;
+    if (!text) return;
+    const request = ++speechRequest.current;
     setIsSpeaking(true);
     await speechService.speak(text, leitnerEngine.getSettings().speechRate);
-    setIsSpeaking(false);
-  }, [isSpeaking]);
+    if (request === speechRequest.current) setIsSpeaking(false);
+  }, []);
 
   // Reset card UI and auto-speak when a new card comes up
   useEffect(() => {
