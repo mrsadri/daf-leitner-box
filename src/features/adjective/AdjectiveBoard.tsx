@@ -99,7 +99,7 @@ export function AdjectiveBoard({ userId, showOnLeaderboard }: Props) {
           </span>
         </div>
         <div>
-          <span className="text-xs text-indigo-800 dark:text-indigo-300 block">{t.leaderboard.weekScore}</span>
+          <span className="text-xs text-indigo-800 dark:text-indigo-300 block">{t.leaderboard.tabWeek}</span>
           <span className="text-lg font-bold font-mono-num text-slate-900 dark:text-white block">
             {myBestWeek === null ? b.none : num(myBestWeek)}
           </span>

@@ -481,6 +481,7 @@ export const en: Messages = {
     tabWeek: 'This week',
     myRank: 'Your rank',
     totalScore: 'Total score',
+    tabBalance: '168-hour balance',
     weekScore: '168-hour balance',
     streak: 'Day streak',
     hidden: 'Your name is hidden from others; only you can see your rank.',
