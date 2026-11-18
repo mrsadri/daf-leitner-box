@@ -31,4 +31,5 @@ delete from public.cards where id='daf_01_1';
 do $$ begin
  if not exists(select 1 from public.get_verified_leaderboard() where is_me and score_7d=0) then raise exception 'FAILED: deletion balance';end if;
 end $$;
+do $$ begin raise notice 'ok: snapshot legacy rewards, one-time scene awards and signed balances'; end $$;
 rollback;
