@@ -52,8 +52,10 @@ export const WordSheet: React.FC<Props> = ({ target, onClose, onCardsChanged, on
   };
   const changed = () => { onCardsChanged(); force(x => x + 1); };
   const guard = () => {
-    if (Date.now() < busyUntil.current) return false;   // a short guard against an accidental double tap
-    busyUntil.current = Date.now() + 800;
+    // eslint-disable-next-line react/purity -- This guard executes only from add/move button event handlers, never during render.
+    const now = performance.now();
+    if (now < busyUntil.current) return false;   // a short guard against an accidental double tap
+    busyUntil.current = now + 800;
     return true;
   };
 

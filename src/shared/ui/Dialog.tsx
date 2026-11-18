@@ -18,9 +18,25 @@ import { cx } from './cx';
 import { IconButton } from './Button';
 import { useI18n } from '../../i18n/I18nProvider';
 
-let openCount = 0;
+const dialogStack: HTMLElement[] = [];
+const inertBefore = new Map<HTMLElement, boolean>();
+let originalOverflow = '';
+function updateBackground() {
+  const top = dialogStack.at(-1);
+  if (!top) {
+    inertBefore.forEach((value, element) => { element.inert = value; });
+    inertBefore.clear();
+    document.body.style.overflow = originalOverflow;
+    return;
+  }
+  for (const element of document.body.children) {
+    if (!(element instanceof HTMLElement)) continue;
+    if (!inertBefore.has(element)) inertBefore.set(element, element.inert);
+    element.inert = element !== top;
+  }
+}
 /** True while any Dialog is open. Screen-level keyboard shortcuts must check this first. */
-export const isDialogOpen = (): boolean => openCount > 0;
+export const isDialogOpen = (): boolean => dialogStack.length > 0;
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -57,15 +73,18 @@ export const Dialog: React.FC<DialogProps> = ({
   useEffect(() => { latest.current = { onClose, dismissable }; });
 
   useEffect(() => {
-    openCount++;
+    const container = panel.current?.parentElement;
+    if (!container) return;
+    if (!dialogStack.length) originalOverflow = document.body.style.overflow;
+    dialogStack.push(container);
+    updateBackground();
     const opener = document.activeElement as HTMLElement | null;
     const first = panel.current?.querySelector<HTMLElement>('[data-autofocus]') ?? panel.current?.querySelector<HTMLElement>(FOCUSABLE);
     (first ?? panel.current)?.focus();
-    const overflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
     const onKey = (e: KeyboardEvent) => {
-      if (!panel.current) return;
+      if (!panel.current || dialogStack.at(-1) !== container) return;
       if (e.key === 'Escape') {
         e.preventDefault();
         e.stopPropagation();
@@ -81,9 +100,10 @@ export const Dialog: React.FC<DialogProps> = ({
     };
     window.addEventListener('keydown', onKey, true);
     return () => {
-      openCount--;
+      const index = dialogStack.indexOf(container);
+      if (index !== -1) dialogStack.splice(index, 1);
+      updateBackground();
       window.removeEventListener('keydown', onKey, true);
-      document.body.style.overflow = overflow;
       if (opener && document.contains(opener)) opener.focus();
     };
   }, []);

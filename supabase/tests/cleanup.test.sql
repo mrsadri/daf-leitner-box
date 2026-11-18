@@ -22,9 +22,11 @@ insert into public.cards (user_id, id, type, box, next_review_date, data) values
   ('00000000-0000-0000-0000-0000000000c1', 'shared_11111111-1111-1111-1111-111111111111', 'reflection', 3, current_date, '{"title":"Fremd"}'),
   ('00000000-0000-0000-0000-0000000000c2', 'shared_22222222-2222-2222-2222-222222222222', 'reflection', 0, current_date, '{}');
 alter table public.cards enable trigger cards_guard_shared_copies;
+alter table public.story_progress disable trigger story_progress_merge;
 insert into public.story_progress (user_id, story_id, finished_count, total_count) values
   ('00000000-0000-0000-0000-0000000000c1', 'story-01', 12, 80),
   ('00000000-0000-0000-0000-0000000000c1', 'S01-Q1', 3, 3);
+alter table public.story_progress enable trigger story_progress_merge;
 drop table if exists public.backup_shared_copies_20261117;
 
 \ir ../migrations/20261117_cleanup_insights_dictation.sql

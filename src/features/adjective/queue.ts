@@ -7,6 +7,7 @@
 export const QUEUE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
 export interface PendingFinish {
+  protocol?: 'verified';
   id: string;
   score: number;
   answered: number;
@@ -36,4 +37,18 @@ export function classifyFinishResponse(res: { error: unknown; status?: number })
 /** Whether a queued entry should stay queued after an attempt with this outcome. */
 export function keepAfterOutcome(outcome: FlushOutcome): boolean {
   return outcome === 'network-error';
+}
+
+/** Validate saved finish requests before issuing any RPC. Corrupt storage is never silently replaced. */
+export function parsePendingFinishes(value: unknown): PendingFinish[] {
+  if (!Array.isArray(value) || value.length > 200) throw new Error('Invalid stored drill queue');
+  const ids = new Set<string>();
+  for (const entry of value) {
+    if (!entry || typeof entry !== 'object' || typeof entry.id !== 'string' || entry.id.length > 100 || !entry.id
+      || !Number.isInteger(entry.score) || !Number.isInteger(entry.answered) || entry.score < 0 || entry.score > entry.answered || entry.answered > 150
+      || !Number.isFinite(entry.queuedAt) || entry.queuedAt < 0 || (entry.protocol !== undefined && entry.protocol !== 'verified')
+      || ids.has(entry.id)) throw new Error('Invalid stored drill request');
+    ids.add(entry.id);
+  }
+  return value;
 }

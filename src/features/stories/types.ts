@@ -75,7 +75,7 @@ export interface StoryProgress {
   totalPages: number;
   /** Quiz answered: the next story in the book opens */
   completedAt: string | null;
-  /** Correct answers in the last quiz (local only) */
+  /** Correct answers in the most recent synchronized quiz */
   score?: number;
   updatedAt: string;
 }

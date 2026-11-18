@@ -7,7 +7,8 @@ import { useEffect, useRef } from 'react';
 import type { AppSettings, UserProfile } from '../core/types';
 import { cloudSync, touchPresence } from '../core/cloudSync';
 import { soundService } from '../shared/lib/soundService';
-import { startSilver } from '../features/silver/silver';
+import { refreshSilver, startSilver } from '../features/silver/silver';
+import { flushQueue as flushDrill } from '../features/adjective/drillSync';
 import { refreshPush } from '../features/settings/pwa';
 import { useI18n } from '../i18n/I18nProvider';
 import { DEFAULT_LANG } from '../i18n/format';
@@ -29,7 +30,7 @@ export function useSessionEffects({ userId, profile, settings, setProfile, updat
     if (!ready) return;
     let stopped = false;
     const ping = () => {
-      if (stopped || document.visibilityState !== 'visible') return;
+      if (stopped || !userId || document.visibilityState !== 'visible') return;
       touchPresence()
         .then(suspended => {
           if (!suspended || stopped) return;
@@ -46,11 +47,22 @@ export function useSessionEffects({ userId, profile, settings, setProfile, updat
       clearInterval(interval);
       document.removeEventListener('visibilitychange', ping);
     };
-  }, [ready, setProfile]);
+  }, [ready, setProfile, userId]);
+
+  useEffect(() => {
+    if (!ready) return;
+    const retry = () => { if (document.visibilityState === 'visible') void flushDrill(userId).catch(() => {}); };
+    retry();
+    window.addEventListener('online', retry); document.addEventListener('visibilitychange', retry);
+    const timer = setInterval(retry, 15000);
+    return () => { clearInterval(timer); window.removeEventListener('online', retry); document.removeEventListener('visibilitychange', retry); };
+  }, [ready,userId]);
 
   // Silver cards: this device's running count, brought up to date with the server
   useEffect(() => {
-    if (ready) startSilver(userId);
+    if (!ready) return;
+    void startSilver(userId);
+    return cloudSync.onStatus(status => { if (status === 'idle') void refreshSilver(); });
   }, [ready, userId]);
 
   // The sound toggle used to reset to "on" after every reload

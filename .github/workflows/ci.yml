@@ -20,9 +20,20 @@ jobs:
       - run: npm ci
       - run: python3 -m unittest discover scripts/stories/tests
       - run: python3 scripts/stories/build_stories.py --check
+      - run: python3 scripts/build-edge-function.py --check
+      - run: npm run check:edge
+      - run: npm run test:edge
       - run: npm run lint
+      - run: npm run db:types:check
+      - run: npm run db:upgrade:check
+      - run: npm run db:questions:check
+      - run: npm run test:sql:isolated
       - run: npm test
       - run: npm run build
+        env:
+          # Include the signed-in application in the production bundle without real credentials.
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: placeholder
       - run: npx playwright install --with-deps chromium-headless-shell
       - run: npm run e2e
       - uses: actions/upload-artifact@v4
@@ -31,3 +42,14 @@ jobs:
           name: playwright-report
           path: playwright-report
           retention-days: 7
+
+  database:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install disposable PostgreSQL test binaries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-16
+      - name: Test schema, migration replay, and SQL assertions
+        run: bash scripts/test-sql.sh /usr/lib/postgresql/16/bin

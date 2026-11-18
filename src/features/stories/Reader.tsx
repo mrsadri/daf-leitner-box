@@ -76,6 +76,7 @@ export const Reader: React.FC<Props> = ({ story, startPage, hasNext, onPage, onQ
   // Arrow keys turn pages (German reads left to right, so → is forward in both interface languages)
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if ((e.target as HTMLElement)?.closest('[data-word-navigation]')) return;
       if (isDialogOpen() || (e.target as HTMLElement)?.closest('input, textarea, select')) return;
       if (e.key === 'ArrowRight') { e.preventDefault(); forward(); }
       if (e.key === 'ArrowLeft') { e.preventDefault(); back(); }
@@ -85,6 +86,7 @@ export const Reader: React.FC<Props> = ({ story, startPage, hasNext, onPage, onQ
   }, [forward, back]);
 
   // A new page gets the focus, so screen readers start reading it
+  // eslint-disable-next-line react/exhaustive-effect-dependencies -- The page transition intentionally triggers focus on the new rendered page.
   useEffect(() => { pageRef.current?.focus({ preventScroll: true }); }, [step]);
 
   const onTouchStart = (e: React.TouchEvent) => { touch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }; };

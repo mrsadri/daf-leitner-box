@@ -54,3 +54,9 @@ DaF-kompakt-work/
 000-*.txt
 LOGIC_REVIEW.md
 dist-demo
+
+# Local Supabase CLI bookkeeping
+supabase/.temp/
+
+# Pinned Edge Function dependency graph for reproducible runtime checks
+!supabase/functions/send-reminders/deno.lock

@@ -3,6 +3,9 @@
  * review rules (box intervals, due dates) and every change to cards. Changes are reported to cloudSync through hooks.
  * A singleton; no React. Rules: Box n is due 2^n days after its last review; box 6 is the archive (mastered).
  */
+import { parseStoryBackup } from './backup';
+import { mergeAll } from '../features/stories/progress';
+import { validSettings } from './settingsValidation';
 import { LeitnerCard, AppSettings, MASTERED_BOX, ReviewEvent } from './types';
 import { parseCSV, transformCsvToCards } from './csvParser';
 import { toLocalDateString } from './dates';
@@ -102,9 +105,17 @@ function normalizeImportedCard(raw: unknown): LeitnerCard | null {
   if (c.type !== 'vocab' && c.type !== 'reflection') return null;
   if (!Number.isInteger(c.box) || (c.box as number) < 0 || (c.box as number) > MASTERED_BOX) return null;
   if (typeof c.nextReviewDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(c.nextReviewDate)) return null;
+  const textFields = ['wort','persisch','artikel','beispiel','formen','plural','wortart','oesterreich','lektion','niveau','nr','feld',
+    'englisch','beispielEn','formenEn','oesterreichEn','perfekt','infinitiv','praesens','praeteritum','reflexiv','title','content'] as const;
+  if (textFields.some(key => c[key] !== undefined && typeof c[key] !== 'string')) return null;
+  if (c.category !== undefined && !['decision','motivation','habit','goal','note'].includes(c.category)) return null;
+  if (new TextEncoder().encode(JSON.stringify(raw)).byteLength > 16384) return null;
+  const content = Object.fromEntries(textFields.filter(key => c[key] !== undefined).map(key => [key,c[key]]));
   const count = (v: unknown) => (Number.isInteger(v) && (v as number) >= 0 ? (v as number) : 0);
   return {
-    ...(c as LeitnerCard),
+    ...content,
+    id: c.id, type: c.type, box: c.box!, nextReviewDate: c.nextReviewDate,
+    ...(c.category ? { category: c.category } : {}),
     lastReviewedAt: typeof c.lastReviewedAt === 'string' ? c.lastReviewedAt : null,
     createdAt: typeof c.createdAt === 'string' ? c.createdAt : new Date().toISOString(),
     reviewCount: count(c.reviewCount),
@@ -179,7 +190,16 @@ class LeitnerEngine {
     this.userId = userId;
     // Only in memory and the local cache: nothing is sent to the server until a card is answered
     this.cards = cards.filter(c => !isRemovedSharedCopy(c)).map(c => this.withCatalogContent(c));
-    this.settings = { ...DEFAULT_SETTINGS, ...(settings || {}) };
+    this.settings = { ...DEFAULT_SETTINGS, ...validSettings(settings) };
+    this.writeCache();
+  }
+
+  /** Acknowledgements update sync metadata only, retaining newer local learning changes. */
+  public acknowledgeSyncStamps(stamps: Record<string, string | null>) {
+    for (const card of this.cards) if (Object.hasOwn(stamps, card.id)) {
+      if (stamps[card.id]) card.syncStamp = stamps[card.id]!;
+      else delete card.syncStamp;
+    }
     this.writeCache();
   }
 
@@ -197,7 +217,12 @@ class LeitnerEngine {
       const cards = JSON.parse(raw);
       const settingsRaw = safeGet(settingsKey(userId));
       return {
-        cards: Array.isArray(cards) ? cards.filter((c: LeitnerCard) => c && !isRemovedSharedCopy(c)) : [],
+        cards: Array.isArray(cards) ? cards.flatMap((cached: unknown) => {
+          const card = normalizeImportedCard(cached);
+          if (!card || isRemovedSharedCopy(card)) return [];
+          if (cached && typeof cached === 'object' && 'syncStamp' in cached && typeof cached.syncStamp === 'string') card.syncStamp = cached.syncStamp;
+          return [card];
+        }) : [],
         settings: settingsRaw ? JSON.parse(settingsRaw) : null
       };
     } catch {
@@ -251,7 +276,7 @@ class LeitnerEngine {
         .catch(err => {
           console.error('Failed to load default CSV asset', err);
           this.catalogPromise = null;
-          return [];
+          throw err;
         });
     }
     return this.catalogPromise;
@@ -485,7 +510,8 @@ class LeitnerEngine {
 
   public exportData(): string {
     return JSON.stringify({
-      version: '1.0',
+      version: '2.0',
+      stories: this.userId ? JSON.parse(safeGet(`daf_stories_progress_${this.userId}`) || '{}') : {},
       exportedAt: new Date().toISOString(),
       cards: this.cards,
       settings: this.settings
@@ -496,11 +522,12 @@ class LeitnerEngine {
    * Replace all cards (and settings) with a JSON backup. Invalid cards are dropped;
    * the import fails if the file has cards but none of them are valid.
    */
-  public importData(jsonString: string): { ok: boolean; imported: number; skipped: number } {
+  public importData(jsonString: string, mode: 'replace' | 'merge' = 'replace'): { ok: boolean; imported: number; skipped: number } {
     try {
       const data = JSON.parse(jsonString);
-      if (!data || !Array.isArray(data.cards)) return { ok: false, imported: 0, skipped: 0 };
+      if (!data || !Array.isArray(data.cards) || data.cards.length > 10000 || (data.version && !['1.0', '2.0'].includes(data.version))) return { ok: false, imported: 0, skipped: 0 };
 
+      const stories = parseStoryBackup(data.stories);
       const seen = new Set<string>();
       const valid: LeitnerCard[] = [];
       for (const raw of data.cards) {
@@ -514,14 +541,29 @@ class LeitnerEngine {
         return { ok: false, imported: 0, skipped: data.cards.length };
       }
 
+      const importedCount = valid.length;
+      if (mode === 'merge') {
+        for (const card of this.cards) if (!seen.has(card.id)) { valid.push(card); seen.add(card.id); }
+        if (valid.length > 10000) return { ok: false, imported: 0, skipped: 0 };
+      }
+      if (this.userId && Object.keys(stories).length) {
+        const key = `daf_stories_progress_${this.userId}`;
+        const merged = mergeAll(parseStoryBackup(JSON.parse(safeGet(key) || '{}')), stories);
+        const pendingKey = `daf_stories_pending_${this.userId}`;
+        const pending = new Set<string>(JSON.parse(safeGet(pendingKey) || '[]'));
+        Object.keys(stories).forEach(id => pending.add(id));
+        // Persist before mutating card state; do not silently ignore storage errors.
+        localStorage.setItem(key, JSON.stringify(merged));
+        localStorage.setItem(pendingKey, JSON.stringify([...pending]));
+      }
       const removedIds = this.cards.filter(c => !seen.has(c.id)).map(c => c.id);
       this.cards = valid.map(c => this.withCatalogContent(c));
       this.persist(valid, removedIds);
 
       if (data.settings && typeof data.settings === 'object') {
-        this.saveSettings({ ...DEFAULT_SETTINGS, ...data.settings });
+        this.saveSettings({ ...DEFAULT_SETTINGS, ...validSettings(data.settings) });
       }
-      return { ok: true, imported: valid.length, skipped: data.cards.length - valid.length };
+      return { ok: true, imported: importedCount, skipped: data.cards.length - importedCount };
     } catch (e) {
       console.error('Import failed', e);
       return { ok: false, imported: 0, skipped: 0 };

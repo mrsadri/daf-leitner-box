@@ -11,10 +11,12 @@ import { Button, Card, Badge, cx } from '../../shared/ui';
 import { NewCardModal } from '../vocab/NewCardModal';
 import { loadBook, loadIndex, imageUrl } from './content';
 import { StoriesProgressStore } from './storiesSync';
+import type { StorySaveStatus } from './progressStore';
 import { storyStates, nextStory, withPage, withQuizDone } from './progress';
 import { resolveTap, type WordTarget } from './wordTap';
 import { WordSheet } from './WordSheet';
 import { Reader } from './Reader';
+import { readStoryLocation, writeStoryLocation, type StoryView } from './storyNavigation';
 import type { Book, StoriesIndex, StoryProgress, WordSegment } from './types';
 
 interface Props {
@@ -24,7 +26,7 @@ interface Props {
   onAddCard: (card: Partial<LeitnerCard>) => void;
 }
 
-type View = { kind: 'shelf' } | { kind: 'book'; n: number } | { kind: 'read'; n: number; storyId: string; continueAt?: number };
+
 
 const COVER_TINTS = ['bg-amber-100', 'bg-sky-100', 'bg-emerald-100', 'bg-rose-100', 'bg-violet-100', 'bg-lime-100', 'bg-orange-100', 'bg-teal-100', 'bg-indigo-100', 'bg-yellow-100'];
 
@@ -34,29 +36,48 @@ export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard
   const [index, setIndex] = useState<StoriesIndex | null>(null);
   const [book, setBook] = useState<Book | null>(null);
   const [error, setError] = useState(false);
-  const [view, setView] = useState<View>({ kind: 'shelf' });
+  const [loadAttempt, setLoadAttempt] = useState(0);
+  const [requestedView, updateView] = useState<StoryView>(() => readStoryLocation(window.location.href));
+  const setView = (next: StoryView) => { writeStoryLocation(next); updateView(next); };
+  useEffect(() => {
+    const pop = () => updateView(readStoryLocation(window.location.href));
+    window.addEventListener('popstate', pop);
+    return () => window.removeEventListener('popstate', pop);
+  }, []);
   const [target, setTarget] = useState<Exclude<WordTarget, { kind: 'none' }> | null>(null);
   const [newWord, setNewWord] = useState<string | null>(null);
   const store = useMemo(() => new StoriesProgressStore(userId), [userId]);
   const [progress, setProgress] = useState<Record<string, StoryProgress>>(() => store.get());
 
+  const [saveStatus, setSaveStatus] = useState<StorySaveStatus>('idle');
+
   useEffect(() => {
+    const offStatus = store.onStatus(setSaveStatus);
     const off = store.subscribe(setProgress);
     void store.start();
-    return () => { off(); store.dispose(); };
+    return () => { offStatus(); off(); store.dispose(); };
   }, [store]);
 
-  const load = () => { setError(false); loadIndex().then(setIndex).catch(() => setError(true)); };
+  // eslint-disable-next-line react/set-state-in-effect -- This shared retry/mount callback starts an external content load.
+  const load = () => { setError(false); setLoadAttempt(a => a + 1); loadIndex().then(setIndex).catch(() => setError(true)); };
   useEffect(load, []);
+
+  const requestedBook = requestedView.kind === 'shelf' ? undefined : index?.books.find(b => b.n === requestedView.n);
+  const requestedStory = requestedView.kind === 'read' ? requestedBook?.stories.findIndex(st => st.id === requestedView.storyId) ?? -1 : -1;
+  const view: StoryView = !index ? requestedView : !requestedBook ? { kind: 'shelf' }
+    : requestedView.kind === 'read' && (requestedStory < 0 || storyStates(requestedBook.stories.map(st => st.id), progress)[requestedStory] === 'locked')
+      ? { kind: 'book', n: requestedBook.n } : requestedView;
 
   const bookN = view.kind === 'shelf' ? null : view.n;
   useEffect(() => {
     if (bookN === null) return;
     let live = true;
+    // eslint-disable-next-line react/set-state-in-effect -- Changing the book invalidates the previous fetched book before loading its replacement.
     setBook(b => (b?.n === bookN ? b : null));
     loadBook(bookN).then(b => { if (live) setBook(b); }).catch(() => { if (live) setError(true); });
     return () => { live = false; };
-  }, [bookN]);
+    // eslint-disable-next-line react/exhaustive-effect-dependencies -- Retry reloads the same book after a failed request.
+  }, [bookN, loadAttempt]);
 
   const owned = useMemo(() => new Set(cards.map(c => c.id)), [cards]);
   const names = useMemo(() => new Set(book?.names ?? []), [book]);
@@ -79,6 +100,12 @@ export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard
 
   const overlays = (
     <>
+      {(saveStatus !== 'idle' || store.getSaveInfo().lastSuccess) && (
+        <div role="status" className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-200">
+          <span>{saveStatus !== 'idle' && s.saveStatus[saveStatus]} {s.pendingCount(store.getSaveInfo().pending)} {store.getSaveInfo().lastSuccess && t.sync.lastSaved(new Date(store.getSaveInfo().lastSuccess!).toLocaleString())}</span>
+          {saveStatus === 'error' && <Button onClick={() => { void store.retry(); }}>{s.retry}</Button>}
+        </div>
+      )}
       {target && (
         <WordSheet
           target={target}
@@ -189,7 +216,8 @@ export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard
 
   // ----- Reading -----
   if (!book || book.n !== view.n) return <p className="text-center py-16 text-slate-500" role="status">{s.loading}</p>;
-  const story = book.stories.find(st => st.id === view.storyId)!;
+  const story = book.stories.find(st => st.id === view.storyId);
+  if (!story) return <Button onClick={() => setView({ kind: 'book', n: book.n })}>{s.backToShelf}</Button>;
   const idx = book.stories.indexOf(story);
   const nextSt = book.stories[idx + 1];
   return (
@@ -199,7 +227,10 @@ export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard
         story={story}
         startPage={view.continueAt && view.continueAt > 0 ? view.continueAt : undefined}
         hasNext={!!nextSt}
-        onPage={(page) => store.save(withPage(progress[story.id], story.id, page, story.pages.length, now()), book.contentVersion)}
+        onPage={(page) => {
+          writeStoryLocation({ kind: 'read', n: book.n, storyId: story.id, continueAt: page }, true);
+          store.save(withPage(progress[story.id], story.id, page, story.pages.length, now()), book.contentVersion);
+        }}
         onQuizDone={(score) => store.save(withQuizDone(progress[story.id], story.id, story.pages.length, score, now()), book.contentVersion)}
         onWord={onWord}
         onNextStory={() => nextSt && setView({ kind: 'read', n: book.n, storyId: nextSt.id })}

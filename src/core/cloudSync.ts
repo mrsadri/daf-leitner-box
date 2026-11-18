@@ -4,10 +4,13 @@
  * Writes go through a queue that is debounced, retried with backoff and persisted
  * in localStorage, so answers given offline or during a network error are not lost.
  */
+import type { Database, Json } from './database.types';
+import { validatePersistedQueue } from './queueValidation';
+import { validSettings } from './settingsValidation';
 import type { User } from '@supabase/supabase-js';
 import { requireSupabase } from '../shared/lib/supabase';
 import { AppSettings, LeitnerCard, ReviewEvent, UserProfile } from './types';
-import { leitnerEngine, isRemovedSharedCopy, LEGACY_CARDS_KEY, LEGACY_SETTINGS_KEY } from './leitnerEngine';
+import { leitnerEngine, isRemovedSharedCopy, LEGACY_CARDS_KEY, LEGACY_SETTINGS_KEY, DEFAULT_SETTINGS } from './leitnerEngine';
 import { isDemoMode, buildDemoCards } from '../shared/lib/demo';
 
 
@@ -28,14 +31,14 @@ interface CardRow {
   review_count: number;
   correct_count: number;
   wrong_count: number;
-  data: Record<string, unknown>;
+  data: Record<string, Json | undefined>;
   created_at: string;
   updated_at: string;
 }
 
 function cardToRow(card: LeitnerCard, userId: string): CardRow {
   const {
-    id, type, box, nextReviewDate, lastReviewedAt, reviewCount, correctCount, wrongCount, createdAt,
+    id, type, box, nextReviewDate, lastReviewedAt, reviewCount, correctCount, wrongCount, createdAt, syncStamp: _syncStamp,
     ...data
   } = card;
   return {
@@ -65,30 +68,79 @@ function rowToCard(row: CardRow): LeitnerCard {
     reviewCount: row.review_count,
     correctCount: row.correct_count,
     wrongCount: row.wrong_count,
-    createdAt: row.created_at
+    createdAt: row.created_at,
+    syncStamp: row.updated_at
   };
 }
 
+interface SyncBatch {
+  operation: string; revision: number; upserts: CardRow[]; deletes: string[]; events: ReviewEvent[];
+  settings: Partial<AppSettings> | null; versions: Record<string, number>; settingsVersion: number;
+}
 interface PersistedQueue {
+  protocol?: 2;
+  bases?: Record<string, string | null>;
+  versions?: Record<string, number>;
+  settingsBase?: Partial<AppSettings>;
+  settingsVersion?: number;
+  inflight?: SyncBatch | null;
   upserts: Record<string, LeitnerCard>;
   deletes: string[];
   events: ReviewEvent[];
-  settings: AppSettings | null;
+  settings: Partial<AppSettings> | null;
 }
 
-class CloudSync {
+export class CloudSync {
+  private generation = 0;
+  private revision = 0;
+  private serverStamps = new Map<string, string>();
+  private bases: Record<string, string | null> = Object.create(null);
+  private versions = new Map<string, number>();
+  private serial = 0;
+  private settingsVersion = 0;
+  private settingsBase: Partial<AppSettings> = {};
+  private knownSettings: Partial<AppSettings> = {};
+  private inflight: SyncBatch | null = null;
+
+  /** Synchronous unmount barrier: pending writes already have their per-user durable copy. */
+  public detach() {
+    this.generation++;
+    if (this.timer) clearTimeout(this.timer);
+    this.timer = null;
+    this.flushing = null;
+    this.userId = null;
+    this.lastSuccess = null; this.lastErrorCode = null; this.storageError = false;
+    this.upserts.clear(); this.deletes.clear(); this.events = []; this.settings = null;
+    this.serverStamps.clear(); this.bases = Object.create(null); this.versions.clear();
+    this.serial = 0; this.revision = 0; this.settingsVersion = 0;
+    this.settingsBase = {}; this.knownSettings = {}; this.inflight = null;
+    leitnerEngine.reset();
+    this.retryDelay = 2000;
+    this.setStatus('idle');
+  }
+
   private userId: string | null = null;
   private upserts = new Map<string, LeitnerCard>();
   private deletes = new Set<string>();
   private events: ReviewEvent[] = [];
-  private settings: AppSettings | null = null;
+  private settings: Partial<AppSettings> | null = null;
   private timer: ReturnType<typeof setTimeout> | null = null;
   private flushing: Promise<void> | null = null;
   private retryDelay = 2000;
+  private lastSuccess: string | null = null;
+  private lastErrorCode: string | null = null;
+  private storageError = false;
+  public getSyncInfo() {
+    let rejected = 0, conflicts = 0;
+    try { rejected = JSON.parse(localStorage.getItem(`daf_rejected_reviews_${this.userId}`) || '[]').length; } catch { /* unavailable */ }
+    try { conflicts = JSON.parse(localStorage.getItem(`daf_sync_conflicts_${this.userId}`) || '[]').length; } catch { /* unavailable */ }
+    return { storageError:this.storageError, errorCode:this.lastErrorCode, conflicts, pending: this.upserts.size + this.deletes.size + this.events.length + (this.settings ? 1 : 0), lastSuccess: this.lastSuccess, rejected };
+  }
+
   private status: SyncStatus = 'idle';
   private listeners = new Set<(s: SyncStatus) => void>();
 
-  constructor() {
+  constructor(private readonly getDb = requireSupabase) {
     if (typeof window !== 'undefined') {
       window.addEventListener('online', () => this.schedule(0));
       document.addEventListener('visibilitychange', () => {
@@ -110,39 +162,45 @@ class CloudSync {
   }
 
   private hasPending() {
-    return this.upserts.size > 0 || this.deletes.size > 0 || this.events.length > 0 || this.settings !== null;
+    return this.inflight !== null || this.upserts.size > 0 || this.deletes.size > 0 || this.events.length > 0 || this.settings !== null;
   }
 
-  private saveQueue() {
+  private saveQueue(strict = false) {
     if (!this.userId) return;
     try {
       if (!this.hasPending()) {
         localStorage.removeItem(queueKey(this.userId));
+        this.storageError = false;
         return;
       }
       const q: PersistedQueue = {
+        protocol: 2, bases: this.bases, versions: Object.fromEntries(this.versions),
+        settingsBase: this.settingsBase, settingsVersion: this.settingsVersion, inflight: this.inflight,
         upserts: Object.fromEntries(this.upserts),
         deletes: [...this.deletes],
         events: this.events,
         settings: this.settings
       };
       localStorage.setItem(queueKey(this.userId), JSON.stringify(q));
-    } catch {
-      // storage full / unavailable: the in-memory queue still works
+      this.storageError = false;
+      this.listeners.forEach(fn => fn(this.status));
+    } catch (error) {
+      this.storageError = true;
+      this.setStatus('error');
+      this.listeners.forEach(fn => fn(this.status));
+      if (strict) throw error;
+      // In-memory work remains available; the UI explicitly warns that reload is unsafe.
     }
   }
 
   private loadQueue(userId: string): PersistedQueue | null {
-    try {
-      const raw = localStorage.getItem(queueKey(userId));
-      if (!raw) return null;
-      const q = JSON.parse(raw) as PersistedQueue;
-      // Queued changes to removed shared-insight copies are dropped, not sent back
-      if (q.upserts) q.upserts = Object.fromEntries(Object.entries(q.upserts).filter(([id]) => !isRemovedSharedCopy({ id })));
-      return q;
-    } catch {
-      return null;
-    }
+    const raw = localStorage.getItem(queueKey(userId));
+    if (!raw) return null;
+    const parsed: unknown = JSON.parse(raw);
+    validatePersistedQueue(parsed);
+    const q = parsed as PersistedQueue;
+    q.upserts = Object.fromEntries(Object.entries(q.upserts).filter(([id]) => !isRemovedSharedCopy({ id })));
+    return q;
   }
 
   private schedule(delay = FLUSH_DELAY_MS) {
@@ -153,6 +211,8 @@ class CloudSync {
 
   public queueUpserts(cards: LeitnerCard[]) {
     cards.filter(c => !isRemovedSharedCopy(c)).forEach(c => {
+      if (!Object.hasOwn(this.bases, c.id)) this.bases[c.id] = this.serverStamps.get(c.id) ?? null;
+      this.versions.set(c.id, ++this.serial);
       this.upserts.set(c.id, c);
       this.deletes.delete(c.id);
     });
@@ -162,6 +222,8 @@ class CloudSync {
 
   public queueDeletes(ids: string[]) {
     ids.forEach(id => {
+      if (!Object.hasOwn(this.bases, id)) this.bases[id] = this.serverStamps.get(id) ?? null;
+      this.versions.set(id, ++this.serial);
       this.deletes.add(id);
       this.upserts.delete(id);
     });
@@ -170,15 +232,76 @@ class CloudSync {
   }
 
   public queueEvent(e: ReviewEvent) {
-    this.events.push(e);
+    this.events.push({ ...e, operationId: e.operationId ?? crypto.randomUUID() });
     this.saveQueue();
     this.schedule();
   }
 
   public queueSettings(s: AppSettings) {
-    this.settings = s;
-    this.saveQueue();
-    this.schedule();
+    const patch = Object.fromEntries(Object.entries(s).filter(([key, value]) => value !== this.knownSettings[key as keyof AppSettings]));
+    for (const key of Object.keys(patch) as (keyof AppSettings)[]) {
+      if (!Object.hasOwn(this.settingsBase, key)) Object.assign(this.settingsBase, { [key]: this.knownSettings[key] });
+    }
+    this.settings = { ...this.settings, ...patch };
+    this.knownSettings = { ...s };
+    this.settingsVersion = ++this.serial;
+    this.saveQueue(); this.schedule();
+  }
+
+  private async snapshot(userId: string) {
+    const db = this.getDb();
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const before = await db.rpc('get_sync_revision');
+      if (before.error) throw before.error;
+      const prof = await db.from('profiles').select('*').eq('id', userId).single();
+      if (prof.error) throw prof.error;
+      const cards: LeitnerCard[] = [];
+      for (let from = 0; ; from += PAGE_SIZE) {
+        const page = await db.from('cards').select('*').eq('user_id', userId).order('id').range(from, from + PAGE_SIZE - 1);
+        if (page.error) throw page.error;
+        cards.push(...(page.data as CardRow[]).map(rowToCard));
+        if (page.data.length < PAGE_SIZE) break;
+      }
+      const after = await db.rpc('get_sync_revision');
+      if (after.error) throw after.error;
+      if (Number(before.data) === Number(after.data)) return { revision: Number(after.data), cards, settings: validSettings(prof.data.settings) };
+    }
+    throw new Error('Server changed during snapshot; retry');
+  }
+
+  private archiveConflict(userId: string, record: unknown) {
+    const key = `daf_sync_conflicts_${userId}`;
+    const previous = JSON.parse(localStorage.getItem(key) || '[]');
+    localStorage.setItem(key, JSON.stringify([...previous, { at: new Date().toISOString(), ...record as object }]));
+  }
+
+  private async reconcile(userId: string, active: () => boolean) {
+    const remote = await this.snapshot(userId);
+    if (!active()) return;
+    const byId = new Map(remote.cards.map(card => [card.id, card]));
+    const affected = new Set([...this.upserts.keys(), ...this.deletes]);
+    for (const id of affected) {
+      const stamp = byId.get(id)?.syncStamp ?? null;
+      if (this.bases[id] !== stamp) {
+        this.archiveConflict(userId, { cardId: id, card: this.upserts.get(id), deleted: this.deletes.has(id),
+          events: this.events.filter(e => e.cardId === id), server: byId.get(id) });
+        this.upserts.delete(id); this.deletes.delete(id); this.versions.delete(id);
+        this.events = this.events.filter(e => e.cardId !== id);
+      }
+    }
+    for (const key of Object.keys(this.settings ?? {}) as (keyof AppSettings)[]) {
+      if (({ ...DEFAULT_SETTINGS, ...remote.settings })[key] !== this.settingsBase[key]) {
+        this.archiveConflict(userId, { settings: { [key]: this.settings?.[key] }, server: { [key]: remote.settings[key] } });
+        delete this.settings?.[key]; delete this.settingsBase[key];
+      }
+    }
+    if (this.settings && !Object.keys(this.settings).length) this.settings = null;
+    this.revision = remote.revision;
+    this.serverStamps = new Map(remote.cards.filter(c => c.syncStamp).map(c => [c.id, c.syncStamp!]));
+    for (const id of affected) if (this.upserts.has(id) || this.deletes.has(id)) this.bases[id] = this.serverStamps.get(id) ?? null;
+    this.deletes.forEach(id => byId.delete(id)); this.upserts.forEach(card => byId.set(card.id, card));
+    leitnerEngine.hydrate(userId, [...byId.values()], { ...remote.settings, ...this.settings });
+    this.inflight = null; this.saveQueue();
   }
 
   /** Push everything pending to Supabase. Safe to call concurrently. */
@@ -191,76 +314,85 @@ class CloudSync {
     }
 
     const userId = this.userId;
-    this.flushing = (async () => {
-      const db = requireSupabase();
+    const generation = this.generation;
+    const active = () => generation === this.generation && this.userId === userId;
+    // Defer execution until the promise is assigned, even when local persistence throws synchronously.
+    this.flushing = Promise.resolve().then(async () => {
       this.setStatus('syncing');
       try {
-        if (this.deletes.size) {
-          const ids = [...this.deletes];
-          const { error } = await db.from('cards').delete().eq('user_id', userId).in('id', ids);
-          if (error) throw error;
-          ids.forEach(id => this.deletes.delete(id));
-          this.saveQueue();
-        }
-
-        if (this.upserts.size) {
-          const batch = [...this.upserts.values()];
-          for (let i = 0; i < batch.length; i += UPSERT_CHUNK) {
-            const chunk = batch.slice(i, i + UPSERT_CHUNK);
-            const { error } = await db.from('cards').upsert(chunk.map(c => cardToRow(c, userId)));
-            if (error) throw error;
-            // Only drop entries that weren't changed again while the request was in flight
-            chunk.forEach(c => {
-              if (this.upserts.get(c.id) === c) this.upserts.delete(c.id);
-            });
-            this.saveQueue();
+        const db = this.getDb();
+        if (!active()) return;
+        for (let attempt = 0; this.hasPending() && attempt < 10; attempt++) {
+          if (!active()) return;
+          if (!this.inflight) {
+            const upserts = [...this.upserts.values()].slice(0, UPSERT_CHUNK);
+            const deletes = [...this.deletes].slice(0, UPSERT_CHUNK);
+            const ids = new Set([...upserts.map(c => c.id), ...deletes]);
+            const events = this.events.filter(e => ids.has(e.cardId) || !this.upserts.has(e.cardId));
+            this.inflight = {
+              operation: crypto.randomUUID(), revision: this.revision,
+              upserts: upserts.map(c => cardToRow(c, userId)), deletes, events,
+              settings: this.settings ? { ...this.settings } : null, settingsVersion: this.settingsVersion,
+              versions: Object.fromEntries([...ids].map(id => [id, this.versions.get(id) ?? 0])),
+            };
           }
-        }
-
-        if (this.events.length) {
-          const batch = this.events.slice();
-          const { error } = await db.from('review_events').insert(batch.map(e => ({
-            user_id: userId,
-            card_id: e.cardId,
-            card_type: e.cardType,
-            correct: e.correct,
-            from_box: e.fromBox,
-            to_box: e.toBox,
-            review_day: e.reviewDay
-          })));
-          if (error) {
-            // A stale offline event (review_day out of range) is rejected forever; drop it instead of retrying.
-            if (/out of range/i.test(error.message)) this.events.splice(0, batch.length);
-            else throw error;
-          } else {
-            this.events.splice(0, batch.length);
+          // Reconfirm durability on every retry, including a previously failed local write.
+          this.saveQueue(true);
+          const batch = this.inflight;
+          const result = await db.rpc('apply_sync_batch', {
+            p_operation: batch.operation, p_revision: batch.revision, p_expected_user:userId,
+            p_upserts: batch.upserts as unknown as Json, p_deletes: batch.deletes,
+            p_events: batch.events as unknown as Json, p_settings: batch.settings ? { ...batch.settings } : null,
+          });
+          if (!active()) return;
+          if (result.error) throw result.error;
+          const receipt = result.data as { conflict: boolean; revision: number; stamps?: Record<string, string>; personal?: string[] };
+          if (!receipt || typeof receipt.conflict !== 'boolean' || !Number.isSafeInteger(receipt.revision)) throw new Error('Invalid sync receipt');
+          if (receipt.conflict) { await this.reconcile(userId, active); continue; }
+          this.revision = receipt.revision;
+          for (const [id, version] of Object.entries(batch.versions)) {
+            const stamp = receipt.stamps?.[id];
+            if (stamp) this.serverStamps.set(id, stamp); else this.serverStamps.delete(id);
+            if (this.versions.get(id) === version) {
+              this.upserts.delete(id); this.deletes.delete(id); this.versions.delete(id); delete this.bases[id];
+            } else this.bases[id] = stamp ?? null;
           }
-          this.saveQueue();
+          leitnerEngine.acknowledgeSyncStamps(Object.fromEntries(Object.keys(batch.versions).map(id => [id, receipt.stamps?.[id] ?? null])));
+          const sent = new Set(batch.events.map(e => e.operationId));
+          this.events = this.events.filter(e => !sent.has(e.operationId));
+          if (batch.settingsVersion === this.settingsVersion) { this.settings = null; this.settingsBase = {}; }
+          else if (batch.settings) {
+            for (const key of Object.keys(batch.settings) as (keyof AppSettings)[]) {
+              if (this.settings?.[key] === batch.settings[key]) { delete this.settings?.[key]; delete this.settingsBase[key]; }
+              else Object.assign(this.settingsBase, { [key]: batch.settings[key] });
+            }
+            if (this.settings && !Object.keys(this.settings).length) this.settings = null;
+          }
+          if (receipt.personal?.length) {
+            const key = `daf_rejected_reviews_${userId}`;
+            const previous = JSON.parse(localStorage.getItem(key) || '[]');
+            localStorage.setItem(key, JSON.stringify([...previous, ...batch.events.filter(e => receipt.personal!.includes(e.operationId!))]));
+          }
+          this.inflight = null; this.saveQueue();
         }
-
-        if (this.settings) {
-          const s = this.settings;
-          const { error } = await db.from('profiles')
-            .update({ settings: s, updated_at: new Date().toISOString() })
-            .eq('id', userId);
-          if (error) throw error;
-          if (this.settings === s) this.settings = null;
-          this.saveQueue();
-        }
-
         this.retryDelay = 2000;
+        this.lastErrorCode = null;
+        this.lastSuccess = new Date().toISOString();
         this.setStatus('idle');
       } catch (err) {
+        if (active()) this.lastErrorCode = (err as {code?:string})?.code ?? null;
+        if (!active()) return;
+        if (this.lastErrorCode === '54000') { this.inflight = null; this.saveQueue(); }
         console.error('Sync failed', err);
         this.setStatus(navigator.onLine ? 'error' : 'offline');
         this.schedule(this.retryDelay);
         this.retryDelay = Math.min(this.retryDelay * 2, 60000);
       } finally {
-        this.flushing = null;
+        if (active()) this.flushing = null;
       }
       // Something changed while we were flushing
-      if (this.hasPending() && this.status === 'idle') this.schedule();
-    })();
+      if (active() && this.hasPending() && this.status === 'idle') this.schedule();
+    });
     return this.flushing;
   }
 
@@ -270,10 +402,14 @@ class CloudSync {
    */
   public async start(user: User): Promise<{ profile: UserProfile; offline: boolean }> {
     if (isDemoMode) return this.startDemo(user);
-    const db = requireSupabase();
+    this.detach();
+    const generation = this.generation;
+    if (generation !== this.generation) throw new Error('Session changed');
+    const db = this.getDb();
     this.userId = user.id;
     const meta = user.user_metadata || {};
     await leitnerEngine.loadCatalog();
+    if (generation !== this.generation) throw new Error('Session changed');
 
     let profile: UserProfile = {
       id: user.id,
@@ -290,8 +426,12 @@ class CloudSync {
     let settings: Partial<AppSettings> | null = null;
     let offline = false;
 
+    let loadedRevision = 0;
     try {
+      const before = await db.rpc('get_sync_revision');
+      if (before.error) throw before.error;
       let { data: prof, error: profErr } = await db.from('profiles').select('*').eq('id', user.id).maybeSingle();
+      if (generation !== this.generation) throw new Error('Session changed');
       if (profErr) throw profErr;
       if (!prof) {
         // The auth trigger normally creates it; this covers projects where it wasn't installed.
@@ -318,7 +458,7 @@ class CloudSync {
       // Fails (→ false) until the admin functions in supabase/schema.sql are installed
       const { data: isAdmin } = await db.rpc('is_admin');
       profile.isAdmin = isAdmin === true;
-      settings = prof.settings && Object.keys(prof.settings).length ? prof.settings : null;
+      settings = validSettings(prof.settings);
 
       cards = [];
       for (let from = 0; ; from += PAGE_SIZE) {
@@ -332,7 +472,14 @@ class CloudSync {
         cards.push(...(data as CardRow[]).map(rowToCard));
         if (!data || data.length < PAGE_SIZE) break;
       }
+      const after = await db.rpc('get_sync_revision');
+      if (after.error) throw after.error;
+      if (Number(before.data) !== Number(after.data)) {
+        const consistent = await this.snapshot(user.id);
+        cards = consistent.cards; settings = consistent.settings; loadedRevision = consistent.revision;
+      } else loadedRevision = Number(after.data);
     } catch (err) {
+      if (generation !== this.generation) throw new Error('Session changed', { cause: err });
       console.error('Could not load cloud data, falling back to local cache', err);
       const cached = leitnerEngine.readCache(user.id);
       cards = cached?.cards || [];
@@ -341,9 +488,17 @@ class CloudSync {
       profile.onboarded = true; // don't seed or migrate on top of data we couldn't read
     }
 
+    if (generation !== this.generation) throw new Error('Session changed');
+    this.revision = loadedRevision;
+    this.serverStamps = new Map(cards.filter(c => c.syncStamp).map(c => [c.id, c.syncStamp!]));
     // Re-apply writes that never reached the server (e.g. made offline last time)
     const pending = this.loadQueue(user.id);
     if (pending) {
+      this.bases = pending.bases ?? Object.fromEntries(Object.keys(pending.upserts ?? {}).map(id => [id, null]));
+      this.versions = new Map(Object.entries(pending.versions ?? Object.fromEntries([...Object.keys(pending.upserts ?? {}), ...(pending.deletes ?? [])].map((id,i) => [id, i + 1]))));
+      this.serial = Math.max(0, ...this.versions.values(), pending.settingsVersion ?? 0);
+      this.settingsVersion = pending.settingsVersion ?? 0; this.settingsBase = pending.settingsBase ?? {};
+      this.inflight = pending.inflight ?? null;
       const byId = new Map(cards.map(c => [c.id, c]));
       (pending.deletes || []).forEach(id => byId.delete(id));
       Object.values(pending.upserts || {}).forEach(c => byId.set(c.id, c));
@@ -351,11 +506,16 @@ class CloudSync {
       if (pending.settings) settings = pending.settings;
       Object.values(pending.upserts || {}).forEach(c => this.upserts.set(c.id, c));
       (pending.deletes || []).forEach(id => this.deletes.add(id));
-      this.events = pending.events || [];
+      this.events = (pending.events || []).map(event => ({ ...event, operationId: event.operationId ?? crypto.randomUUID() }));
       this.settings = pending.settings || null;
     }
 
     leitnerEngine.hydrate(user.id, cards, settings);
+    if (pending && !offline && !this.inflight) {
+      await this.reconcile(user.id, () => generation === this.generation);
+      if (generation !== this.generation) throw new Error('Session changed');
+    }
+    this.knownSettings = { ...leitnerEngine.getSettings() };
     leitnerEngine.setHooks({
       onCardsUpserted: c => this.queueUpserts(c),
       onCardsDeleted: ids => this.queueDeletes(ids),
@@ -370,6 +530,7 @@ class CloudSync {
       this.updateProfile({ onboarded: true }).catch(err => console.error('Could not mark profile onboarded', err));
     }
 
+    this.saveQueue(); // Persist assigned IDs before the first request; reloads must reuse them.
     this.schedule(0);
     return { profile, offline };
   }
@@ -410,116 +571,29 @@ class CloudSync {
 
   public async updateProfile(patch: Partial<Pick<UserProfile, 'displayName' | 'showOnLeaderboard' | 'onboarded'>>) {
     if (!this.userId) return;
-    const row: Record<string, unknown> = { updated_at: new Date().toISOString() };
+    const row: Database['public']['Tables']['profiles']['Update'] = { updated_at: new Date().toISOString() };
     if (patch.displayName !== undefined) row.display_name = patch.displayName;
     if (patch.showOnLeaderboard !== undefined) row.show_on_leaderboard = patch.showOnLeaderboard;
     if (patch.onboarded !== undefined) row.onboarded = patch.onboarded;
-    const { error } = await requireSupabase().from('profiles').update(row).eq('id', this.userId);
+    const { error } = await this.getDb().from('profiles').update(row).eq('id', this.userId);
     if (error) throw error;
   }
 
   /** Flush pending writes, then detach from the user (call before signing out). */
   public async stop() {
+    const generation = this.generation;
     try {
       await this.flush();
     } catch {
-      // the queue stays in localStorage and is replayed on next sign-in
+      // Durable work stays scoped to its account for the next sign-in.
     }
-    if (this.timer) clearTimeout(this.timer);
-    this.timer = null;
-    this.userId = null;
-    this.upserts.clear();
-    this.deletes.clear();
-    this.events = [];
-    this.settings = null;
-    this.setStatus('idle');
-    leitnerEngine.reset();
+    if (generation !== this.generation) return;
+    this.detach();
   }
+
 }
 
 export const cloudSync = new CloudSync();
 
-export interface LeaderboardRow {
-  user_id: string;
-  display_name: string;
-  avatar_url: string | null;
-  score: number;
-  score_7d: number;
-  mastered: number;
-  learning: number;
-  reviews_7d: number;
-  streak: number;
-  /** Silver cards collected (missing until the database part is installed) */
-  silver?: number;
-  rank: number;
-  is_me: boolean;
-}
-
-export async function fetchLeaderboard(period: 'all' | 'week', limit = 100): Promise<LeaderboardRow[]> {
-  if (isDemoMode) return DEMO_LEADERBOARD;
-  const { data, error } = await requireSupabase().rpc('get_leaderboard', { p_period: period, p_limit: limit });
-  if (error) throw error;
-  return (data || []).map((r: Record<string, unknown>) => ({
-    ...r,
-    score: Number(r.score),
-    score_7d: Number(r.score_7d),
-    mastered: Number(r.mastered),
-    learning: Number(r.learning),
-    reviews_7d: Number(r.reviews_7d),
-    streak: Number(r.streak),
-    silver: r.silver === undefined || r.silver === null ? undefined : Number(r.silver),
-    rank: Number(r.rank)
-  })) as LeaderboardRow[];
-}
-
-/** Record that the user is using the app. Resolves to true if the account has been suspended. */
-export async function touchPresence(): Promise<boolean> {
-  if (isDemoMode) return false;
-  const { data, error } = await requireSupabase().rpc('touch_presence');
-  if (error) throw error;
-  return data === true;
-}
-
-export interface AdminUserRow {
-  user_id: string;
-  email: string | null;
-  display_name: string;
-  avatar_url: string | null;
-  first_seen: string;
-  last_seen: string | null;
-  suspended_at: string | null;
-  cards: number;
-  reviews: number;
-}
-
-export async function adminListUsers(): Promise<AdminUserRow[]> {
-  if (isDemoMode) return DEMO_ADMIN_USERS;
-  const { data, error } = await requireSupabase().rpc('admin_list_users');
-  if (error) throw error;
-  return (data || []).map((r: Record<string, unknown>) => ({
-    ...r,
-    cards: Number(r.cards),
-    reviews: Number(r.reviews)
-  })) as AdminUserRow[];
-}
-
-export async function adminSetSuspended(userId: string, suspended: boolean) {
-  const { error } = await requireSupabase().rpc('admin_set_suspended', { p_user: userId, p_suspended: suspended });
-  if (error) throw error;
-}
-
-export async function adminDeleteUser(userId: string) {
-  const { error } = await requireSupabase().rpc('admin_delete_user', { p_user: userId });
-  if (error) throw error;
-}
-
-const DEMO_LEADERBOARD: LeaderboardRow[] = [
-  { user_id: 'u1', display_name: 'Sara', avatar_url: null, score: 1840, score_7d: 210, mastered: 120, learning: 380, reviews_7d: 260, streak: 21, silver: 12, rank: 1, is_me: false },
-  { user_id: 'demo-user', display_name: 'Demo', avatar_url: null, score: 960, score_7d: 85, mastered: 40, learning: 150, reviews_7d: 90, streak: 6, silver: 3, rank: 2, is_me: true },
-  { user_id: 'u3', display_name: 'Alexander Müller-Lüdenscheidt', avatar_url: null, score: 410, score_7d: -12, mastered: 9, learning: 60, reviews_7d: 14, streak: 0, silver: 0, rank: 3, is_me: false }
-];
-
-const DEMO_ADMIN_USERS: AdminUserRow[] = [
-  { user_id: 'demo-user', email: 'demo@example.com', display_name: 'Demo', avatar_url: null, first_seen: '2026-10-01T09:00:00Z', last_seen: new Date().toISOString(), suspended_at: null, cards: 150, reviews: 900 },
-  { user_id: 'u3', email: 'a.very.long.email.address@example.com', display_name: 'Alexander Müller-Lüdenscheidt', avatar_url: null, first_seen: '2026-10-10T09:00:00Z', last_seen: '2026-10-20T18:30:00Z', suspended_at: '2026-10-21T08:00:00Z', cards: 60, reviews: 14 }
-];
+export { fetchLeaderboard, touchPresence, adminListUsers, adminSetSuspended, adminDeleteUser } from './cloudApi';
+export type { LeaderboardRow, AdminUserRow } from './cloudApi';

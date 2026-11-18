@@ -4,10 +4,21 @@ updates:
     directory: /
     schedule:
       interval: weekly
+      day: wednesday
+    open-pull-requests-limit: 5
     groups:
-      minor-and-patch:
-        update-types: [minor, patch]
+      supabase:
+        patterns:
+          - '@supabase/*'
+      build-toolchain:
+        patterns:
+          - vite
+          - '@vitejs/*'
+          - '@tailwindcss/*'
+          - tailwindcss
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: monthly
+      interval: weekly
+      day: wednesday
+    open-pull-requests-limit: 3

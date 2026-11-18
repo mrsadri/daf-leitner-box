@@ -13,6 +13,8 @@
 
 راهنمای کار با کد (برای انسان و ابزارهای هوش مصنوعی): [CLAUDE.md](CLAUDE.md) · معماری: [docs/architecture.md](docs/architecture.md)
 
+> Development schema setup: use [the schema lifecycle guide](docs/schema-lifecycle.md). Current features require the baseline **and ordered migrations**, not `schema.sql` alone.
+
 ---
 
 ## راه‌اندازی (یک بار)

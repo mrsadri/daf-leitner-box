@@ -107,7 +107,9 @@ export const VocabCatalog: React.FC<VocabCatalogProps> = ({
 
   // A selection made under other filters may include words that are no longer visible
   useEffect(() => {
+    // eslint-disable-next-line react/set-state-in-effect -- Selections must be cleared at the filter boundary to avoid hidden bulk actions.
     setSelectedIds(new Set());
+  // eslint-disable-next-line react/exhaustive-effect-dependencies -- Each filter change intentionally invalidates the selected set, independently of its value.
   }, [searchQuery, selectedLektion, selectedNiveau, selectedWortart, statusFilter]);
 
   const handleSelectAllFiltered = () => {

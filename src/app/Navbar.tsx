@@ -137,15 +137,14 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* Mobile navigation */}
       <nav
-        className="xl:hidden grid border-t border-slate-200 dark:border-slate-800 bg-slate-50/95 dark:bg-slate-900/95 px-1 py-1.5 text-xs"
-        style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
+        className="xl:hidden flex overflow-x-auto max-w-full border-t border-slate-200 dark:border-slate-800 bg-slate-50/95 dark:bg-slate-900/95 px-1 py-1.5 text-xs"
       >
         {tabs.map(({ id, icon: Icon }) => (
           <button
             key={id}
             onClick={() => onTabChange(id)}
             aria-current={activeTab === id ? 'page' : undefined}
-            className={`flex flex-col items-center gap-1 px-0.5 py-1 min-w-0 rounded-lg ${
+            className={`flex flex-1 shrink-0 min-w-16 flex-col items-center gap-1 px-1 py-1 rounded-lg ${
               activeTab === id ? 'text-indigo-600 dark:text-indigo-400 font-semibold' : 'text-slate-500 dark:text-slate-400'
             }`}
           >

@@ -4,13 +4,14 @@
  * Data and changes come from useLeitnerData; start-up side effects from useSessionEffects. Screens get plain
  * props and callbacks, so each one can be read on its own. Deep links (?go=…) come from push notifications.
  */
-import React, { Suspense, lazy, useEffect, useRef, useState } from 'react';
+import React, { Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react';
 import type { User } from '@supabase/supabase-js';
 import { WifiOff } from 'lucide-react';
 import { getTodayString, isCardDue } from '../core/leitnerEngine';
 import { cloudSync } from '../core/cloudSync';
 import { supabase } from '../shared/lib/supabase';
 import { useI18n } from '../i18n/I18nProvider';
+import { RecoveryMessage } from '../shared/ui/RecoveryBoundary';
 import { FullScreenLoader } from '../shared/ui/FullScreenLoader';
 import { Navbar, type ActiveTab } from './Navbar';
 import { AppFooter } from './AppFooter';
@@ -45,10 +46,19 @@ const initialGo = new URLSearchParams(window.location.search).get('go');
 
 export function LeitnerApp({ user }: { user: User }) {
   const { t } = useI18n();
-  const { cards, catalog, settings, profile, setProfile, loadedOffline, syncStatus, refresh, actions } = useLeitnerData(user);
+  const { loadError, retryLoad, cards, catalog, settings, profile, setProfile, loadedOffline, syncStatus, syncInfo, refresh, actions } = useLeitnerData(user);
   const { ready } = useSessionEffects({ userId: user.id, profile, settings, setProfile, updateSettings: actions.updateSettings });
 
-  const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
+  const [activeTab, updateActiveTab] = useState<ActiveTab>('dashboard');
+  const setActiveTab = useCallback((tab: ActiveTab) => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.get('go') !== tab) {
+      url.searchParams.set('go', tab);
+      window.history.pushState(null, '', url);
+    }
+    updateActiveTab(tab);
+    requestAnimationFrame(() => document.querySelector<HTMLElement>('main')?.focus({ preventScroll: true }));
+  }, []);
   // Lesson (or MY_CARDS) to open the word bank with; the key remounts it so the choice applies
   const [catalogLektion, setCatalogLektion] = useState<{ lektion: string; key: number } | null>(null);
   const [isNewCardModalOpen, setIsNewCardModalOpen] = useState(false);
@@ -81,7 +91,7 @@ export function LeitnerApp({ user }: { user: User }) {
   // If the flag turns out to be off, a deep link (or an already-open tab) falls back to the home page.
   useEffect(() => {
     if (activeTab === 'adjective' && !showAdjective) setActiveTab('dashboard');
-  }, [activeTab, showAdjective]);
+  }, [activeTab, showAdjective, setActiveTab]);
 
   // Cards the nightly overdue rule moved back: explain them once (fresh server data is loaded by now)
   useEffect(() => {
@@ -118,7 +128,8 @@ export function LeitnerApp({ user }: { user: User }) {
     else if (initialGo === 'leaderboard') setActiveTab('leaderboard');
     else if (initialGo === 'stories' || initialGo === 'dictation') setActiveTab('stories');
     else if (initialGo === 'adjective') setActiveTab('adjective');
-    if (initialGo) window.history.replaceState(null, '', window.location.pathname);
+    else if (initialGo === 'catalog' || initialGo === 'settings' || initialGo === 'admin' || initialGo === 'dashboard') setActiveTab(initialGo);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile]);
 
@@ -128,7 +139,9 @@ export function LeitnerApp({ user }: { user: User }) {
     if (!settings.overdueRuleSeen) actions.updateSettings({ overdueRuleSeen: true });
   };
 
-  const signOut = async () => {
+  const [signOutRequested, setSignOutRequested] = useState(false);
+  const signOut = () => setSignOutRequested(true);
+  const completeSignOut = async () => {
     // The next person signing in on this device must not get this user's reminders or pending results
     await disablePush().catch(() => undefined);
     clearAdjectiveQueue(user.id);
@@ -153,6 +166,22 @@ export function LeitnerApp({ user }: { user: User }) {
     if (tab) applyTabChange(tab);
   };
 
+  useEffect(() => {
+    const onBack = () => {
+      const tab = new URLSearchParams(window.location.search).get('go') || 'dashboard';
+      if (['dashboard','review','catalog','stories','adjective','leaderboard','settings','admin'].includes(tab)) requestTabChange(tab as ActiveTab);
+    };
+    window.addEventListener('popstate', onBack);
+    return () => window.removeEventListener('popstate', onBack);
+  });
+
+  const cancelLeaveDrill = () => {
+    setPendingTab(null);
+    const url = new URL(window.location.href); url.searchParams.set('go', activeTab);
+    window.history.replaceState(null, '', url);
+  };
+
+  if (loadError) return <RecoveryMessage onRetry={retryLoad} />;
   if (!profile) return <FullScreenLoader text={t.app.preparing} />;
   if (profile.suspended) return <SuspendedScreen email={profile.email} onSignOut={() => supabase!.auth.signOut()} />;
 
@@ -169,6 +198,12 @@ export function LeitnerApp({ user }: { user: User }) {
         showStories={showStories}
       />
 
+      {(syncInfo.storageError || syncInfo.pending > 0 || syncInfo.rejected > 0 || syncInfo.conflicts > 0 || syncInfo.drillPending > 0 || syncInfo.drillError || syncStatus === 'error' || syncStatus === 'offline') && (
+        <div role="status" className="px-4 py-3 text-sm bg-amber-50 dark:bg-amber-950/40 flex gap-3 items-center justify-center">
+          <span>{syncInfo.storageError && t.sync.storageError} {syncInfo.errorCode === '54000' && t.sync.quotaError} {t.sync.details(syncInfo.pending + syncInfo.drillPending, syncInfo.rejected, syncInfo.conflicts)} {syncInfo.lastSuccess && t.sync.lastSaved(new Date(syncInfo.lastSuccess).toLocaleString())}</span>
+          <Button variant="secondary" size="sm" onClick={actions.retrySync}>{t.common.retry}</Button>
+        </div>
+      )}
       {loadedOffline && (
         <div className="bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs">
           <div className="max-w-7xl mx-auto px-4 py-2 flex items-center gap-2">
@@ -178,7 +213,7 @@ export function LeitnerApp({ user }: { user: User }) {
         </div>
       )}
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
+      <main tabIndex={-1} className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
         {isStudyingNewWords ? (
           <NewWordsStudySession
             onFinish={() => { setIsStudyingNewWords(false); setActiveTab('dashboard'); }}
@@ -289,18 +324,23 @@ export function LeitnerApp({ user }: { user: User }) {
 
       {pendingTab && (
         <Dialog
-          onClose={() => setPendingTab(null)}
+          onClose={cancelLeaveDrill}
           title={t.adjective.leaveConfirm.title}
           description={t.adjective.leaveConfirm.body}
           footer={
             <>
-              <Button variant="secondary" onClick={() => setPendingTab(null)}>{t.adjective.leaveConfirm.cancel}</Button>
+              <Button variant="secondary" onClick={cancelLeaveDrill}>{t.adjective.leaveConfirm.cancel}</Button>
               <Button variant="danger" onClick={confirmLeaveDrill}>{t.adjective.leaveConfirm.confirm}</Button>
             </>
           }
         />
       )}
 
+      {signOutRequested && <Dialog title={t.settings.signOut} description={t.sync.signOutWarning}
+        onClose={() => setSignOutRequested(false)} footer={<>
+          <Button variant="secondary" onClick={() => setSignOutRequested(false)}>{t.common.cancel}</Button>
+          <Button variant="danger" onClick={() => { setSignOutRequested(false); void completeSignOut(); }}>{t.settings.signOut}</Button>
+        </>} />}
       <AppFooter />
     </div>
   );

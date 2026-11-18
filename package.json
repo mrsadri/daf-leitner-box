@@ -7,9 +7,16 @@
     "dev": "vite --port=3000 --host=0.0.0.0",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "tsc --noEmit && oxlint",
+    "lint": "tsc --noEmit && oxlint --deny-warnings",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "test:sql:isolated": "node scripts/test-sql-wasm.mjs",
+    "db:types": "node scripts/generate-database-types.mjs",
+    "db:types:check": "node scripts/generate-database-types.mjs --check",
+    "db:questions:check": "node scripts/build-adjective-bank.mjs --check",
+    "db:upgrade:check": "node scripts/check-schema-upgrade.mjs",
+    "check:edge": "npx --yes deno@2.9.6 check --node-modules-dir=none --lock=supabase/functions/send-reminders/deno.lock --frozen-lockfile supabase/functions/send-reminders/index.ts",
+    "test:edge": "ECE_KEYLOG=0 npx --yes deno@2.9.6 test --node-modules-dir=none --lock=supabase/functions/send-reminders/deno.lock --frozen-lockfile --allow-env=ECE_KEYLOG,NODE_DEBUG,DEBUG supabase/functions/send-reminders/pushRuntime.test.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.119.0",
@@ -21,6 +28,7 @@
     "vite": "^8.3.8"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.16",
     "@playwright/test": "1.65.0",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",

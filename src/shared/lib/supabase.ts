@@ -1,6 +1,7 @@
 /**
  * The Supabase client (public URL and anon key from the environment), or null in demo mode or without configuration.
  */
+import type { Database } from '../../core/database.types';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { isDemoMode } from './demo';
 
@@ -10,8 +11,8 @@ const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
 // Demo mode never creates a client, even when .env.local holds real keys
 export const isSupabaseConfigured = !isDemoMode && Boolean(url && anonKey);
 
-export const supabase: SupabaseClient | null = isSupabaseConfigured
-  ? createClient(url!, anonKey!, {
+export const supabase: SupabaseClient<Database> | null = isSupabaseConfigured
+  ? createClient<Database>(url!, anonKey!, {
       auth: {
         persistSession: true,
         autoRefreshToken: true,
@@ -21,7 +22,7 @@ export const supabase: SupabaseClient | null = isSupabaseConfigured
     })
   : null;
 
-export function requireSupabase(): SupabaseClient {
+export function requireSupabase(): SupabaseClient<Database> {
   if (!supabase) throw new Error('Supabase is not configured (VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY).');
   return supabase;
 }
