@@ -30,3 +30,7 @@ Disable Cron/reminders and all external provider delivery in the isolated target
 Record snapshot start, last successful upload, incident start, restore completion, validation completion, measured loss window and operator. The 4-hour RTO includes setup, decryption, restore, service configuration and application validation. Delete decrypted files from the encrypted working volume after validation. A local synthetic restore demonstrates tooling only, not hosted recovery or the 24h/4h targets.
 
 Reference: [Supabase database backups](https://supabase.com/docs/guides/platform/backups). Automatic managed daily backups are a paid-plan feature; this workflow does not change the Supabase plan.
+
+## Readiness report
+
+Run `node scripts/backup/check-readiness.mjs /tmp/daf-backup-readiness.json` with an authenticated GitHub CLI. It inspects secret **names** and configuration variables, confirms that the destination is private, and reports missing setup without reading secret values or accessing PostgreSQL. An exit status of 1 means setup is incomplete. A successful metadata check still does not validate secret contents, key custody, backup completeness or recovery targets. Create the private destination with an initial README/default branch so it can hold release tags.

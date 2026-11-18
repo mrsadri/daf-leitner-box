@@ -1,3 +1,5 @@
+> Latest four-task follow-up: [task 21/22/23/25 fixes, tests and remaining requirements](13-four-task-follow-up.md).
+
 > Current release: PR #35 is published. See [publication and recovery](10-publication-and-recovery.md) for current acceptance evidence and remaining operator/human/upstream gates. Earlier implementation notes remain historical.
 
 # DaF & Mind — actionable to-do list
@@ -604,7 +606,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 - [ ] **21.1** Observe reader keyboard traversal and screen-reader output before selecting the interaction. **AI: GPT-6.2 Sol · High.**
 - [x] **21.2** Add a clear path to reading/page controls and intentional word navigation; keep word lookup keyboard accessible. **AI: GPT-6.2 Sol · High.**
 - [x] **21.3** Manage the topmost modal, background interaction, Escape, and focus restoration; test nested dialogs in both languages. **AI: GPT-6.2 Sol · High.**
-- [x] **21.V** Pass and record [acceptance check V21](03-verification-checklist.md#v21). **AI: GPT-6.2 Sol · High.**
+- [ ] **21.V** Pass and record [acceptance check V21](03-verification-checklist.md#v21). **AI: GPT-6.2 Sol · High.**
 
 **Acceptance:** A reader can reach page controls efficiently; Escape closes only the topmost dialog and focus returns correctly.
 

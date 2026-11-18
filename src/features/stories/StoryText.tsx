@@ -2,7 +2,7 @@
  * One page of a story: German paragraphs in which every word can be tapped. Lesson words are bold; nouns carry a
  * gender underline (masculine blue, feminine red, neuter green, plural ink; colours in index.css). Always LTR.
  */
-import React, { useId } from 'react';
+import React, { useId, useState } from 'react';
 import { useI18n } from '../../i18n/I18nProvider';
 import type { Page, WordSegment } from './types';
 import { splitWords } from './wordTap';
@@ -14,8 +14,19 @@ const wordClass = 'rounded-sm px-[1px] -mx-[1px] cursor-pointer hover:bg-amber-2
 export const StoryText: React.FC<{ page: Page; onWord: (w: WordSegment | string) => void; className?: string }> = ({ page, onWord, className = '' }) => {
   const { t, lang } = useI18n();
   const hint = useId();
+  const [activeWord, setActiveWord] = useState(0);
+  const paragraphs = page.map(paragraph => paragraph.flatMap(segment => typeof segment === 'string'
+    ? splitWords(segment).map(part => ({ text: part.text, word: part.word, segment: undefined as WordSegment | undefined }))
+    : [{ text: segment.t, word: true, segment }]));
+  const wordCount = paragraphs.flat().filter(part => part.word).length;
+  const selectedWord = Math.min(activeWord, wordCount - 1);
   return (
-  <div data-word-navigation role="toolbar" aria-label={t.stories.wordNavigation} aria-keyshortcuts="ArrowLeft ArrowRight Home End" tabIndex={0} aria-describedby={hint}
+  <div data-word-navigation role="toolbar" aria-label={t.stories.wordNavigation} aria-keyshortcuts="ArrowLeft ArrowRight Home End" tabIndex={-1} aria-describedby={hint}
+    onFocus={e => {
+      const words = [...e.currentTarget.querySelectorAll<HTMLElement>('[role=button]')];
+      const index = words.indexOf(e.target as HTMLElement);
+      if (index >= 0) setActiveWord(index);
+    }}
     onKeyDown={e => {
       if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return;
       const words = [...e.currentTarget.querySelectorAll<HTMLElement>('[role=button]')];
@@ -26,19 +37,17 @@ export const StoryText: React.FC<{ page: Page; onWord: (w: WordSegment | string)
       e.preventDefault(); e.stopPropagation(); words[next].focus();
     }} dir="ltr" lang="de" className={`font-story text-ink text-xl sm:text-[1.375rem] leading-[1.9] space-y-4 text-start ${className}`}>
     <span id={hint} lang={lang} dir={lang === 'fa' ? 'rtl' : 'ltr'} className="sr-only">{t.stories.keyboardWords}</span>
-    {page.map((para, i) => (
+    {paragraphs.map((paragraph, i) => (
       <p key={i}>
-        {para.map((seg, j) => {
-          if (typeof seg === 'string') {
-            return splitWords(seg).map((part, k) => part.word
-              ? <span key={`${j}-${k}`} role="button" tabIndex={-1} className={wordClass}
-                  onClick={() => onWord(part.text)} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onWord(part.text); } }}>{part.text}</span>
-              : <React.Fragment key={`${j}-${k}`}>{part.text}</React.Fragment>);
-          }
-          const cls = [wordClass, seg.b ? 'font-bold' : '', seg.g ? GENDER_CLASS[seg.g] : ''].join(' ');
+        {paragraph.map((part, j) => {
+          if (!part.word) return <React.Fragment key={j}>{part.text}</React.Fragment>;
+          const index = paragraphs.slice(0, i).flat().filter(word => word.word).length
+            + paragraph.slice(0, j).filter(word => word.word).length;
+          const seg = part.segment;
+          const cls = [wordClass, seg?.b ? 'font-bold' : '', seg?.g ? GENDER_CLASS[seg.g] : ''].join(' ');
           return (
-            <span key={j} role="button" tabIndex={-1} className={cls} data-gender={seg.g}
-              onClick={() => onWord(seg)} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onWord(seg); } }}>{seg.t}</span>
+            <span key={j} role="button" tabIndex={index === selectedWord ? 0 : -1} className={cls} data-gender={seg?.g}
+              onClick={() => onWord(seg ?? part.text)} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onWord(seg ?? part.text); } }}>{part.text}</span>
           );
         })}
       </p>

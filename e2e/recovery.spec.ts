@@ -52,12 +52,21 @@ test('reader words use arrow navigation and one Tab exits the text',async({page}
  await openApp(page,'en','/?go=stories&book=1&story=S01-Q1');
  await page.getByTestId('story-start').click();
  const text=page.locator('[data-word-navigation]').first();
- await text.focus();await page.keyboard.press('ArrowRight');
+ await text.locator('[role=button]').first().focus();
  expect(await text.evaluate(e=>e.contains(document.activeElement))).toBe(true);
  await page.keyboard.press('ArrowRight');
  expect(await text.evaluate(e=>e.querySelectorAll('[role=button]')[1]===document.activeElement)).toBe(true);
  await page.keyboard.press('Tab');
  expect(await text.evaluate(e=>e.contains(document.activeElement))).toBe(false);
+ await page.keyboard.press('Shift+Tab');
+ await expect(text.locator('[role=button]').nth(1)).toBeFocused();
+ await page.keyboard.press('Home');
+ await expect(text.locator('[role=button]').first()).toBeFocused();
+ await page.keyboard.press('Shift+Tab');
+ expect(await text.evaluate(e=>e.contains(document.activeElement))).toBe(false);
+ await page.keyboard.press('Tab');
+ await expect(text.locator('[role=button]').first()).toBeFocused();
+ await expect(text.locator('[role=button][tabindex="0"]')).toHaveCount(1);
 });
 
 
