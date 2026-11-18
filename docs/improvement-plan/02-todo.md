@@ -45,7 +45,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 | 22 | P2 | D | [Version browser security headers and verify deployed responses](#task-22) | M | Partial — live headers/assets pass; OAuth/push/CSP disposition pending |
 | 23 | P2 | A | [Track the current picomatch advisory and harden dependency maintenance](#task-23) | S | Open — runtime audit clean; five build-tool findings await upstream remediation |
 | 24 | P2 | E | [Clarify or expand what the backup actually contains](#task-24) | M | Implemented locally |
-| 25 | P2 | E | [Define offline availability and recovery expectations](#task-25) | M/L | Partial — encrypted backup prepared; activation and hosted recovery pending |
+| 25 | P2 | E | [Define offline availability and recovery expectations](#task-25) | M/L | Partial — private encrypted backup repository/key recipient configured; database credentials and restore pending |
 
 <a id="task-01"></a>
 
@@ -706,7 +706,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P2 · **Phase:** E · **Effort:** M/L  
 **Depends on:** 10, 11; D6; coordinate cache policy with 22  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Partial — encrypted backup prepared; activation and hosted recovery pending
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Partial — private encrypted backup repository/key recipient configured; database credentials and restore pending
 **Original evidence:** Verified design limitation; deployment checks pending.
 
 **Why:** Learners may confuse offline persistence with being able to reopen the app offline; operators also need a tested recovery path.

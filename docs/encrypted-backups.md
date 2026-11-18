@@ -1,6 +1,6 @@
 # Encrypted off-site database backups (Supabase Free)
 
-Owner decision, 18 November 2026: keep Free and prepare encrypted off-site backups. Target: at most 24 hours lost data and recovery within 4 hours. **Prepared, not active:** no backup connection secrets, private destination or decryption identity have been configured. Do not mark recovery accepted until a real encrypted snapshot is downloaded, decrypted and restored in an isolated Supabase environment.
+Owner decision, 18 November 2026: keep Free and prepare encrypted off-site backups. Target: at most 24 hours lost data and recovery within 4 hours. **Prepared, not active:** the owner created an age identity and supplied its public recipient; a private destination and matching public variables are configured. PostgreSQL connection secrets and recovery validation remain pending. Do not mark recovery accepted until a real encrypted snapshot is downloaded, decrypted and restored in an isolated Supabase environment.
 
 ## Design and custody
 
@@ -13,11 +13,11 @@ Operator: repository owner (Masih); until a second custodian is appointed, recov
 ## Activation
 
 1. On an offline/trusted machine install age. Run `age-keygen -o /secure/offline/daf-backup.identity` and copy only its public `age1…` recipient. Store two protected copies of the identity separately; verify access to both. Never paste the identity into chat.
-2. Create a private backup repository. Use a fine-grained token with contents read/write on that destination only; set an expiry and renewal reminder. The source repository's default token cannot write there.
-3. In source repository Actions variables set `BACKUP_REPOSITORY=owner/private-repository` and `BACKUP_AGE_RECIPIENT=age1…`. Keep `BACKUP_ENABLED` unset for now.
-4. In Actions secrets set `BACKUP_PGHOST`, `BACKUP_PGPORT`, `BACKUP_PGUSER`, `BACKUP_PGPASSWORD`, and `BACKUP_REPOSITORY_TOKEN`. Use Supabase's direct connection or **session** pooler; do not use the transaction pooler. Obtain these from the project's Connect panel. The public anon/service API keys are not PostgreSQL credentials. Use a credential with complete read access to every backed-up schema; a restricted role must be tested for RLS/managed-schema completeness. Do not reset the database password merely to configure backups.
+2. The private repository is `mrsadri/daf-leitner-backups`. Its reviewed workflow and encryption script run there and use that repository’s built-in `GITHUB_TOKEN` for release uploads. No separate upload token is needed. Review changes before updating the private workflow copy.
+3. In both source and private repository Actions variables set `BACKUP_REPOSITORY=owner/private-repository` and `BACKUP_AGE_RECIPIENT=age1…`. Keep `BACKUP_ENABLED` unset in the private repository for now; the public source workflow remains disabled.
+4. In the **private backup repository’s** Actions secrets set `BACKUP_PGHOST`, `BACKUP_PGPORT`, `BACKUP_PGUSER`, and `BACKUP_PGPASSWORD`. Use Supabase's direct connection or **session** pooler; do not use the transaction pooler. Obtain these from the project's Connect panel. The public anon/service API keys are not PostgreSQL credentials. Use a credential with complete read access to every backed-up schema; a restricted role must be tested for RLS/managed-schema completeness. Do not reset the database password merely to configure backups.
 5. The workflow installs PostgreSQL 17 client; verify the source major version is no newer than 17, or update the pinned client. TLS is required. A full logical dump includes private schemas and sensitive Auth/configuration records; encryption and destination restrictions are essential.
-6. Set `BACKUP_ENABLED=true`, run the workflow manually, verify a private release exists, download the ciphertext and perform the restore drill below. If it fails, disable the variable and resolve the failure before relying on it. Enable Actions failure notifications in your GitHub notification settings.
+6. In the private repository set `BACKUP_ENABLED=true`, run the workflow manually, verify a private release exists, download the ciphertext and perform the restore drill below. If it fails, disable the variable and resolve the failure before relying on it. Enable Actions failure notifications in your GitHub notification settings.
 
 ## Restore drill and incident procedure
 
@@ -34,3 +34,5 @@ Reference: [Supabase database backups](https://supabase.com/docs/guides/platform
 ## Readiness report
 
 Run `node scripts/backup/check-readiness.mjs /tmp/daf-backup-readiness.json` with an authenticated GitHub CLI. It inspects secret **names** and configuration variables, confirms that the destination is private, and reports missing setup without reading secret values or accessing PostgreSQL. An exit status of 1 means setup is incomplete. A successful metadata check still does not validate secret contents, key custody, backup completeness or recovery targets. Create the private destination with an initial README/default branch so it can hold release tags.
+
+The private workflow is copied from `.github/workflows/encrypted-backup.yml` together with `scripts/backup/encrypt-dump.sh`. It refuses to run unless the repository matches `BACKUP_REPOSITORY` and is private. Refresh these reviewed copies when backup tooling changes; application deployments do not update them automatically.

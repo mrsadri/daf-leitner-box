@@ -11,11 +11,17 @@ concurrency:
 jobs:
   backup:
     # Deliberate opt-in: no hosted database access until all setup steps are complete.
-    if: vars.BACKUP_ENABLED == 'true'
+    if: vars.BACKUP_ENABLED == 'true' && github.repository == vars.BACKUP_REPOSITORY
+    permissions:
+      contents: write
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
+      - name: Require private recovery repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: test "$(gh repo view "$GITHUB_REPOSITORY" --json visibility --jq .visibility)" = PRIVATE
       - name: Install encryption and matching PostgreSQL client
         run: |
           sudo apt-get update
@@ -39,8 +45,8 @@ jobs:
           bash scripts/backup/encrypt-dump.sh "$RUNNER_TEMP/encrypted-backup/database.dump.age"
       - name: Store ciphertext in a separate private repository
         env:
-          GH_TOKEN: ${{ secrets.BACKUP_REPOSITORY_TOKEN }}
-          BACKUP_REPOSITORY: ${{ vars.BACKUP_REPOSITORY }}
+          GH_TOKEN: ${{ github.token }}
+          BACKUP_REPOSITORY: ${{ github.repository }}
         run: |
           set -euo pipefail
           test "$(gh repo view "$BACKUP_REPOSITORY" --json visibility --jq .visibility)" = PRIVATE
