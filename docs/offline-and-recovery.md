@@ -34,3 +34,7 @@ DAF_RESTORE_REPORT=/tmp/daf-restore-report.json bash scripts/test-sql.sh /path/t
 ```
 
 The measured local fixture restore is not a hosted recovery-time commitment. Hosted backup retention, Auth service/Storage recovery, independent disaster recovery, operator responsibility and agreed RPO/RTO still need the owner rehearsal described above. No production backup or learner data is used by this script.
+
+## Owner-approved targets — 18 November 2026
+
+The owner accepted a maximum 24-hour data-loss window (RPO) and restoration within 4 hours (RTO). These are acceptance targets, not evidence that the current hosted backup plan meets them. The production backup schedule/retention and hosted restore rehearsal must demonstrate both targets before task 25 is closed. The synthetic local/CI restore does not establish hosted compliance.

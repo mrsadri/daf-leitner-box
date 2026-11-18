@@ -34,7 +34,14 @@ jobs:
           # Include the signed-in application in the production bundle without real credentials.
           VITE_SUPABASE_URL: https://example.supabase.co
           VITE_SUPABASE_ANON_KEY: placeholder
-      - run: npx playwright install --with-deps chromium-headless-shell
+      - name: Prepare browser for acceptance tests
+        run: |
+          if command -v google-chrome >/dev/null 2>&1; then
+            echo "PW_EXE=$(command -v google-chrome)" >> "$GITHUB_ENV"
+            google-chrome --version
+          else
+            npx playwright install --with-deps chromium-headless-shell
+          fi
       - run: npm run e2e
       - uses: actions/upload-artifact@v4
         if: failure()
