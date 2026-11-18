@@ -1,3 +1,5 @@
+> Current release: PR #35 is published. See [publication and recovery](10-publication-and-recovery.md) for current acceptance evidence and remaining operator/human/upstream gates. Earlier implementation notes remain historical.
+
 # DaF & Mind — actionable to-do list
 
 [Plan](01-implementation-plan.md) · [Verification checklist](03-verification-checklist.md) · [Original review](00-original-review.md)
@@ -383,10 +385,10 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Why:** Latency and database cost may grow with historical events, even though the returned leaderboard is small.
 
-- [ ] **13.1** Seed representative staging volumes and capture EXPLAIN ANALYZE plus p50/p95 timings. **AI: GPT-6.2 Sol · High.**
+- [x] **13.1** Capture representative synthetic volumes and read-only production EXPLAIN ANALYZE plus p50/p95 timings (substitutes for paid staging). **AI: GPT-6.2 Sol · High.**
 - [x] **13.2** Identify the actual scan cost before selecting date-led indexes, partial indexes, or daily aggregates. **AI: GPT-6.2 Sol · High.**
 - [x] **13.3** Compare query plans and results before/after; verify hidden users, tie ranks, streaks, and silver counts. **AI: GPT-6.2 Sol · High.**
-- [ ] **13.V** Pass and record [acceptance check V13](03-verification-checklist.md#v13). **AI: GPT-6.2 Sol · High.**
+- [x] **13.V** Pass and record [acceptance check V13](03-verification-checklist.md#v13). **AI: GPT-6.2 Sol · High.**
 
 **Acceptance:** Record p50/p95 timings and query plans at realistic volumes; demonstrate improvement without changing ranking results.
 
