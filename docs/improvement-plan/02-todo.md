@@ -12,7 +12,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 ## Coverage and status register
 
-**Correction:** 13 tasks remain incomplete overall. See [exact remaining requirements](06-incomplete-tasks.md). “Implemented locally” in earlier notes never establishes full task completion.
+**Correction:** 12 tasks remain incomplete overall. See [exact remaining requirements](06-incomplete-tasks.md). “Implemented locally” in earlier notes never establishes full task completion.
 
 
 | ID | Priority | Phase | Task | Effort | Status |
