@@ -193,10 +193,10 @@ See [progress](04-progress.md) for current counts/commands and [owner handoff](0
 **Verification AI:** GPT-6.2 Sol · High
 
 
-- [ ] Record p50/p95 timings and query plans at realistic volumes; demonstrate improvement without changing ranking results. **AI: GPT-6.2 Sol · High.**
-- [ ] Evidence recorded and assessed against the original confidence level: Optimization candidate; no production timings collected. **AI: GPT-6.2 Sol · High.**
+- [x] Record p50/p95 timings and plans at realistic synthetic volumes and current production load; compare index candidates and ranking equivalence. No material index gain was demonstrated, so no new index was deployed. **AI: GPT-6.2 Sol · High.**
+- [x] Evidence recorded and assessed against the original confidence level: production warm-cache execution is about 9.5–9.8ms; prior concern was an unmeasured optimization candidate. **AI: GPT-6.2 Sol · High.**
 
-**Result:** Pending · **Commit/environment:** — · **Evidence:** — · **Reviewer:** —  
+**Result:** Investigation accepted; no additional index justified · **Environment:** synthetic local + read-only production · **Evidence:** [publication report](10-publication-and-recovery.md) · **Reviewer:** Codex (no independent human review claimed)
 [Implementation tasks](02-todo.md#task-13)
 
 <a id="v14"></a>

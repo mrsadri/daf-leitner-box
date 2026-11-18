@@ -38,3 +38,7 @@ The measured local fixture restore is not a hosted recovery-time commitment. Hos
 ## Owner-approved targets — 18 November 2026
 
 The owner accepted a maximum 24-hour data-loss window (RPO) and restoration within 4 hours (RTO). These are acceptance targets, not evidence that the current hosted backup plan meets them. The production backup schedule/retention and hosted restore rehearsal must demonstrate both targets before task 25 is closed. The synthetic local/CI restore does not establish hosted compliance.
+
+## Free-plan encrypted off-site preparation
+
+The owner chose to keep Supabase Free. See [encrypted-backups.md](encrypted-backups.md) for the opt-in twice-daily encrypted workflow, private destination, 30-day retention procedure, key custody, activation and hosted recovery gates. The synthetic restore harness now uses the exact encrypted streaming path, decrypts with a temporary identity, restores it and verifies failure cleanup. No permanent key or production backup has been created by that test.

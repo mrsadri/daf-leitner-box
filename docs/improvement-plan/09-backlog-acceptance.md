@@ -1,6 +1,6 @@
 # Backlog acceptance follow-up — 18 November 2026
 
-Branch: `codex/backlog-acceptance`, based on published PR #32 (`1f38dc2`). This candidate is not deployed. No production database changes or notifications were made during this pass; the public release checker used anonymous GET requests only.
+PR #35 is now merged at `a63142c` and published. Its scoped-start migration was applied before the frontend. See [the publication follow-up](10-publication-and-recovery.md) for current status; the table below records the earlier acceptance pass.
 
 ## Current scope and outcome
 

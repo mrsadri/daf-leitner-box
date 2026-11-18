@@ -17,26 +17,27 @@
     "db:upgrade:check": "node scripts/check-schema-upgrade.mjs",
     "check:edge": "npx --yes deno@2.9.6 check --node-modules-dir=none --lock=supabase/functions/send-reminders/deno.lock --frozen-lockfile supabase/functions/send-reminders/index.ts",
     "test:edge": "ECE_KEYLOG=0 npx --yes deno@2.9.6 test --node-modules-dir=none --lock=supabase/functions/send-reminders/deno.lock --frozen-lockfile --allow-env=ECE_KEYLOG,NODE_DEBUG,DEBUG,CRON_SECRET,VAPID_SUBJECT,VAPID_PUBLIC_KEY,VAPID_PRIVATE_KEY,SUPABASE_URL,SUPABASE_SERVICE_ROLE_KEY supabase/functions/send-reminders/*.test.ts",
-    "check:public-release": "node scripts/check-public-release.mjs"
+    "check:public-release": "node scripts/check-public-release.mjs",
+    "audit:runtime": "npm audit --omit=dev --audit-level=high"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.119.0",
-    "@tailwindcss/vite": "^4.3.5",
-    "@vitejs/plugin-react": "^6.3.0",
     "lucide-react": "^1.73.0",
     "react": "^19.0.1",
-    "react-dom": "^19.0.1",
-    "vite": "^8.3.8"
+    "react-dom": "^19.0.1"
   },
   "devDependencies": {
     "@electric-sql/pglite": "0.5.16",
     "@playwright/test": "1.65.0",
+    "@tailwindcss/vite": "^4.3.5",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.3.0",
     "oxlint": "1.93.0",
     "tailwindcss": "^4.3.3",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8"
   },
   "engines": {
     "node": ">=20"

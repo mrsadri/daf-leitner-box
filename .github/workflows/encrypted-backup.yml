@@ -1,0 +1,53 @@
+name: Encrypted database backup
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 2,14 * * *'
+permissions:
+  contents: read
+concurrency:
+  group: encrypted-database-backup
+  cancel-in-progress: false
+jobs:
+  backup:
+    # Deliberate opt-in: no hosted database access until all setup steps are complete.
+    if: vars.BACKUP_ENABLED == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install encryption and matching PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y age postgresql-common
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client-17
+      - name: Stream encrypted snapshot
+        env:
+          PGHOST: ${{ secrets.BACKUP_PGHOST }}
+          PGPORT: ${{ secrets.BACKUP_PGPORT }}
+          PGUSER: ${{ secrets.BACKUP_PGUSER }}
+          PGPASSWORD: ${{ secrets.BACKUP_PGPASSWORD }}
+          PGDATABASE: postgres
+          PGSSLMODE: require
+          PGCONNECT_TIMEOUT: '30'
+          BACKUP_AGE_RECIPIENT: ${{ vars.BACKUP_AGE_RECIPIENT }}
+        run: |
+          export PATH="/usr/lib/postgresql/17/bin:$PATH"
+          mkdir -m 700 "$RUNNER_TEMP/encrypted-backup"
+          bash scripts/backup/encrypt-dump.sh "$RUNNER_TEMP/encrypted-backup/database.dump.age"
+      - name: Store ciphertext in a separate private repository
+        env:
+          GH_TOKEN: ${{ secrets.BACKUP_REPOSITORY_TOKEN }}
+          BACKUP_REPOSITORY: ${{ vars.BACKUP_REPOSITORY }}
+        run: |
+          set -euo pipefail
+          test "$(gh repo view "$BACKUP_REPOSITORY" --json visibility --jq .visibility)" = PRIVATE
+          tag="database-backup-$(date -u +%Y%m%dT%H%M%SZ)-${GITHUB_RUN_ID}"
+          gh release create "$tag" "$RUNNER_TEMP/encrypted-backup/database.dump.age" \
+            --repo "$BACKUP_REPOSITORY" --title "$tag" \
+            --notes 'Age-encrypted logical database snapshot. Decryption identity is held offline.'
+      - name: Remove local ciphertext
+        if: always()
+        run: rm -rf -- "$RUNNER_TEMP/encrypted-backup"

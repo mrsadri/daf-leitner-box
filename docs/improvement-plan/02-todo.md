@@ -1,3 +1,5 @@
+> Current release: PR #35 is published. See [publication and recovery](10-publication-and-recovery.md) for current acceptance evidence and remaining operator/human/upstream gates. Earlier implementation notes remain historical.
+
 # DaF & Mind — actionable to-do list
 
 [Plan](01-implementation-plan.md) · [Verification checklist](03-verification-checklist.md) · [Original review](00-original-review.md)
@@ -24,24 +26,24 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 | 05 | P1 | C | [Define conflict handling for cards and settings across devices](#task-05) | L | Implemented locally |
 | 06 | P1 | C | [Make competitive results server-verifiable](#task-06) | L | Implemented locally |
 | 07 | P1 | D | [Validate push destinations before the privileged worker fetches them](#task-07) | M | Partial — acceptance pending |
-| 08 | P1 | B | [Bind sync state and pending requests to a single user session](#task-08) | M | Local acceptance passed; candidate review/release pending |
+| 08 | P1 | B | [Bind sync state and pending requests to a single user session](#task-08) | M | Published in PR #35; automated acceptance passed |
 | 09 | P1 | B | [Allow updates at the card quota and make limits concurrency-safe](#task-09) | M | Implemented locally |
 | 10 | P1 | A | [Run database authorization and migration tests in CI](#task-10) | M | Verified locally and in GitHub CI |
 | 11 | P2 | A | [Create one reproducible, versioned schema installation path](#task-11) | M | Partial — acceptance pending |
 | 12 | P2 | C | [Give story progress a current, constrained data model](#task-12) | M | Implemented locally; hosted data audit pending |
-| 13 | P2 | E | [Measure and reduce leaderboard aggregation cost](#task-13) | M | Partial — semantic checks pass; staging measurement pending |
-| 14 | P2 | D | [Make reminder delivery bounded and safe to retry](#task-14) | M | Local acceptance passed; candidate review/release pending |
+| 13 | P2 | E | [Measure and reduce leaderboard aggregation cost](#task-13) | M | Measured — synthetic and read-only production evidence; no new index justified |
+| 14 | P2 | D | [Make reminder delivery bounded and safe to retry](#task-14) | M | Published in PR #35; automated acceptance passed |
 | 15 | P2 | C | [Generate database types and validate persisted/imported data](#task-15) | M | Implemented locally |
-| 16 | P2 | D | [Add recoverable startup and screen error states](#task-16) | M | Local acceptance passed; candidate review/release pending |
+| 16 | P2 | D | [Add recoverable startup and screen error states](#task-16) | M | Published in PR #35; automated acceptance passed |
 | 17 | P2 | D | [Close lint warnings and split responsibilities at unstable boundaries](#task-17) | M | Implemented locally |
 | 18 | P1 | B | [Preview backup imports before replacing current cards](#task-18) | M | Implemented locally |
-| 19 | P2 | E | [Make unsynced work visible and actionable](#task-19) | M | Local acceptance passed; candidate review/release pending |
-| 20 | P2 | E | [Simplify mobile navigation and preserve location in the URL](#task-20) | M | Local acceptance passed; candidate review/release pending |
+| 19 | P2 | E | [Make unsynced work visible and actionable](#task-19) | M | Published in PR #35; automated acceptance passed |
+| 20 | P2 | E | [Simplify mobile navigation and preserve location in the URL](#task-20) | M | Published in PR #35; automated acceptance passed |
 | 21 | P2 | E | [Reduce reader tab stops and test nested dialog behavior](#task-21) | M | Partial — keyboard checks pass; screen-reader observation pending |
 | 22 | P2 | D | [Version browser security headers and verify deployed responses](#task-22) | M | Partial — live headers/assets pass; OAuth/push/CSP disposition pending |
-| 23 | P2 | A | [Track the current picomatch advisory and harden dependency maintenance](#task-23) | S | Open — five audit findings; compatible upstream remediation pending |
+| 23 | P2 | A | [Track the current picomatch advisory and harden dependency maintenance](#task-23) | S | Open — runtime audit clean; five build-tool findings await upstream remediation |
 | 24 | P2 | E | [Clarify or expand what the backup actually contains](#task-24) | M | Implemented locally |
-| 25 | P2 | E | [Define offline availability and recovery expectations](#task-25) | M/L | Partial — synthetic restore passes; hosted recovery targets pending |
+| 25 | P2 | E | [Define offline availability and recovery expectations](#task-25) | M/L | Partial — encrypted backup prepared; activation and hosted recovery pending |
 
 <a id="task-01"></a>
 
@@ -243,7 +245,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P1 · **Phase:** B · **Effort:** M  
 **Depends on:** G0  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Local acceptance passed; candidate review/release pending
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Published in PR #35; automated acceptance passed
 **Original evidence:** Source-derived risk requiring an integration test.
 
 **Why:** Account changes or expired sessions could leave stale operations or startup results attached to the next session. This is a lifecycle risk, not a demonstrated cross-account breach.
@@ -378,15 +380,15 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P2 · **Phase:** E · **Effort:** M  
 **Depends on:** 10, 11; representative staging data  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Partial — semantic checks pass; staging measurement pending
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Measured — synthetic and read-only production evidence; no new index justified
 **Original evidence:** Optimization candidate; no production timings collected.
 
 **Why:** Latency and database cost may grow with historical events, even though the returned leaderboard is small.
 
-- [ ] **13.1** Seed representative staging volumes and capture EXPLAIN ANALYZE plus p50/p95 timings. **AI: GPT-6.2 Sol · High.**
+- [x] **13.1** Capture representative synthetic volumes and read-only production EXPLAIN ANALYZE plus p50/p95 timings (substitutes for paid staging). **AI: GPT-6.2 Sol · High.**
 - [x] **13.2** Identify the actual scan cost before selecting date-led indexes, partial indexes, or daily aggregates. **AI: GPT-6.2 Sol · High.**
 - [x] **13.3** Compare query plans and results before/after; verify hidden users, tie ranks, streaks, and silver counts. **AI: GPT-6.2 Sol · High.**
-- [ ] **13.V** Pass and record [acceptance check V13](03-verification-checklist.md#v13). **AI: GPT-6.2 Sol · High.**
+- [x] **13.V** Pass and record [acceptance check V13](03-verification-checklist.md#v13). **AI: GPT-6.2 Sol · High.**
 
 **Acceptance:** Record p50/p95 timings and query plans at realistic volumes; demonstrate improvement without changing ranking results.
 
@@ -405,7 +407,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P2 · **Phase:** D · **Effort:** M  
 **Depends on:** 07, 10, 11  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Local acceptance passed; candidate review/release pending
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Published in PR #35; automated acceptance passed
 **Original evidence:** Verified design gap.
 
 **Why:** One slow endpoint can delay the run; retries can annoy learners or increase delivery cost.
@@ -459,7 +461,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P2 · **Phase:** D · **Effort:** M  
 **Depends on:** G0  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Local acceptance passed; candidate review/release pending
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Published in PR #35; automated acceptance passed
 **Original evidence:** Verified gap.
 
 **Why:** A transient failure can look like an empty catalog, a stuck loader, or a blank app.
@@ -540,7 +542,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P2 · **Phase:** E · **Effort:** M  
 **Depends on:** 03, 08; status contracts for 02/04/05  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Local acceptance passed; candidate review/release pending
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Published in PR #35; automated acceptance passed
 **Original evidence:** Verified UI limitation.
 
 **Why:** Users can assume work is synchronized when a feature’s queue is still failing, particularly on touch devices without hover.
@@ -567,7 +569,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P2 · **Phase:** E · **Effort:** M  
 **Depends on:** Working browser validation; D7  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Local acceptance passed; candidate review/release pending
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Published in PR #35; automated acceptance passed
 **Original evidence:** Source-based UX recommendation; visual validation pending.
 
 **Why:** Labels may be hard to scan on small screens, and browser Back/refresh cannot reliably restore a learner’s location.
@@ -648,7 +650,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P2 · **Phase:** A · **Effort:** S  
 **Depends on:** G0; fresh advisory check  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Open — five audit findings; compatible upstream remediation pending
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Open — runtime audit clean; five build-tool findings await upstream remediation
 **Original evidence:** Confirmed by npm audit and upstream advisory.
 
 **Why:** Build/development tools still need security maintenance, but six affected packages should not be mistaken for six independent application vulnerabilities.
@@ -702,7 +704,7 @@ Assignments are project-specific judgments based on [OpenAI’s model guidance](
 
 **Priority:** P2 · **Phase:** E · **Effort:** M/L  
 **Depends on:** 10, 11; D6; coordinate cache policy with 22  
-**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Partial — synthetic restore passes; hosted recovery targets pending
+**Owner:** TBD · **Reviewer:** TBD · **PR/commit:** — · **Status:** Partial — encrypted backup prepared; activation and hosted recovery pending
 **Original evidence:** Verified design limitation; deployment checks pending.
 
 **Why:** Learners may confuse offline persistence with being able to reopen the app offline; operators also need a tested recovery path.

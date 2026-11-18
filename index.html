@@ -19,10 +19,7 @@
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="preload" href="/fonts/vazirmatn/vazirmatn-arabic-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-    <script>
-      // Apply the saved interface language before the app loads, so English users don't see an RTL flash
-      try { if (localStorage.getItem('daf_lang') === 'en') { document.documentElement.lang = 'en'; document.documentElement.dir = 'ltr'; } } catch (e) {}
-    </script>
+    <script src="/interface-language.js"></script>
   </head>
   <body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 antialiased selection:bg-amber-100 selection:text-amber-900">
     <div id="root"></div>

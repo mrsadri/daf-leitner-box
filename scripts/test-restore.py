@@ -36,6 +36,27 @@ with tempfile.TemporaryDirectory(prefix='daf-restore-') as tmp:
     started=time.monotonic()
     run('pg_dump','-d','postgres','--format=custom','--no-owner','--file',str(backup))
     dumped=time.monotonic()
+    # Test the exact operator pipeline with a disposable key and synthetic data.
+    identity=Path(tmp)/'identity'
+    subprocess.run(['age-keygen','-o',str(identity)],check=True,capture_output=True)
+    recipient=subprocess.check_output(['age-keygen','-y',str(identity)],text=True).strip()
+    encrypted=Path(tmp)/'synthetic.dump.age'
+    backup_env={**os.environ,'PATH':str(pg)+os.pathsep+os.environ['PATH'],
+      'PGHOST':'127.0.0.1','PGPORT':str(args.port),'PGUSER':'postgres',
+      'PGDATABASE':'postgres','BACKUP_AGE_RECIPIENT':recipient}
+    subprocess.run(['bash','scripts/backup/encrypt-dump.sh',str(encrypted)],
+      env=backup_env,check=True,capture_output=True)
+    assert encrypted.read_bytes().startswith(b'age-encryption.org/v1'), 'Missing age envelope'
+    backup.unlink()
+    subprocess.run(['age','--decrypt','-i',str(identity),'-o',str(backup),str(encrypted)],
+      check=True,capture_output=True)
+    # Broken connection must leave no final or partial snapshot and no credential in diagnostics.
+    failed=Path(tmp)/'failed.dump.age'
+    failure=subprocess.run(['bash','scripts/backup/encrypt-dump.sh',str(failed)],
+      env={**backup_env,'PGPORT':'1','PGCONNECT_TIMEOUT':'1','PGPASSWORD':'synthetic-secret'},capture_output=True)
+    assert failure.returncode != 0 and not failed.exists() and not Path(str(failed)+'.partial').exists()
+    assert b'synthetic-secret' not in failure.stdout+failure.stderr
+
     # Prove the dump is a snapshot: a later synthetic write must not appear in the restore.
     run('psql','-d','postgres','-v','ON_ERROR_STOP=1','-c',"insert into public.app_flags(key,value) values('restore_after_snapshot','true') on conflict(key) do update set value='true'")
     run('createdb',destination)
@@ -55,7 +76,8 @@ with tempfile.TemporaryDirectory(prefix='daf-restore-') as tmp:
           'backupBytes':backup.stat().st_size,'backupSeconds':round(dumped-started,3),
           'restoreSeconds':round(restored-restore_start,3),'validationSeconds':round(time.monotonic()-restored,3),
           'restoredCounts':actual['counts'],'schemaAndPermissionsEquivalent':True,
-          'postSnapshotWriteAbsent':True,'hostedRecoveryTargetsValidated':False,
+          'postSnapshotWriteAbsent':True,'encryptedRoundTripVerified':True,
+          'failedBackupLeavesNoArtifact':True,'hostedRecoveryTargetsValidated':False,
           'limitations':'Same-cluster synthetic restore. Does not test hosted backup retention, Auth service recovery, Storage objects, operator RPO/RTO, or independent disaster recovery.'}
         path=os.environ.get('DAF_RESTORE_REPORT')
         if path:Path(path).write_text(json.dumps(report,indent=2)+'\n')
