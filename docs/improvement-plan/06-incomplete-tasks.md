@@ -1,3 +1,5 @@
+**Current update:** [The follow-up acceptance report](09-backlog-acceptance.md) supersedes the counts below. Candidate local acceptance passes for 8, 14, 16, 19 and 20; review/release remains. Substantive external requirements remain for 13, 21, 22, 23 and 25.
+
 # Incomplete tasks — corrected status
 
 The following **12 tasks remain incomplete overall**: **7, 8, 11, 13, 14, 16, 19, 20, 21, 22, 23 and 25**.

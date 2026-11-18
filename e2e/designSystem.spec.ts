@@ -57,7 +57,13 @@ test(`nested dialogs close only the top layer and restore its opener (${lang})`,
  const parent=page.getByRole('dialog',{name:'Dialog title',exact:true});
  const opener=parent.getByRole('button',{name:'Open nested dialog'});
  await opener.click();
- await expect(page.getByRole('dialog',{name:'Nested dialog',exact:true})).toBeVisible();
+ const nested=page.getByRole('dialog',{name:'Nested dialog',exact:true});
+ await expect(nested).toBeVisible();
+ expect(await parent.evaluate(e=>e.parentElement?.inert)).toBe(true);
+ for(let i=0;i<5;i++){
+  await page.keyboard.press('Tab');
+  expect(await nested.evaluate(e=>e.contains(document.activeElement))).toBe(true);
+ }
  await page.keyboard.press('Escape');
  await expect(page.getByRole('dialog',{name:'Nested dialog',exact:true})).toHaveCount(0);
  await expect(parent).toBeVisible();

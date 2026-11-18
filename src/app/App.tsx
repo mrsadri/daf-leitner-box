@@ -6,6 +6,7 @@
  * Demo mode (src/shared/lib/demo.ts) skips sign-in and Supabase entirely.
  */
 import React, { useState, useEffect, lazy, Suspense } from 'react';
+import { subscribeSession } from '../core/sessionSubscription';
 import type { Session } from '@supabase/supabase-js';
 import { supabase, isSupabaseConfigured } from '../shared/lib/supabase';
 import { isDemoMode, DEMO_USER } from '../shared/lib/demo';
@@ -36,10 +37,19 @@ function AuthGate() {
   const [failed, setFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
   useEffect(() => {
-    let live = true;
-    supabase!.auth.getSession().then(({ data, error }) => { if (!live) return; if (error) setFailed(true); else setSession(data.session); }).catch(() => { if (live) setFailed(true); });
-    const { data: { subscription } } = supabase!.auth.onAuthStateChange((_event, s) => setSession(s));
-    return () => { live = false; subscription.unsubscribe(); };
+    return subscribeSession<Session>({
+      load:async()=>{
+        const {data,error}=await supabase!.auth.getSession();
+        if(error)throw error;
+        return data.session;
+      },
+      listen:callback=>{
+        const {data:{subscription}}=supabase!.auth.onAuthStateChange((_event,nextSession)=>callback(nextSession));
+        return ()=>subscription.unsubscribe();
+      },
+      onSession:nextSession=>{setFailed(false);setSession(nextSession);},
+      onError:()=>setFailed(true),
+    });
   // eslint-disable-next-line react/exhaustive-effect-dependencies -- The explicit retry token deliberately resubscribes and reloads Auth state.
   }, [attempt]);
 

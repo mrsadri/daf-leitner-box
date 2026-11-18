@@ -34,6 +34,13 @@ for (const lang of ['fa','en'] as const) {
    await page.evaluate(()=>{document.documentElement.style.fontSize='20px';});
    const {tabBar,noHorizontalScroll}=await import('./helpers');
    await noHorizontalScroll(page);
+   const banner=page.getByTestId('install-banner');
+   if(await banner.count()){
+    const box=await banner.boundingBox(),copy=await page.getByTestId('install-banner-copy').boundingBox(),action=await page.getByTestId('install-banner-action').boundingBox();
+    expect(copy!.width).toBeGreaterThan(box!.width/2);
+    expect(action!.y).toBeGreaterThanOrEqual(copy!.y+copy!.height-1);
+   }
+   await page.screenshot({path:`/tmp/daf-nav-${lang}-${width}-${test.info().project.name}.png`});
    await tabBar(page).getByRole('button',{name:lang==='fa'?/تنظیمات/:/settings/i}).click();
    await expect(page.locator('input[type=file]')).toHaveCount(1);
    await noHorizontalScroll(page);
@@ -73,5 +80,32 @@ for(const lang of ['en','fa'] as const){
   const alert=page.getByRole('alert');await expect(alert).toBeVisible();
   fail=false;await alert.getByRole('button',{name:lang==='en'?'Try again':'تلاش مجدد'}).click();
   await expect(page.getByTestId('stories-shelf')).toBeVisible();
+ });
+}
+
+for(const lang of ['en','fa'] as const){
+ test(`sign-out explains pending work and cancellation preserves data (${lang})`,async({page})=>{
+  await openApp(page,lang,'/?go=settings');
+  const before=await page.evaluate(()=>localStorage.getItem('daf_cards_cache_demo-user'));
+  expect(before).not.toBeNull();
+  const name=lang==='en'?'Sign out':'خروج از حساب کاربری';
+  await page.getByRole('button',{name,exact:true}).click();
+  const dialog=page.getByRole('dialog',{name,exact:true});await expect(dialog).toBeVisible();
+  await expect(dialog).toContainText(lang==='en'?'Changes only in memory can be lost.':'حافظه موقت');
+  await dialog.getByRole('button',{name:lang==='en'?'Cancel':'انصراف',exact:true}).click();
+  await expect(dialog).toHaveCount(0);
+  expect(await page.evaluate(()=>localStorage.getItem('daf_cards_cache_demo-user'))).toEqual(before);
+ });
+}
+
+for(const lang of ['en','fa'] as const){
+ test(`reader lookup has a named group and correctly localized instructions (${lang})`,async({page})=>{
+  await openApp(page,lang,'/?go=stories&book=1&story=S01-Q1');
+  await page.getByTestId('story-start').click();
+  const text=page.getByRole('toolbar',{name:lang==='en'?'Word lookup':'معنی واژه‌ها'}).first();
+  await expect(text).toHaveAttribute('lang','de');
+  const descriptionLanguage=await text.evaluate(element=>document.getElementById(element.getAttribute('aria-describedby')!)?.getAttribute('lang'));
+  expect(descriptionLanguage).toBe(lang);
+  await expect(text).toHaveAttribute('aria-keyshortcuts','ArrowLeft ArrowRight Home End');
  });
 }
