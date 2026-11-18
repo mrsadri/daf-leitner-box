@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { lessonProgress } from '../src/features/dashboard/lessonProgress.ts';
+import { lessonProgress, reviewedCardIds } from '../src/features/dashboard/lessonProgress.ts';
 
 const catalog = [
   { id: 'daf_01_1', lektion: '01', niveau: 'A1' }, { id: 'daf_01_2', lektion: '01', niveau: 'A1' },
@@ -30,3 +30,11 @@ test('percent never shows 100 before the last word', () => {
   const s = lessonProgress(big, big.slice(0, 199).map(w => w.id)).stations[0];
   assert.deepEqual([s.status, s.percent], ['partial', 99]);
 });
+
+ test('adding every card is insufficient; the first review completes each word', () => {
+ const words = [{id:'daf_03_1',lektion:'03'}, {id:'daf_03_2',lektion:'03'}];
+ const cards = [{id:'daf_03_1',reviewCount:1}, {id:'daf_03_2',reviewCount:0}];
+ assert.equal(lessonProgress(words,reviewedCardIds(cards)).stations[0].percent,50);
+ cards[1].reviewCount=1;
+ assert.equal(lessonProgress(words,reviewedCardIds(cards)).stations[0].status,'done');
+ });

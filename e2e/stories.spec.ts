@@ -10,6 +10,7 @@ for (const lang of ['fa', 'en'] as const) {
     const { errors, external } = await openApp(page, lang);
     await tabBar(page).getByRole('button', { name: lang === 'fa' ? /داستان/ : /stories/i }).click();
     await expect(page.getByTestId('stories-shelf')).toBeVisible();
+    await page.getByTestId('open-collection').click();
     await expect(page.getByTestId('book-cover')).toHaveCount(10);
     await noHorizontalScroll(page);
 
@@ -58,6 +59,8 @@ for (const lang of ['fa', 'en'] as const) {
       if (q > 0) await options.nth(2).click();
       await page.getByTestId('quiz-next').click();
     }
+    await expect(page.getByRole('dialog', { name: lang === 'fa' ? 'سکانس تمام شد!' : 'Scene completed!' })).toBeVisible();
+    await page.keyboard.press('Escape');
     await expect(page.getByTestId('story-result')).toBeVisible();
     await expect(page.getByTestId('next-story')).toBeVisible();
 

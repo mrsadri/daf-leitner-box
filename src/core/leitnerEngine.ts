@@ -396,8 +396,7 @@ class LeitnerEngine {
   public getUnlearnedWords(): LeitnerCard[] {
     const keys = this.vocabKeys();
     return this.catalog.filter(word => {
-      const w = (word.wort || '').toLowerCase().trim();
-      return !keys.has(w) && !keys.has(word.id);
+      return !keys.has(word.id);
     });
   }
 
@@ -420,11 +419,11 @@ class LeitnerEngine {
       wrongCount: 0
     };
 
-    // Avoid duplicates (same id, or same German spelling for vocab)
+    // Catalog entries are distinct by stable ID; personal cards can deduplicate by spelling.
     const wortKey = (newCard.wort || '').toLowerCase().trim();
     const existing = this.cards.find(c =>
       c.id === id ||
-      (newCard.type === 'vocab' && c.type === 'vocab' && !!wortKey && (c.wort || '').toLowerCase().trim() === wortKey)
+      (!id.startsWith('daf_') && !c.id.startsWith('daf_') && newCard.type === 'vocab' && c.type === 'vocab' && !!wortKey && (c.wort || '').toLowerCase().trim() === wortKey)
     );
     if (existing) return existing;
 
@@ -442,8 +441,7 @@ class LeitnerEngine {
     const added: LeitnerCard[] = [];
 
     words.forEach(word => {
-      const w = (word.wort || '').toLowerCase().trim();
-      if (keys.has(word.id) || (w && keys.has(w))) return;
+      if (keys.has(word.id)) return;
       const card: LeitnerCard = {
         ...word,
         box: 0,
@@ -457,7 +455,6 @@ class LeitnerEngine {
       this.cards.push(card);
       added.push(card);
       keys.add(word.id);
-      if (w) keys.add(w);
     });
 
     if (added.length > 0) this.persist(added);

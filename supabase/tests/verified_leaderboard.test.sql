@@ -1,5 +1,7 @@
 \set ON_ERROR_STOP on
 begin;
+-- Native suites share a cluster; unrelated earlier fixtures must not enter these rank assertions.
+update public.profiles set show_on_leaderboard=false;
 insert into auth.users(id,email) values
  ('83000000-0000-0000-0000-000000000001','board-a@example.test'),
  ('83000000-0000-0000-0000-000000000002','board-b@example.test'),
@@ -24,8 +26,8 @@ select set_config('test.uid','83000000-0000-0000-0000-000000000001',true);
 set local role authenticated;
 do $$ begin
  if exists(select 1 from public.get_verified_leaderboard('all',500) where user_id in ('83000000-0000-0000-0000-000000000003','83000000-0000-0000-0000-000000000004')) then raise exception 'FAILED: hidden or suspended user exposed'; end if;
- if not exists(select 1 from public.get_verified_leaderboard('all',500) where is_me and score=4 and score_7d=17 and reviews_7d=17 and streak=2 and silver=1 and rank=1) then raise exception 'FAILED: verified totals/streak/silver or tie rank'; end if;
- if not exists(select 1 from public.get_verified_leaderboard('week',500) where user_id='83000000-0000-0000-0000-000000000002' and score_7d=17 and rank=1) then raise exception 'FAILED: weekly tie rank'; end if;
+ if not exists(select 1 from public.get_verified_leaderboard('all',500) where is_me and score=4 and score_7d=4 and reviews_7d=1 and streak=2 and silver=1 and rank=1) then raise exception 'FAILED: verified totals/streak/silver or tie rank'; end if;
+ if not exists(select 1 from public.get_verified_leaderboard('week',500) where user_id='83000000-0000-0000-0000-000000000002' and score_7d=4 and rank=1) then raise exception 'FAILED: weekly tie rank'; end if;
 end $$;
 create temp table board_before as select jsonb_agg(to_jsonb(b) order by user_id) as result from public.get_verified_leaderboard('week',500)b;
 reset role;
@@ -38,7 +40,7 @@ do $$ begin
 end $$;
 select set_config('test.uid','83000000-0000-0000-0000-000000000003',true);
 do $$ begin
- if not exists(select 1 from public.get_verified_leaderboard('all',500) where is_me and score=6 and rank=1) then raise exception 'FAILED: hidden caller cannot see their own hypothetical rank'; end if;
+ if not exists(select 1 from public.get_verified_leaderboard('all',500) where is_me and score=4 and rank=1) then raise exception 'FAILED: hidden caller cannot see their own hypothetical rank'; end if;
 end $$;
 reset role;
 rollback;

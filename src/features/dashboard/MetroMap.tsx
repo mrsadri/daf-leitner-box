@@ -5,7 +5,7 @@
 import React, { useLayoutEffect, useMemo, useRef } from 'react';
 import { MapPin, Check } from 'lucide-react';
 import type { LeitnerCard } from '../../core/types';
-import { lessonProgress, LessonStation } from './lessonProgress';
+import { lessonProgress, reviewedCardIds, LessonStation } from './lessonProgress';
 import { useI18n } from '../../i18n/I18nProvider';
 import { SignHeading } from '../../shared/ui/Icon3D';
 
@@ -22,7 +22,7 @@ export const MetroMap: React.FC<{ catalog: LeitnerCard[]; cards: LeitnerCard[]; 
   const { t, digits } = useI18n();
   const m = t.metro;
   const { stations, current } = useMemo(
-    () => lessonProgress(catalog.map(c => ({ id: c.id, lektion: c.lektion, niveau: c.niveau })), cards.map(c => c.id)),
+    () => lessonProgress(catalog.map(c => ({ id: c.id, lektion: c.lektion, niveau: c.niveau })), reviewedCardIds(cards)),
     [catalog, cards]
   );
   const scroller = useRef<HTMLDivElement>(null);

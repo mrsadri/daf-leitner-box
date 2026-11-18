@@ -7,7 +7,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Check, Lock, ChevronLeft, BookOpen } from 'lucide-react';
 import type { LeitnerCard } from '../../core/types';
 import { useI18n } from '../../i18n/I18nProvider';
-import { Button, Card, Badge, cx } from '../../shared/ui';
+import { Button, Card, Badge, Dialog, cx } from '../../shared/ui';
 import { NewCardModal } from '../vocab/NewCardModal';
 import { loadBook, loadIndex, imageUrl } from './content';
 import { StoriesProgressStore } from './storiesSync';
@@ -15,6 +15,7 @@ import type { StorySaveStatus } from './progressStore';
 import { storyStates, nextStory, withPage, withQuizDone } from './progress';
 import { resolveTap, type WordTarget } from './wordTap';
 import { WordSheet } from './WordSheet';
+import { Icon3D } from '../../shared/ui/Icon3D';
 import { Reader } from './Reader';
 import { readStoryLocation, writeStoryLocation, type StoryView } from './storyNavigation';
 import type { Book, StoriesIndex, StoryProgress, WordSegment } from './types';
@@ -33,6 +34,8 @@ const COVER_TINTS = ['bg-amber-100', 'bg-sky-100', 'bg-emerald-100', 'bg-rose-10
 export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard }: Props) {
   const { t } = useI18n();
   const s = t.stories;
+  const [reward, setReward] = useState<number | null>(null);
+  const [collectionOpen, setCollectionOpen] = useState(false);
   const [index, setIndex] = useState<StoriesIndex | null>(null);
   const [book, setBook] = useState<Book | null>(null);
   const [error, setError] = useState(false);
@@ -100,6 +103,10 @@ export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard
 
   const overlays = (
     <>
+      {reward !== null && <Dialog title={s.rewardTitle} onClose={() => setReward(null)}>
+        <Icon3D name="trophy" className="w-24 h-24 mx-auto" />
+        <p className="text-center text-xl font-bold">{s.rewardPoints(reward)}</p>
+      </Dialog>}
       {(saveStatus !== 'idle' || store.getSaveInfo().lastSuccess) && (
         <div role="status" className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-200">
           <span>{saveStatus !== 'idle' && s.saveStatus[saveStatus]} {s.pendingCount(store.getSaveInfo().pending)} {store.getSaveInfo().lastSuccess && t.sync.lastSaved(new Date(store.getSaveInfo().lastSuccess!).toLocaleString())}</span>
@@ -117,6 +124,13 @@ export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard
       <NewCardModal isOpen={newWord !== null} initialWord={newWord ?? undefined} onClose={() => setNewWord(null)} onAddCard={onAddCard} />
     </>
   );
+
+  if (view.kind === 'shelf' && !collectionOpen) return <Card className="max-w-xl mx-auto space-y-4" data-testid="stories-shelf">
+    <h1 className="text-2xl font-bold">{index.book?.title ?? s.collectionTitle}</h1>
+    <p>{s.collectionDescription}</p>
+    <Button data-testid="open-collection" onClick={() => setCollectionOpen(true)}>{s.openCollection}</Button>
+    {overlays}
+  </Card>;
 
   // ----- Bookshelf -----
   if (view.kind === 'shelf') {
@@ -231,7 +245,10 @@ export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard
           writeStoryLocation({ kind: 'read', n: book.n, storyId: story.id, continueAt: page }, true);
           store.save(withPage(progress[story.id], story.id, page, story.pages.length, now()), book.contentVersion);
         }}
-        onQuizDone={(score) => store.save(withQuizDone(progress[story.id], story.id, story.pages.length, score, now()), book.contentVersion)}
+        onQuizDone={(score) => {
+          if (!progress[story.id]?.completedAt) setReward(story.sentenceCount);
+          store.save(withQuizDone(progress[story.id], story.id, story.pages.length, score, now()), book.contentVersion);
+        }}
         onWord={onWord}
         onNextStory={() => nextSt && setView({ kind: 'read', n: book.n, storyId: nextSt.id })}
         onBack={() => setView({ kind: 'book', n: book.n })}

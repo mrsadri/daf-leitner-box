@@ -51,7 +51,11 @@ def noun_forms(wort: str, plural: str) -> tuple[set[str], set[str]]:
 
 
 def noun_gender(token: str, artikel: str, wort: str, plural: str, previous: str | None) -> str | None:
-    g = GENDER.get((artikel or "").strip())
+    if (artikel or "").strip() not in GENDER:
+        return None
+    matching = [v for v in split_variants(wort) if token.lower() in noun_forms(v, "")[0]]
+    variant_article = re.match(r"^(der|die|das)\s+", matching[0]) if len(matching) == 1 else None
+    g = GENDER.get(variant_article.group(1) if variant_article else (artikel or "").strip())
     if g is None:
         return None
     t = token.lower()

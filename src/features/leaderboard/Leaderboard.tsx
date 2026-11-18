@@ -128,7 +128,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ profile, onOpenSetting
         <div role="tablist" className="inline-flex p-1 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs font-semibold">
           {([
             { id: 'all', label: t.leaderboard.tabAll },
-            { id: 'week', label: t.leaderboard.tabWeek }
+            { id: 'week', label: t.leaderboard.tabBalance }
           ] as const).map(tab => (
             <button
               key={tab.id}

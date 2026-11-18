@@ -1,7 +1,11 @@
 /**
  * Progress per DaF kompakt lesson for the metro map on the dashboard (pure, unit-tested).
- * A lesson's words count as added once their card is in the Leitner box (any box, archive included).
+ * A lesson's words count towards completion only after at least one review, including a wrong answer.
  */
+
+export function reviewedCardIds(cards: Iterable<{ id: string; reviewCount: number }>): string[] {
+  return Array.from(cards).filter(c => c.reviewCount > 0).map(c => c.id);
+}
 
 export interface LessonWord { id: string; lektion?: string; niveau?: string }
 

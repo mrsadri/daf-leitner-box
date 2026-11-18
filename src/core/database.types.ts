@@ -596,6 +596,7 @@ Relationships: [];
 "mark_overdue_demotions_seen": { Args: Record<never, never>; Returns: undefined };
 "merge_story_progress": { Args: Record<never, never>; Returns: unknown };
 "register_push_subscription": { Args: {"p_endpoint": string;"p_p256dh": string;"p_auth": string;"p_timezone": string;"p_lang": string}; Returns: undefined };
+"set_activity_timezone": { Args: {"p_zone": string}; Returns: undefined };
 "start_adjective_run": { Args: Record<never, never>; Returns: string };
 "start_scoped_adjective_run": { Args: {"p_expected_user": string}; Returns: Json };
 "start_verified_adjective_run": { Args: Record<never, never>; Returns: Json };
