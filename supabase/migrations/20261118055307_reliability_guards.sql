@@ -10,6 +10,10 @@ begin
   return new;
 end $$;
 revoke all on function public.limit_cards_per_user() from public, anon, authenticated;
+-- Production installations made through the SQL Editor may lack the baseline trigger.
+drop trigger if exists cards_limit_per_user on public.cards;
+create trigger cards_limit_per_user before insert on public.cards
+for each row execute function public.limit_cards_per_user();
 
 alter table public.story_progress add column if not exists quiz_score smallint
   check (quiz_score between 0 and 3);

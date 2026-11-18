@@ -140,6 +140,6 @@ alter table public.review_events enable trigger review_events_validate;
 
 -- Cron job registered once (file can run twice)
 select pg_temp.check((select count(*) = 1 and min(schedule) = '35 20 * * *' from cron.job where jobname = 'daf-overdue-demotions'), 'cron job scheduled at 00:05 Tehran');
-select pg_temp.check((select count(*) = 2 from information_schema.columns where table_name = 'push_state' and column_name in ('overtake_rank', 'last_overtake_at')), 'push_state columns added');
+select pg_temp.check((select count(*) = 2 from information_schema.columns where table_schema = 'public' and table_name = 'push_state' and column_name in ('overtake_rank', 'last_overtake_at')), 'push_state columns added');
 
 \echo ALL SQL TESTS PASSED

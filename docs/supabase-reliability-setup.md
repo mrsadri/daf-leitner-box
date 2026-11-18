@@ -1,6 +1,10 @@
 # Reliability and verified-results rollout — owner execution guide
 
-Status: implemented and tested locally; not applied to any hosted database. Repository rules prohibit this coding agent from accessing production. The owner executes hosted SQL through the established workflow.
+Release status, 18 November 2026: the owner explicitly overrode the production-access and exact-wording restrictions for PR #32 in this chat. The private pre-release snapshot and five release migrations have been applied to production. Aggregate learner-data counts are unchanged and database contract/permission checks pass. This is a one-release authorization, not a standing change to repository rules.
+
+## Private recovery snapshot
+
+`20261118095210_release_snapshot.sql` was applied first for this release. It captures the nine legacy application tables and public function definitions in `release_backup_20261118_pr32`. Anonymous and authenticated roles have no schema/table access, and every snapshot table has RLS. It is an in-database recovery snapshot, not an independent disaster-recovery backup. Production drift also required explicit installation of `cards_limit_per_user`; the reliability migration now installs that trigger rather than assuming the baseline already did.
 
 ## Migration order
 

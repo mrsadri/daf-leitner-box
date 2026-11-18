@@ -2,14 +2,14 @@
 
 Branch: `codex/production-readiness`. Baseline: `5d9f576758fe5ec93837916a7793d04aa88081f3`.
 
-**Status: ready for code review; not cleared for production deployment.** The owner selected local testing only on 18 November 2026. No staging resources were created, and no hosted database was inspected or modified.
+**Status: production database rollout complete; final CI, merge and publication in progress.** After initially selecting local testing only, the owner explicitly authorized a production release and override of the repository access/wording restrictions on 18 November 2026. No staging resources were created.
 
 ## Verified locally
 
 - 220 Node unit/integration tests; 60 Playwright tests on phone/desktop in Persian/English.
 - 28 Python story tests and generated-content freshness.
 - TypeScript/oxlint: zero warnings; configured production build succeeds with public placeholders.
-- Eleven isolated SQL suites, migration replay and a negative RLS mutation control.
+- Twelve isolated SQL suites, migration replay and a negative RLS mutation control.
 - Native PostgreSQL assertions and two-connection revision/quota/story races, including replacement at quota.
 - Clean-install versus legacy-fixture upgrade equivalence, including permissions, functions, policies, triggers and jobs.
 - Deno worker type-check and two real web-push crypto/transport-boundary tests, using synthetic keys and a fake fetch. No browser push provider was contacted.
@@ -40,3 +40,7 @@ Follow `docs/supabase-reliability-setup.md`. New clients require the new RPCs. A
 Cold-offline reopening remains the owner's accepted deferral. Local checks do not establish recovery objectives or production backup retention.
 
 Do not remove these holds by checking boxes without evidence. Merge/deploy authorization and production SQL execution follow `CLAUDE.md`; this document does not grant them.
+
+## Production database evidence
+
+Snapshot captured 18 November 2026 at 10:57 CET. Before/after counts match: profiles 32, cards 5,937, reviews 11,881, story progress 13, drill runs 17. Six recorded operations comprise the private snapshot and five release migrations. Verified API signatures, quota trigger, 3,460 canonical IDs, 1,422 active questions and restricted verification/delivery privileges all pass. The snapshot remains private and no learner data was exported to Git.
