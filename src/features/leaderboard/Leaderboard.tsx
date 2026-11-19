@@ -1,260 +1,75 @@
-/**
- * Leaderboard: all-time and weekly points, the user's own rank, silver cards; users can hide themselves in settings.
- */
-import React, { Suspense, lazy, useCallback, useEffect, useState } from 'react';
-import { Trophy, RefreshCw, Flame, Crown, Medal, AlertTriangle, EyeOff, Loader2 } from 'lucide-react';
-import { buttonClass } from '../../shared/ui';
-import { fetchLeaderboard, LeaderboardRow, cloudSync } from '../../core/cloudSync';
-import { UserProfile } from '../../core/types';
+import React, { Suspense, lazy, useCallback, useRef, useState } from 'react';
+import { fetchLeaderboard, cloudSync } from '../../core/cloudSync';
+import type { UserProfile } from '../../core/types';
 import { useI18n } from '../../i18n/I18nProvider';
-import { Auto } from '../../shared/ui/Text';
+import { CompetitionBoard, type BoardPeriod } from './CompetitionBoard';
+import { useBoardData } from './useBoardData';
 
-// The adjective records load only when that tab is opened
 const AdjectiveBoard = lazy(() => import('../adjective/AdjectiveBoard').then(m => ({ default: m.AdjectiveBoard })));
-
 export type LeaderboardTopTab = 'leitner' | 'adjective';
-
 interface LeaderboardProps {
   profile: UserProfile;
   onOpenSettings: () => void;
-  /** The adjective drill kill switch; the «صفت‌ها» tab is hidden while it's off. */
   showAdjective?: boolean;
   topTab?: LeaderboardTopTab;
   onTopTabChange?: (tab: LeaderboardTopTab) => void;
 }
 
-type Period = 'all' | 'week';
-
-const Avatar: React.FC<{ row: LeaderboardRow }> = ({ row }) =>
-  row.avatar_url ? (
-    <img src={row.avatar_url} alt="" referrerPolicy="no-referrer" className="w-9 h-9 rounded-full object-cover shrink-0" />
-  ) : (
-    <div className="w-9 h-9 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 flex items-center justify-center font-bold shrink-0">
-      {row.display_name.slice(0, 1)}
-    </div>
-  );
-
-const RankBadge: React.FC<{ rank: number }> = ({ rank }) => {
+function LeitnerBoard({ period, onPeriodChange, profile, onOpenSettings }: {
+  period: BoardPeriod; onPeriodChange: (period: BoardPeriod) => void; profile: UserProfile; onOpenSettings: () => void;
+}) {
   const { t, num } = useI18n();
-  if (rank === 1) return <Crown className="w-5 h-5 text-amber-500" aria-label={t.leaderboard.rankLabel(1)} />;
-  if (rank === 2) return <Medal className="w-5 h-5 text-slate-400" aria-label={t.leaderboard.rankLabel(2)} />;
-  if (rank === 3) return <Medal className="w-5 h-5 text-orange-500" aria-label={t.leaderboard.rankLabel(3)} />;
-  return <span className="font-mono-num text-sm font-bold text-slate-600 dark:text-slate-400">{num(rank)}</span>;
-};
+  const loader = useCallback(async () => {
+    await cloudSync.flush();
+    return fetchLeaderboard(period);
+  }, [period]);
+  const { data, status, refresh } = useBoardData(loader);
+  const b = t.leaderboard;
+  return <CompetitionBoard period={period} onPeriodChange={onPeriodChange} status={status} refresh={refresh}
+    hidden={!profile.showOnLeaderboard} onOpenSettings={onOpenSettings}
+    columnScoreLabel={b.colScore} weekLabel={b.tabBalance} title={b.leitnerTitle} scoreLabel={period === 'all' ? b.totalScore : b.weekScore}
+    rules={b.explainer} errorMessage={b.error} emptyMessage={b.empty}
+    rows={(data ?? []).map(row => ({
+      id: row.user_id, name: row.display_name, avatar: row.avatar_url, rank: row.rank, isMe: row.is_me,
+      score: period === 'all' ? num(row.score) : b.signed(row.score_7d),
+      details: [
+        { label: b.silverTitle, value: num(row.silver ?? 0) },
+        { label: b.colMastered, value: num(row.mastered) },
+        { label: b.streak, value: t.common.day(row.streak) },
+        { label: b.learningCards, value: num(row.learning) },
+      ],
+    }))} />;
+}
 
 export const Leaderboard: React.FC<LeaderboardProps> = ({ profile, onOpenSettings, showAdjective = true, topTab: topTabProp, onTopTabChange }) => {
-  const { t, num } = useI18n();
-  const [topTabState, setTopTabState] = useState<LeaderboardTopTab>('leitner');
-  const topTab = topTabProp ?? topTabState;
-  const setTopTab = onTopTabChange ?? setTopTabState;
-  const [period, setPeriod] = useState<Period>('all');
-  const [rows, setRows] = useState<LeaderboardRow[]>([]);
-  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
-
-  const load = useCallback(async (p: Period) => {
-    setStatus('loading');
-    try {
-      // Push this user's latest answers first so their own row is current
-      await cloudSync.flush();
-      setRows(await fetchLeaderboard(p));
-      setStatus('ready');
-    } catch (e) {
-      console.error(e);
-      setStatus('error');
-    }
-  }, []);
-
-  useEffect(() => {
-    // eslint-disable-next-line react/set-state-in-effect -- A period change starts an external query; its loading state is intentional.
-    load(period);
-  }, [period, load]);
-
-  const me = rows.find(r => r.is_me);
-  const metricLabel = period === 'week' ? t.leaderboard.colWeekScore : t.leaderboard.colScore;
-  const metricOf = (r: LeaderboardRow) => (period === 'week' ? r.score_7d : r.score);
-  const th = 'py-3 px-3 sm:px-4 font-semibold whitespace-nowrap';
-  const td = 'py-3 px-3 sm:px-4';
-
-  return (
-    <div className="max-w-3xl mx-auto space-y-6 pb-12">
-      {showAdjective && (
-        <div role="tablist" aria-label={t.leaderboard.title} className="inline-flex p-1 gap-1 bg-slate-100 dark:bg-slate-800 rounded-xl text-sm font-semibold">
-          {([
-            { id: 'leitner', label: t.leaderboard.topTabLeitner },
-            { id: 'adjective', label: t.leaderboard.topTabAdjective }
-          ] as const).map(tab => (
-            <button
-              key={tab.id}
-              role="tab"
-              aria-selected={topTab === tab.id}
-              onClick={() => setTopTab(tab.id)}
-              className={`px-4 py-2 rounded-lg transition-colors ${
-                topTab === tab.id
-                  ? 'bg-white dark:bg-slate-900 text-indigo-700 dark:text-indigo-300 shadow-xs'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {topTab === 'adjective' && showAdjective ? (
-        <Suspense fallback={<div className="py-12 flex justify-center"><Loader2 className="w-6 h-6 animate-spin text-slate-400" aria-hidden /></div>}>
-          <AdjectiveBoard userId={profile.id} showOnLeaderboard={profile.showOnLeaderboard} />
-        </Suspense>
-      ) : (
-      <>
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1 min-w-0">
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Trophy className="w-6 h-6 text-amber-500 shrink-0" />
-              <span>{t.leaderboard.title}</span>
-            </h1>
-            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed max-w-xl">{t.leaderboard.explainer}</p>
-          </div>
-          <button
-            onClick={() => load(period)}
-            disabled={status === 'loading'}
-            className={buttonClass('secondary', 'sm')}
-          >
-            <RefreshCw className={`w-4 h-4 ${status === 'loading' ? 'animate-spin' : ''}`} />
-            <span>{t.leaderboard.refresh}</span>
-          </button>
-        </div>
-
-        <div role="tablist" className="inline-flex p-1 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs font-semibold">
-          {([
-            { id: 'all', label: t.leaderboard.tabAll },
-            { id: 'week', label: t.leaderboard.tabBalance }
-          ] as const).map(tab => (
-            <button
-              key={tab.id}
-              role="tab"
-              aria-selected={period === tab.id}
-              onClick={() => setPeriod(tab.id)}
-              className={`px-4 py-1.5 rounded-lg transition-colors ${
-                period === tab.id
-                  ? 'bg-white dark:bg-slate-900 text-indigo-700 dark:text-indigo-300 shadow-xs'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* My progress */}
-      {me && (
-        <div className="bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-200 dark:border-indigo-800 rounded-2xl p-5 grid grid-cols-2 sm:grid-cols-5 gap-4 text-center">
-          <div>
-            <span className="text-xs text-indigo-800 dark:text-indigo-300 block">{t.leaderboard.myRank}</span>
-            <span className="text-2xl font-bold font-mono-num text-indigo-700 dark:text-indigo-300">{num(me.rank)}</span>
-          </div>
-          <div>
-            <span className="text-xs text-indigo-800 dark:text-indigo-300 block">{t.leaderboard.totalScore}</span>
-            <span className="text-2xl font-bold font-mono-num text-slate-900 dark:text-white">{num(me.score)}</span>
-          </div>
-          <div>
-            <span className="text-xs text-indigo-800 dark:text-indigo-300 block">{t.leaderboard.weekScore}</span>
-            <span dir="ltr" className="text-2xl font-bold font-mono-num text-emerald-600 dark:text-emerald-400 inline-block">
-              {t.leaderboard.signed(me.score_7d)}
-            </span>
-          </div>
-          <div>
-            <span className="text-xs text-indigo-800 dark:text-indigo-300 block">{t.leaderboard.streak}</span>
-            <span className="text-2xl font-bold font-mono-num text-orange-600 dark:text-orange-400 inline-flex items-center gap-1">
-              <Flame className="w-5 h-5" />
-              {num(me.streak)}
-            </span>
-          </div>
-          <div className="col-span-2 sm:col-span-1">
-            <span className="text-xs text-indigo-800 dark:text-indigo-300 block">{t.leaderboard.silverTitle}</span>
-            <span className="text-2xl font-bold font-mono-num text-slate-600 dark:text-slate-300">🥈 {num(me.silver ?? 0)}</span>
-          </div>
-        </div>
-      )}
-
-      {!profile.showOnLeaderboard && (
-        <div className="p-3.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-xl text-xs text-amber-900 dark:text-amber-200 flex flex-wrap items-center justify-between gap-3">
-          <span className="flex items-center gap-2">
-            <EyeOff className="w-4 h-4 shrink-0" />
-            {t.leaderboard.hidden}
-          </span>
-          <button onClick={onOpenSettings} className="underline font-semibold shrink-0">{t.leaderboard.changeInSettings}</button>
-        </div>
-      )}
-
-      {status === 'error' && (
-        <div className="p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-xl text-xs text-red-700 dark:text-red-300 flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4 shrink-0" />
-          <span>{t.leaderboard.error}</span>
-        </div>
-      )}
-
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-xs text-slate-600 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800">
-                <th scope="col" className={`${th} text-start w-14`}>{t.leaderboard.colRank}</th>
-                <th scope="col" className={`${th} text-start`}>{t.leaderboard.colUser}</th>
-                <th scope="col" className={`${th} text-end`}>{metricLabel}</th>
-                <th scope="col" className={`${th} text-end`} title={t.leaderboard.silverTitle}>🥈 {t.leaderboard.colSilver}</th>
-                <th scope="col" className={`${th} text-end hidden sm:table-cell`}>{t.leaderboard.colMastered}</th>
-                <th scope="col" className={`${th} text-end hidden sm:table-cell`}>{t.leaderboard.colStreak}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {status === 'loading' && rows.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="py-12 text-center text-xs text-slate-600 dark:text-slate-400">{t.leaderboard.loading}</td>
-                </tr>
-              )}
-              {status !== 'loading' && rows.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="py-12 text-center text-xs text-slate-600 dark:text-slate-400">{t.leaderboard.empty}</td>
-                </tr>
-              )}
-              {rows.map(r => (
-                <tr
-                  key={r.user_id}
-                  className={`border-b last:border-b-0 border-slate-100 dark:border-slate-800 ${r.is_me ? 'bg-indigo-50/70 dark:bg-indigo-950/40' : ''}`}
-                >
-                  <td className={td}>
-                    <RankBadge rank={r.rank} />
-                  </td>
-                  <td className={td}>
-                    <div className="flex items-center gap-3 min-w-0">
-                      <Avatar row={r} />
-                      <div className="min-w-0">
-                        <span className="font-semibold text-slate-900 dark:text-white flex items-baseline gap-1.5 min-w-0">
-                          <Auto className="truncate max-w-[9rem] sm:max-w-[14rem]">{r.display_name}</Auto>
-                          {r.is_me && <span className="text-xs text-indigo-600 dark:text-indigo-400 font-medium shrink-0">{t.leaderboard.you}</span>}
-                        </span>
-                        <span className="text-xs text-slate-500 dark:text-slate-400 block">{t.leaderboard.inBoxes(r.learning)}</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td className={`${td} text-end font-mono-num font-bold text-slate-900 dark:text-white`}>
-                    {period === 'week' ? <span dir="ltr">{t.leaderboard.signed(metricOf(r))}</span> : num(metricOf(r))}
-                  </td>
-                  <td className={`${td} text-end font-mono-num font-semibold text-slate-600 dark:text-slate-300`}>{r.silver ? num(r.silver) : '—'}</td>
-                  <td className={`${td} text-end font-mono-num text-emerald-700 dark:text-emerald-400 hidden sm:table-cell`}>{num(r.mastered)}</td>
-                  <td className={`${td} text-end text-orange-600 dark:text-orange-400 hidden sm:table-cell whitespace-nowrap`}>
-                    {r.streak > 0 ? t.common.day(r.streak) : '—'}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-      </>
-      )}
+  const { t, dir } = useI18n();
+  const [localTab, setLocalTab] = useState<LeaderboardTopTab>('leitner');
+  const topTab = showAdjective ? (topTabProp ?? localTab) : 'leitner';
+  const setTopTab = onTopTabChange ?? setLocalTab;
+  const [period, setPeriod] = useState<BoardPeriod>('all');
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const tabs = [{ id: 'leitner', label: t.leaderboard.topTabLeitner }, { id: 'adjective', label: t.leaderboard.topTabAdjective }] as const;
+  return <div className="max-w-4xl mx-auto space-y-7 pb-12 text-slate-900 dark:text-slate-100" data-testid="competition-page">
+    <div className="space-y-3">
+      <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">{t.leaderboard.title}</h1>
+      <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">{t.leaderboard.subtitle}</p>
     </div>
-  );
+    {showAdjective && <div role="tablist" aria-label={t.leaderboard.title} className="flex gap-6 border-b border-slate-200 dark:border-slate-800">
+      {tabs.map((tab, i) => <button key={tab.id} type="button" ref={element => { tabRefs.current[i] = element; }}
+        role="tab" id={`competition-tab-${tab.id}`} aria-controls="competition-panel" aria-selected={topTab === tab.id} tabIndex={topTab === tab.id ? 0 : -1}
+        onClick={() => setTopTab(tab.id)} onKeyDown={event => {
+          if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+          event.preventDefault();
+          const next = event.key === 'Home' ? 0 : event.key === 'End' ? 1 : (i + (event.key === 'ArrowRight' ? (dir === 'rtl' ? -1 : 1) : (dir === 'rtl' ? 1 : -1)) + 2) % 2;
+          setTopTab(tabs[next].id); tabRefs.current[next]?.focus();
+        }} className={`py-3 px-1 min-h-11 text-sm font-semibold border-b-2 focus-visible:outline-2 focus-visible:outline-indigo-500 ${topTab === tab.id ? 'border-indigo-600 text-indigo-700 dark:text-indigo-300' : 'border-transparent text-slate-500'}`}>
+        {tab.label}
+      </button>)}
+    </div>}
+    <div id="competition-panel" role={showAdjective ? 'tabpanel' : undefined} aria-labelledby={showAdjective ? `competition-tab-${topTab}` : undefined}>
+      {topTab === 'adjective' ? <Suspense fallback={<p role="status" className="py-16 text-center text-sm text-slate-500">{t.leaderboard.loading}</p>}>
+        <AdjectiveBoard userId={profile.id} showOnLeaderboard={profile.showOnLeaderboard} period={period} onPeriodChange={setPeriod} onOpenSettings={onOpenSettings} />
+      </Suspense> : <LeitnerBoard profile={profile} onOpenSettings={onOpenSettings} period={period} onPeriodChange={setPeriod} />}
+    </div>
+  </div>;
 };

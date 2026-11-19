@@ -7,7 +7,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Check, Lock, ChevronLeft, BookOpen } from 'lucide-react';
 import type { LeitnerCard } from '../../core/types';
 import { useI18n } from '../../i18n/I18nProvider';
-import { Button, Card, Badge, Dialog, cx } from '../../shared/ui';
+import { Button, Card, Badge, Dialog } from '../../shared/ui';
 import { NewCardModal } from '../vocab/NewCardModal';
 import { loadBook, loadIndex, imageUrl } from './content';
 import { StoriesProgressStore } from './storiesSync';
@@ -19,8 +19,13 @@ import { Icon3D } from '../../shared/ui/Icon3D';
 import { Reader } from './Reader';
 import { readStoryLocation, writeStoryLocation, type StoryView } from './storyNavigation';
 import type { NarrativeStory, StoriesIndex, StoryProgress, WordSegment } from './types';
+import { De } from '../../shared/ui/Text';
+import { EditorialLibrary, BookArt, BookProgress } from './EditorialLibrary';
+import { bookTitle } from './library';
+import './stories.css';
 
 interface Props {
+  onReadingChange?: (reading: boolean) => void;
   userId: string;
   cards: LeitnerCard[];
   onCardsChanged: () => void;
@@ -29,19 +34,16 @@ interface Props {
 
 
 
-const COVER_TINTS = ['bg-amber-100', 'bg-sky-100', 'bg-emerald-100', 'bg-rose-100', 'bg-violet-100', 'bg-lime-100', 'bg-orange-100', 'bg-teal-100', 'bg-indigo-100', 'bg-yellow-100'];
-
-export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard }: Props) {
-  const { t } = useI18n();
+export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard, onReadingChange }: Props) {
+  const { t, dir } = useI18n();
   const s = t.stories;
   const [reward, setReward] = useState<number | null>(null);
-  const [collectionOpen, setCollectionOpen] = useState(false);
   const [index, setIndex] = useState<StoriesIndex | null>(null);
   const [book, setBook] = useState<NarrativeStory | null>(null);
   const [error, setError] = useState(false);
   const [loadAttempt, setLoadAttempt] = useState(0);
   const [requestedView, updateView] = useState<StoryView>(() => readStoryLocation(window.location.href));
-  const setView = (next: StoryView) => { writeStoryLocation(next); updateView(next); };
+  const setView = (next: StoryView) => { writeStoryLocation(next); updateView(next); window.scrollTo({ top: 0 }); };
   useEffect(() => {
     const pop = () => updateView(readStoryLocation(window.location.href));
     window.addEventListener('popstate', pop);
@@ -71,6 +73,11 @@ export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard
     : requestedView.kind === 'read' && (requestedStory < 0 || storyStates(requestedBook.stories.map(st => st.id), progress)[requestedStory] === 'locked')
       ? { kind: 'book', n: requestedBook.n } : requestedView;
 
+  useEffect(() => {
+    onReadingChange?.(view.kind === 'read');
+    return () => onReadingChange?.(false);
+  }, [view.kind, onReadingChange]);
+
   const bookN = view.kind === 'shelf' ? null : view.n;
   useEffect(() => {
     if (bookN === null) return;
@@ -96,6 +103,7 @@ export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard
       <Card className="max-w-md mx-auto text-center space-y-3" role="alert">
         <p>{s.loadError}</p>
         <Button onClick={load}>{s.retry}</Button>
+        {view.kind !== 'shelf' && <Button variant="ghost" onClick={() => { setError(false); setView({ kind: 'shelf' }); }}>{s.backToShelf}</Button>}
       </Card>
     );
   }
@@ -108,7 +116,7 @@ export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard
         <p className="text-center text-xl font-bold">{s.rewardPoints(reward)}</p>
       </Dialog>}
       {(saveStatus !== 'idle' || store.getSaveInfo().lastSuccess) && (
-        <div role="status" className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-200">
+        <div role="status" className={view.kind === 'read' && saveStatus !== 'error' ? 'reader-silent-status' : 'flex flex-wrap items-center gap-3 text-sm text-slate-700 dark:text-slate-200'}>
           <span>{saveStatus !== 'idle' && s.saveStatus[saveStatus]} {s.pendingCount(store.getSaveInfo().pending)} {store.getSaveInfo().lastSuccess && t.sync.lastSaved(new Date(store.getSaveInfo().lastSuccess!).toLocaleString())}</span>
           {saveStatus === 'error' && <Button onClick={() => { void store.retry(); }}>{s.retry}</Button>}
         </div>
@@ -125,51 +133,14 @@ export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard
     </>
   );
 
-  if (view.kind === 'shelf' && !collectionOpen) return <Card className="max-w-xl mx-auto space-y-4" data-testid="stories-shelf">
-    <h1 className="text-2xl font-bold">{index.book?.title ?? s.collectionTitle}</h1>
-    <p>{s.collectionDescription}</p>
-    <Button data-testid="open-collection" onClick={() => setCollectionOpen(true)}>{s.openCollection}</Button>
-    {overlays}
-  </Card>;
-
   // ----- Bookshelf -----
   if (view.kind === 'shelf') {
-    return (
-      <div className="space-y-6 pb-12" data-testid="stories-shelf">
-        <header className="space-y-1">
-          <h1 className="font-story-title text-3xl text-slate-900 dark:text-white">{s.title}</h1>
-          <p className="text-sm text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">{s.subtitle}</p>
-        </header>
-        <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-          {index.books.map(b => {
-            const done = b.stories.filter(st => progress[st.id]?.completedAt).length;
-            const cover = b.stories.find(st => st.image)?.image;
-            return (
-              <li key={b.id}>
-                <button
-                  type="button"
-                  onClick={() => setView({ kind: 'book', n: b.n })}
-                  data-testid="book-cover"
-                  className="group w-full text-start rounded-card overflow-hidden border border-paper-edge bg-paper shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-                >
-                  {cover
-                    ? <img src={imageUrl(cover, true)} alt="" className="w-full aspect-[4/3] object-cover" loading="lazy" decoding="async" />
-                    : <div className={cx('w-full aspect-[4/3] flex items-center justify-center', COVER_TINTS[(b.n - 1) % COVER_TINTS.length], 'dark:opacity-80')}>
-                        <span className="font-story-title text-5xl text-slate-700/70">{b.n}</span>
-                      </div>}
-                  <div className="p-3 space-y-1">
-                    <p className="text-caption font-semibold text-ink-soft">{s.book(b.n)} · {s.lessons(b.lessons[0], b.lessons[1])}</p>
-                    <p dir="ltr" lang="de" className="font-story-title text-lg leading-tight text-ink text-start">{b.title}</p>
-                    <p className="text-caption text-ink-soft">{s.bookProgress(done, b.stories.length)}</p>
-                  </div>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-        {overlays}
-      </div>
-    );
+    return <>
+      <EditorialLibrary index={index} progress={progress}
+        onBook={n => setView({ kind: 'book', n })}
+        onResume={(n, storyId, page) => setView({ kind: 'read', n, storyId, continueAt: page })} />
+      {overlays}
+    </>;
   }
 
   const summary = index.books.find(b => b.n === view.n)!;
@@ -180,17 +151,29 @@ export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard
   if (view.kind === 'book') {
     const cont = nextStory(ids, progress);
     return (
-      <div className="max-w-2xl mx-auto space-y-5 pb-12" data-testid="stories-book">
-        <Button variant="ghost" size="sm" icon={<ChevronLeft className="w-4 h-4 rtl:rotate-180" />} onClick={() => setView({ kind: 'shelf' })}>{s.backToShelf}</Button>
-        <header className="space-y-1">
-          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">{s.book(summary.n)} · {s.lessons(summary.lessons[0], summary.lessons[1])}</p>
-          <h1 dir="ltr" lang="de" className="font-story-title text-3xl text-slate-900 dark:text-white text-start">{summary.title}</h1>
-        </header>
-        <ol className="space-y-3">
+      <div className="editorial-library space-y-8 pb-12" data-testid="stories-book">
+        <Button data-testid="back-to-library" variant="ghost" size="sm" icon={<ChevronLeft className="w-4 h-4 rtl:rotate-180" />} onClick={() => setView({ kind: 'shelf' })}>{s.backToShelf}</Button>
+        <section className="editorial-feature" dir="ltr">
+          <BookArt book={summary} eager />
+          <div className="space-y-5" dir={dir}>
+            <p className="text-sm text-ink-soft">{s.book(summary.n)} · {s.lessons(...summary.lessons)}</p>
+            <h1 className="editorial-title text-3xl sm:text-4xl"><De className="block text-start">{bookTitle(summary)}</De></h1>
+            <p className="text-base leading-8 text-ink-soft">{s.bookTeasers[summary.n - 1]}</p>
+            <BookProgress book={summary} progress={progress} />
+            <Button onClick={() => {
+              const storyId = cont ?? ids[0];
+              setView({ kind: 'read', n: summary.n, storyId, continueAt: cont ? progress[storyId]?.page : undefined });
+            }}>{cont ? progress[cont] ? s.continueReading : s.start : s.readAgain}</Button>
+          </div>
+        </section>
+        <h2 className="text-xl font-semibold border-t border-paper-edge pt-8">{s.scenePreview}</h2>
+        <ol className="editorial-scenes" dir="ltr">
           {summary.stories.map((st, i) => {
             const state = states[i];
             const p = progress[st.id];
             const isCurrent = st.id === cont;
+            const fullStory = book?.n === summary.n ? book.stories.find(story => story.id === st.id) : undefined;
+            const excerpt = fullStory?.pages[0]?.[0]?.map(segment => typeof segment === 'string' ? segment : segment.t).join('');
             return (
               <li key={st.id}>
                 <button
@@ -200,20 +183,16 @@ export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard
                   data-testid="story-item"
                   data-state={state}
                   aria-describedby={state === 'locked' ? 'story-locked-note' : undefined}
-                  className={cx(
-                    'w-full flex items-center gap-4 p-3 rounded-card border text-start transition-colors min-h-16',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500',
-                    state === 'locked' ? 'bg-slate-100/60 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 opacity-70 cursor-not-allowed'
-                      : 'bg-paper border-paper-edge hover:border-indigo-400',
-                    isCurrent && 'ring-2 ring-indigo-500/60',
-                  )}
+                  className="editorial-scene disabled:cursor-not-allowed text-ink hover:bg-paper/50"
                 >
                   {st.image
-                    ? <img src={imageUrl(st.image, true)} alt="" className="w-20 h-15 rounded-control object-cover shrink-0" loading="lazy" />
-                    : <div className="w-20 h-15 rounded-control bg-paper-edge/60 flex items-center justify-center shrink-0"><BookOpen className="w-6 h-6 text-ink-soft" aria-hidden /></div>}
-                  <span className="flex-1 min-w-0">
+                    ? <img src={imageUrl(st.image, true)} alt="" width={800} height={600} loading="lazy" />
+                    : <div className="editorial-scene-art"><BookOpen className="w-6 h-6 text-ink-soft" aria-hidden /></div>}
+                  <span className="flex-1 min-w-0 space-y-2">
                     <span className="block text-caption text-ink-soft font-mono-num">{st.n}</span>
-                    <span dir="ltr" lang="de" className="block font-story-title text-lg leading-tight text-ink text-start">{st.title}</span>
+                    <span dir="ltr" lang="de" className="block editorial-title text-lg text-ink text-start">{st.title}</span>
+                    {excerpt && <De className="block text-sm leading-7 text-ink-soft line-clamp-2">{excerpt}</De>}
+                    {isCurrent && <span dir={dir} className="block text-caption text-indigo-700 dark:text-indigo-300">{p ? s.continueReading : s.start}</span>}
                   </span>
                   {state === 'done' && <Badge tone="success" icon={<Check className="w-3.5 h-3.5" />}>{s.done}</Badge>}
                   {state === 'locked' && <Lock className="w-5 h-5 text-slate-400 shrink-0" aria-label={s.locked} />}
@@ -239,7 +218,7 @@ export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard
       <Reader
         key={story.id}
         story={story}
-        startPage={view.continueAt && view.continueAt > 0 ? view.continueAt : undefined}
+        startPage={view.continueAt}
         hasNext={!!nextSt}
         onPage={(page) => {
           writeStoryLocation({ kind: 'read', n: book.n, storyId: story.id, continueAt: page }, true);

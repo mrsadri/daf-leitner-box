@@ -1,0 +1,37 @@
+.editorial-library { color: var(--ds-ink); padding-bottom: 3rem; }
+.editorial-title { font-family: 'Plus Jakarta Sans', 'Vazirmatn', system-ui, sans-serif; font-weight: 600; line-height: 1.35; overflow-wrap: anywhere; }
+.editorial-library [lang='de'] { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+.story-reader .font-story { font-family: var(--font-story); }
+.story-reader .editorial-title [lang='de'] { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+.editorial-feature { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); align-items: center; gap: clamp(1.5rem, 4vw, 3.5rem); }
+.editorial-cover { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius-card); }
+.editorial-type-cover { aspect-ratio: 4 / 3; padding: clamp(1rem, 3vw, 2rem); border-radius: var(--radius-card); border-inline-start: 6px solid var(--color-indigo-600); background: var(--ds-paper); display: flex; flex-direction: column; justify-content: space-between; gap: 1rem; color: var(--ds-ink); text-align: start; }
+.editorial-art-button, .editorial-book { width: 100%; min-width: 0; text-align: start; cursor: pointer; border-radius: var(--radius-card); }
+.editorial-art-button:focus-visible, .editorial-book:focus-visible { outline: 2px solid var(--color-indigo-500); outline-offset: 6px; }
+.editorial-book:hover .editorial-title { color: var(--color-indigo-600); }
+.editorial-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2.5rem 1.75rem; }
+.editorial-scenes { display: grid; gap: 1rem; }
+.editorial-scene { display: flex; width: 100%; align-items: center; gap: 1.5rem; padding: 1rem 0; text-align: start; border-bottom: 1px solid var(--ds-paper-edge); }
+.editorial-scene img, .editorial-scene-art { width: 9rem; aspect-ratio: 4 / 3; object-fit: cover; flex-shrink: 0; border-radius: var(--radius-control); }
+.editorial-scene-art { display: grid; place-content: center; background: var(--ds-paper); color: var(--ds-ink-soft); }
+.editorial-scene:focus-visible { outline: 2px solid var(--color-indigo-500); outline-offset: 4px; border-radius: var(--radius-control); }
+.story-reading-shell { background: var(--ds-paper); }
+.story-library-shell { background: #faf8f2; }
+@media (prefers-color-scheme: dark) { .story-library-shell { background: #1f231f; } }
+.story-reader { min-height: 100dvh; background: var(--ds-paper); color: var(--ds-ink); padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(2rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left)); }
+.reader-toolbar { max-width: 70rem; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; }
+.reader-toolbar, .reader-reveal { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--ds-paper); }
+.reader-page { max-width: 58rem; margin: 2rem auto; padding: 1rem clamp(0rem, 3vw, 2rem); }
+.reader-page.reading-text { max-width: 65ch; font-size: var(--reader-font-size, 22px); margin: 2rem auto; }
+.reader-page.reading-text .font-story { font-size: inherit; hyphens: auto; overflow-wrap: anywhere; }
+.reader-bottom { max-width: 58rem; margin: 2rem auto 0; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.reader-reveal { display: flex; justify-content: flex-end; max-width: 70rem; margin: 0 auto; }
+.reader-silent-status { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (max-width: 767px) {
+  .editorial-feature { grid-template-columns: minmax(0, 1fr); }
+  .editorial-feature .editorial-cover { max-height: 24rem; object-fit: contain; }
+  .editorial-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem 1rem; }
+  .editorial-scene { gap: .75rem; align-items: flex-start; flex-wrap: wrap; }
+  .editorial-scene img, .editorial-scene-art { width: 5.5rem; }
+}
+@media (max-width: 359px) { .editorial-grid { grid-template-columns: minmax(0, 1fr); } }

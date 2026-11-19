@@ -11,7 +11,7 @@ const GENDER_CLASS = { m: 'gender-m', f: 'gender-f', n: 'gender-n', pl: 'gender-
 
 const wordClass = 'rounded-sm px-[1px] -mx-[1px] cursor-pointer hover:bg-amber-200/60 dark:hover:bg-amber-500/25 focus-visible:outline-2 focus-visible:outline-amber-500';
 
-export const StoryText: React.FC<{ page: Page; onWord: (w: WordSegment | string) => void; className?: string }> = ({ page, onWord, className = '' }) => {
+export const StoryText: React.FC<{ page: Page; onWord: (w: WordSegment | string) => void; className?: string; underlines?: boolean }> = ({ page, onWord, className = '', underlines = true }) => {
   const { t, lang } = useI18n();
   const hint = useId();
   const [activeWord, setActiveWord] = useState(0);
@@ -44,7 +44,7 @@ export const StoryText: React.FC<{ page: Page; onWord: (w: WordSegment | string)
           const index = paragraphs.slice(0, i).flat().filter(word => word.word).length
             + paragraph.slice(0, j).filter(word => word.word).length;
           const seg = part.segment;
-          const cls = [wordClass, seg?.b ? 'font-bold' : '', seg?.g ? GENDER_CLASS[seg.g] : ''].join(' ');
+          const cls = [wordClass, seg?.b ? 'font-bold' : '', underlines && seg?.g ? GENDER_CLASS[seg.g] : ''].join(' ');
           return (
             <span key={j} role="button" tabIndex={index === selectedWord ? 0 : -1} className={cls} data-gender={seg?.g}
               onClick={() => onWord(seg ?? part.text)} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onWord(seg ?? part.text); } }}>{part.text}</span>

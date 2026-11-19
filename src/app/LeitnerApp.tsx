@@ -72,6 +72,8 @@ export function LeitnerApp({ user }: { user: User }) {
   const [overdueMoves, setOverdueMoves] = useState<OverdueMove[]>([]);
   const [showStories, setShowStories] = useState(true);
   const [showAdjective, setShowAdjective] = useState(true);
+  const [storyReading, setStoryReading] = useState(false);
+  const reading = activeTab === 'stories' && showStories && storyReading;
   const [leaderboardTopTab, setLeaderboardTopTab] = useState<'leitner' | 'adjective'>('leitner');
   // True while an adjective drill run is in progress; guards navigating away without confirming.
   const [adjectiveRunning, setAdjectiveRunning] = useState(false);
@@ -191,8 +193,8 @@ export function LeitnerApp({ user }: { user: User }) {
   if (profile.suspended) return <SuspendedScreen email={profile.email} onSignOut={() => supabase!.auth.signOut()} />;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col selection:bg-amber-100 selection:text-amber-900">
-      <Navbar
+    <div className={`min-h-screen flex flex-col selection:bg-amber-100 selection:text-amber-900 ${reading ? 'story-reading-shell' : activeTab === 'stories' ? 'story-library-shell' : 'bg-slate-50 dark:bg-slate-950'}`}>
+      {!reading && <Navbar
         activeTab={activeTab}
         onTabChange={requestTabChange}
         showAdjective={showAdjective}
@@ -201,9 +203,9 @@ export function LeitnerApp({ user }: { user: User }) {
         profile={profile}
         syncStatus={syncStatus}
         showStories={showStories}
-      />
+      />}
 
-      <main tabIndex={-1} className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
+      <main tabIndex={-1} className={reading ? 'flex-1 w-full' : 'flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8'}>
         {isStudyingNewWords ? (
           <NewWordsStudySession
             onFinish={() => { setIsStudyingNewWords(false); setActiveTab('dashboard'); }}
@@ -258,7 +260,7 @@ export function LeitnerApp({ user }: { user: User }) {
 
             {activeTab === 'stories' && showStories && (
               <Suspense fallback={<FullScreenLoader text={t.stories.loading} />}>
-                <StoriesScreen userId={user.id} cards={cards} onCardsChanged={refresh} onAddCard={actions.addCard} />
+                <StoriesScreen onReadingChange={setStoryReading} userId={user.id} cards={cards} onCardsChanged={refresh} onAddCard={actions.addCard} />
               </Suspense>
             )}
 
@@ -331,7 +333,7 @@ export function LeitnerApp({ user }: { user: User }) {
           <Button variant="secondary" onClick={() => setSignOutRequested(false)}>{t.common.cancel}</Button>
           <Button variant="danger" onClick={() => { setSignOutRequested(false); void completeSignOut(); }}>{t.settings.signOut}</Button>
         </>} />}
-      <AppFooter />
+      {!reading && <AppFooter />}
     </div>
   );
 }
