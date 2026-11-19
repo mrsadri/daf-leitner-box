@@ -10,7 +10,6 @@ for (const lang of ['fa', 'en'] as const) {
     const { errors, external } = await openApp(page, lang);
     await tabBar(page).getByRole('button', { name: lang === 'fa' ? /داستان/ : /stories/i }).click();
     await expect(page.getByTestId('stories-shelf')).toBeVisible();
-    await page.getByTestId('open-collection').click();
     await expect(page.getByTestId('book-cover')).toHaveCount(10);
     await noHorizontalScroll(page);
 
@@ -41,6 +40,8 @@ for (const lang of ['fa', 'en'] as const) {
     await expect(sheet).toHaveCount(0);
 
     // Turn pages with the arrow key and the button until the quiz
+    await page.getByTestId('reader-controls-toggle').click();
+    await page.getByTestId('reader-controls-toggle').focus();
     await page.keyboard.press('ArrowRight');
     for (let i = 0; i < 10 && await page.getByTestId('story-next').count(); i++) await page.getByTestId('story-next').click();
     await expect(page.getByTestId('story-quiz')).toBeVisible();

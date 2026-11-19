@@ -6,6 +6,20 @@
  * All text pairs used in the app pass WCAG AA (checked in docs/austria-design-plan.md, now in the Git history).
  */
 @theme {
+  /* Shared editorial neutrals: the library, dashboard, navigation, fields and
+     dialogs use one warm palette in both appearances. Semantic status colours stay unchanged. */
+  --color-white: #fffdf9;
+  --color-slate-50: #faf8f2;
+  --color-slate-100: #f1efe7;
+  --color-slate-200: #e3e0d5;
+  --color-slate-300: #cac9bd;
+  --color-slate-400: #9b9f91;
+  --color-slate-500: #6c7467;
+  --color-slate-600: #535d50;
+  --color-slate-700: #3d493e;
+  --color-slate-800: #30382e;
+  --color-slate-900: #282e26;
+  --color-slate-950: #1f231f;
   --color-indigo-50: #eef6fb;
   --color-indigo-100: #d5e9f5;
   --color-indigo-200: #acd3ea;
@@ -330,4 +344,31 @@
 .story-turn-prev { animation: story-in-prev 0.32s cubic-bezier(.2, .8, .3, 1) both; transform-origin: right center; }
 @media (prefers-reduced-motion: reduce) {
   .story-turn-next, .story-turn-prev { animation: story-fade 0.15s ease-out both; }
+}
+
+/* Shared competition layout. The main table stays at three columns on phones;
+   secondary metrics are available in each learner's disclosure. */
+.competition-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+  padding: clamp(1.25rem, 4vw, 2rem);
+  border-radius: var(--radius-card);
+  background: var(--color-slate-100);
+}
+.competition-number { font-size: clamp(2rem, 5vw, 2.75rem); line-height: 1.3; font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.competition-table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: .875rem; text-align: start; }
+.competition-table th { font-weight: 500; color: var(--color-slate-600); }
+.competition-table th, .competition-table td { padding: 1rem .75rem; border-bottom: 1px solid var(--color-slate-200); vertical-align: top; overflow-wrap: anywhere; }
+.competition-table th:first-child { width: 16%; white-space: nowrap; }
+.competition-table th:last-child { width: 26%; }
+.competition-me { background: var(--color-slate-100); }
+@media (prefers-color-scheme: dark) {
+  .competition-summary, .competition-me { background: var(--color-slate-900); }
+  .competition-table th { color: var(--color-slate-300); }
+  .competition-table th, .competition-table td { border-color: var(--color-slate-800); }
+}
+@media (max-width: 420px) {
+  .competition-table th, .competition-table td { padding: .875rem .375rem; }
+  .competition-summary { gap: 1rem; }
 }
