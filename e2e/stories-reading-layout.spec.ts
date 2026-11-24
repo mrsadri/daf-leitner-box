@@ -3,6 +3,12 @@ import { openApp, noHorizontalScroll } from './helpers';
 
 for (const lang of ['fa', 'en'] as const) {
   test(`editorial library and distraction-free reader (${lang})`, async ({ page }, testInfo) => {
+    // Book 5 is served without pictures, so the typographic fallback stays covered as illustrations are added.
+    await page.context().route('**/data/stories/index.json', async route => {
+      const index = await (await route.fetch()).json();
+      for (const story of index.books[4].stories) story.image = null;
+      await route.fulfill({ json: index });
+    });
     const { errors, external } = await openApp(page, lang, '/?go=stories');
     await expect(page.getByTestId('book-cover')).toHaveCount(10);
     await noHorizontalScroll(page);
