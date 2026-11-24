@@ -16,7 +16,7 @@ import { RoundActionBar } from '../../shared/ui/RoundActionBar';
 import type { SwipeDir } from '../../shared/ui/swipe';
 import { vibrate } from '../../shared/lib/haptics';
 import { recordSilverCorrect } from '../silver/silver';
-import { SilverCardEarned } from '../silver/SilverCards';
+import { SilverCelebration } from '../silver/SilverCards';
 import { Icon3D } from '../../shared/ui/Icon3D';
 import { VocabDetails, ExampleBox, ARTICLE_COLOR } from '../../shared/vocab/VocabCardParts';
 import { Volume2, RotateCw, Check, X, Sparkles, ArrowLeft, BookOpen, Quote, Edit3 } from 'lucide-react';
@@ -74,7 +74,6 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
   const knewRef = useRef<HTMLButtonElement>(null);
   const forgotRef = useRef<HTMLButtonElement>(null);
   const cardAreaRef = useRef<HTMLDivElement>(null);
-  const [silverWon, setSilverWon] = useState<number | null>(null);
   const swipeRef = useRef<SwipeCardHandle>(null);
   const [blockedMsg, setBlockedMsg] = useState<string | null>(null);
   const blockedTimer = useRef<number | undefined>(undefined);
@@ -155,11 +154,9 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
 
     const { newBox } = leitnerEngine.recordVocabAnswer(currentCard.id, isCorrect);
     const graduated = newBox >= MASTERED_BOX;
-    // More than 15 correct answers today: a silver card
-    if (isCorrect) {
-      const won = recordSilverCorrect();
-      if (won) setSilverWon(won);
-    }
+    // More than 15 correct answers today: a silver card. The demo counts it here; in production the server confirms it
+    // after the next sync, and <SilverCelebration> opens it then.
+    if (isCorrect) recordSilverCorrect();
     if (graduated) soundService.playMastered();
 
     setSessionStats(prev => ({
@@ -320,7 +317,8 @@ export const ReviewSession: React.FC<ReviewSessionProps> = ({
     );
   }
 
-  const silverDialog = silverWon !== null && <SilverCardEarned index={silverWon} onClose={() => setSilverWon(null)} />;
+  // Today's silver card, as soon as it is confirmed (also on the finish screen, or at the next review today)
+  const silverDialog = <SilverCelebration />;
 
   // Completion screen
   if (isComplete || !currentCard) {
