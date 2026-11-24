@@ -105,3 +105,31 @@ I picked a default for each question so the work is not blocked. Tell me if you 
 - `npm run e2e` (Chrome, phone and desktop): 92/92 passed, including `e2e/silverCelebration.spec.ts`.
 - Screenshots with motion on were checked in Persian and English, light and dark, at 390 px and 1280 px. The sprinkles stay inside the dialog, and the fact text is readable once the burst is over.
 - Production path (server confirmation after a sync) is covered by the shared logic and unit tests; it still needs a live check after deploy, because e2e runs in demo mode only.
+
+## 8. Follow-up (same day): newest first, and 30 more cards
+
+**Requests:** (1) show the most recently earned cards first in the collection; (2) research and add 30 more cards.
+
+**Done**
+- The collection lists earned cards newest first. Locked tiles stay in ascending order: they show what comes next.
+- Cards 31–60 were added (`silverFacts.ts`):
+  - 5 grammar shortcuts: compound-noun articles, feminine endings, the plural *die*, verb-second order, and writing ae/oe/ue;
+  - 7 idioms and proverbs;
+  - 5 word stories;
+  - 10 culture and history facts: Gutenberg, Luther, Grimm, Silent Night, Edelweiss, Riesenrad, Beethoven/Schiller, Kafka, Bertha Benz, Röntgen;
+  - 1 learning-science fact (the testing effect, Roediger & Karpicke 2006);
+  - 1 final "collection complete" card.
+- Card 30 no longer says "you collected all"; it now says "halfway there".
+- Facts that sources disagree on are worded cautiously: Silent Night is sung in "hundreds of languages", Bertha Benz drove "about 100 km", Luther "helped shape" written German, and Brezel "probably" comes from *bracchium*. A beer idiom was left out on purpose, given the audience.
+- Server cap raised to 60: `supabase/migrations/20261124150000_silver_sixty.sql`, tested in `supabase/tests/silver_sixty.test.sql`. Owner guide: `docs/supabase-silver-sixty-setup.md`.
+
+**Risks**
+
+| # | Case | Handling |
+|---|---|---|
+| R21 | Frontend deployed but migration not run yet | Server still reports at most 30; learners pause at card 30 until the SQL runs. Nothing breaks |
+| R22 | Migration run but old frontend still cached | Old app clamps to its own 30 |
+| R23 | Learners who already passed 30 | None can exist yet (cards started 2026-10-31); the guide includes a read-only check |
+| R24 | Persian/German mixed direction | German phrases are wrapped in LTR isolates with the « » outside, matching card 1; checked on screen |
+| R25 | Leaderboard shows the old maximum | Same migration updates `get_verified_leaderboard` |
+| R26 | Fact accuracy | Uncertain claims were checked against sources (see the PR) and worded cautiously |

@@ -120,7 +120,8 @@ export const SilverCardEarned: React.FC<{ index: number; onClose: () => void }> 
 };
 
 /**
- * All 30 slots: earned cards in full, then the locked ones as small numbered tiles.
+ * Every slot: earned cards in full, newest first (the card won most recently on top), then the locked ones as small
+ * numbered tiles in order.
  * The scroll lives on a plain block wrapper, never on the grid itself: a height-limited grid shrinks rows
  * whose items clip their overflow (the card face does) down to almost nothing.
  */
@@ -138,7 +139,7 @@ export const SilverCollection: React.FC<{ total: number; onClose: () => void }> 
       <div className="space-y-5" data-testid="silver-collection">
         {earned.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" data-testid="silver-earned-list">
-            {earned.map(i => <SilverCardFace key={i} index={i} />)}
+            {[...earned].reverse().map(i => <SilverCardFace key={i} index={i} />)}
           </div>
         )}
         {earned.length >= SILVER_MAX && (

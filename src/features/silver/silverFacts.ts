@@ -1,5 +1,5 @@
 /**
- * The 30 silver cards: fun, motivating facts about German and learning it.
+ * The 60 silver cards: fun, motivating facts about German and learning it (cards 31–60 added 2026-11-24).
  * A day with more than 15 correct vocabulary answers earns the next card in this order.
  * Facts were checked against sources (the plan document is in the Git history); keep wording careful when editing.
  */
@@ -158,8 +158,158 @@ export const SILVER_FACTS: SilverFact[] = [
   },
   {
     icon: 'dragon',
-    fa: 'Drachenfutter یعنی «غذای اژدها»: هدیه‌ای که برای آشتی دادنِ کسی که از دستمان دلخور است می‌خریم. شما ۳۰ کارت نقره‌ای گرفتید؛ این یکی جایزه‌ی خودتان است! 🎉',
-    en: 'Drachenfutter means “dragon food”: a present you buy to make peace with someone who is upset with you. You collected all 30 silver cards; this one is your reward! 🎉'
+    fa: 'Drachenfutter یعنی «غذای اژدها»: هدیه‌ای که برای آشتی دادنِ کسی که از دستمان دلخور است می‌خریم. نیمه‌ی راه: ۳۰ کارت نقره‌ای جمع کردید؛ این یکی جایزه‌ی خودتان است! 🎉',
+    en: 'Drachenfutter means “dragon food”: a present you buy to make peace with someone who is upset with you. Halfway there: you collected 30 silver cards; this one is your reward! 🎉'
+  },
+  {
+    icon: 'door',
+    fa: 'در اسم‌های مرکب، آرتیکل را همیشه کلمه‌ی آخر تعیین می‌کند: ⁦das Haus⁩ + ⁦die Tür⁩ = ⁦die Haustür⁩. آرتیکلِ جزء آخر را بلد باشید، آرتیکل کل کلمه را هم بلدید!',
+    en: 'In a compound noun the last word decides the article: das Haus + die Tür = die Haustür. Know the last part, and you know the article of the whole word!'
+  },
+  {
+    icon: 'ruler',
+    fa: 'اسم‌هایی که به ‎-ung‎، ‎-heit‎، ‎-keit‎، ‎-schaft‎ و ‎-ion‎ ختم می‌شوند تقریباً همیشه مؤنث‌اند: ⁦die Zeitung⁩، ⁦die Freiheit⁩، ⁦die Freundschaft⁩، ⁦die Nation⁩. پنج پسوند، هزاران آرتیکل درست.',
+    en: 'Nouns ending in -ung, -heit, -keit, -schaft and -ion are almost always feminine: die Zeitung, die Freiheit, die Freundschaft, die Nation. Five endings, thousands of correct articles.'
+  },
+  {
+    icon: 'abacus',
+    fa: 'خبر خوب: در جمع، der و die و das همه ⁦die⁩ می‌شوند: ⁦die Männer⁩، ⁦die Frauen⁩، ⁦die Kinder⁩. برای همه‌ی جمع‌ها فقط یک آرتیکل!',
+    en: 'Good news: in the plural, der, die and das all become die: die Männer, die Frauen, die Kinder. One article for every plural!'
+  },
+  {
+    icon: 'lightbulb',
+    fa: 'در جمله‌ی اصلی آلمانی، فعلِ صرف‌شده تقریباً همیشه در جایگاه دوم است: ⁦Ich lerne heute Deutsch.⁩ ← ⁦Heute lerne ich Deutsch.⁩ بقیه جابه‌جا می‌شوند، فعل سر جایش می‌ماند.',
+    en: 'In a German main clause the conjugated verb almost always comes second: Ich lerne heute Deutsch. → Heute lerne ich Deutsch. The rest can move around; the verb stays put.'
+  },
+  {
+    icon: 'smartphone',
+    fa: 'کیبوردتان اوملاوت ندارد؟ به جایش ae، oe، ue و ss بنویسید: ⁦Mädchen → Maedchen⁩، ⁦schön → schoen⁩، ⁦Straße → Strasse⁩. هر آلمانی‌زبانی منظورتان را می‌فهمد.',
+    en: 'No umlauts on your keyboard? Write ae, oe, ue and ss instead: Mädchen → Maedchen, schön → schoen, Straße → Strasse. Every German speaker will understand.'
+  },
+  {
+    icon: 'tram',
+    fa: '«⁦Ich verstehe nur Bahnhof⁩» (فقط «ایستگاه قطار» را می‌فهمم) یعنی «هیچ‌چیز نمی‌فهمم!». اگر درسی این حس را به شما داد، فقط به مرور ادامه دهید!',
+    en: '“Ich verstehe nur Bahnhof” (I only understand “train station”) means “I don’t understand a thing”. If a lesson feels like that, just keep reviewing!'
+  },
+  {
+    icon: 'tomato',
+    fa: '«⁦Tomaten auf den Augen haben⁩» (روی چشم‌ها گوجه داشتن) یعنی چیزی را که درست جلوی چشمتان است نبینید.',
+    en: '“Tomaten auf den Augen haben” (to have tomatoes on your eyes) means not seeing something that is right in front of you.'
+  },
+  {
+    icon: 'handshake',
+    fa: 'آلمانی‌ها برای آرزوی موفقیت انگشت‌هایشان را روی هم نمی‌گذارند، شستشان را فشار می‌دهند: «⁦Ich drücke dir die Daumen!⁩» یعنی «برایت آرزوی موفقیت می‌کنم!»',
+    en: 'Germans don’t cross their fingers for luck, they press their thumbs: “Ich drücke dir die Daumen!” means “I’m keeping my fingers crossed for you!”'
+  },
+  {
+    icon: 'flame',
+    fa: '«⁦Feuer und Flamme sein⁩» (آتش و شعله بودن) یعنی برای چیزی حسابی شور و شوق داشتن؛ مثل شما برای یادگرفتن آلمانی!',
+    en: '“Feuer und Flamme sein” (to be fire and flame) means to be really enthusiastic about something, like you about learning German!'
+  },
+  {
+    icon: 'teddy-bear',
+    fa: '«⁦Hier steppt der Bär⁩» (این‌جا خرس می‌رقصد) یعنی این‌جا حسابی شلوغ و پرهیجان است؛ جشن این‌جاست!',
+    en: '“Hier steppt der Bär” (the bear is tap-dancing here) means this is where the action is: a lively place with lots going on.'
+  },
+  {
+    icon: 'dumbbell',
+    fa: '«⁦Übung macht den Meister⁩»: تمرین، استاد می‌سازد. هر روزِ مرور یک قدم شما را به استادی نزدیک‌تر می‌کند.',
+    en: '“Übung macht den Meister”: practice makes the master. Every day of review brings you a step closer.'
+  },
+  {
+    icon: 'alarm-clock',
+    fa: '«⁦Morgenstund hat Gold im Mund⁩» (ساعتِ صبح طلا در دهان دارد): همان «سحرخیز باش تا کامروا باشی» خودمان. چند کارت همراه چای صبح؟',
+    en: '“Morgenstund hat Gold im Mund” (the morning hour has gold in its mouth) is the German “the early bird catches the worm”. A few cards with your morning tea?'
+  },
+  {
+    icon: 'fountain-pen',
+    fa: '⁦verschlimmbessern⁩ از ترکیب ⁦schlimmer⁩ (بدتر) و ⁦verbessern⁩ (بهتر کردن) ساخته شده: چیزی را با تلاش برای بهتر کردن، بدتر کردن!',
+    en: 'verschlimmbessern blends schlimmer (worse) and verbessern (to improve): to make something worse by trying to improve it!'
+  },
+  {
+    icon: 'map',
+    fa: '⁦Heimweh⁩ یعنی دلتنگی برای خانه، و ⁦Fernweh⁩ («درد دوری») برعکس آن است: اشتیاقِ رفتن به جایی دوردست.',
+    en: 'Heimweh is homesickness; its opposite, Fernweh (“far-sickness”), is the longing to be somewhere far away.'
+  },
+  {
+    icon: 'globe',
+    fa: 'انگلیسی خیلی از کلمه‌های آلمانی را عیناً قرض گرفته است: ⁦Angst⁩، ⁦Kitsch⁩، ⁦Zeitgeist⁩، ⁦Wanderlust⁩، ⁦Schadenfreude⁩ و ⁦Doppelgänger⁩.',
+    en: 'English has borrowed many German words just as they are: Angst, Kitsch, Zeitgeist, Wanderlust, Schadenfreude and Doppelgänger.'
+  },
+  {
+    icon: 'mountain',
+    fa: 'آلمانیِ معیار سوئیس اصلاً حرف ß ندارد: سوئیسی‌ها ⁦Strasse⁩ می‌نویسند، جایی که آلمانی‌ها و اتریشی‌ها ⁦Straße⁩ می‌نویسند. به جای ⁦Hallo⁩ هم اغلب می‌گویند ⁦Grüezi⁩!',
+    en: 'Swiss Standard German doesn’t use the letter ß at all: the Swiss write Strasse where Germans and Austrians write Straße. And instead of Hallo they often say Grüezi!'
+  },
+  {
+    icon: 'sunset',
+    fa: '⁦Donnerstag⁩ (پنجشنبه) روزِ دونار، خدای تندرِ ژرمن‌هاست (⁦Donner⁩ یعنی تندر) که در شمال اروپا «ثور» نامیده می‌شد. ⁦Thursday⁩ انگلیسی هم یعنی «روز ثور»: همان خدا!',
+    en: 'Donnerstag (Thursday) is the day of Donar, the Germanic god of thunder (Donner), called Thor in the north. English Thursday is “Thor’s day”: the same god!'
+  },
+  {
+    icon: 'pretzel',
+    fa: 'کلمه‌ی ⁦Brezel⁩ احتمالاً از ⁦bracchium⁩ لاتین به معنای «بازو» آمده است: گره‌اش شبیه دست‌هایی است که روی سینه ضربدری شده‌اند.',
+    en: 'The word Brezel probably comes from Latin bracchium, “arm”: the knot looks like arms folded across the chest.'
+  },
+  {
+    icon: 'book-lg',
+    fa: 'یوهانس گوتنبرگ، اهل ماینتس، حدود سال ۱۴۵۰ چاپ با حروف متحرک فلزی را به وجود آورد. انجیلی که حدود ۱۴۵۵ چاپ کرد از نخستین کتاب‌هایی بود که در اروپا این‌گونه چاپ شدند.',
+    en: 'Around 1450 Johannes Gutenberg of Mainz developed printing with movable metal type. His Bible, printed around 1455, was one of the first books in Europe printed this way.'
+  },
+  {
+    icon: 'book',
+    fa: 'مارتین لوتر در سال ۱۵۲۲ ترجمه‌ی آلمانیِ عهد جدید را منتشر کرد. این کتاب در شمار بسیار زیادی چاپ شد، در همه‌ی سرزمین‌های آلمانی‌زبان خوانده شد و به شکل‌گیری یک آلمانیِ نوشتاریِ مشترک کمک کرد.',
+    en: 'In 1522 Martin Luther published his German New Testament. Printed in huge numbers and read across the German-speaking lands, it helped shape a shared written German.'
+  },
+  {
+    icon: 'hourglass',
+    fa: 'برادران گریم، که با قصه‌هایشان مشهورند، در سال ۱۸۳۸ نوشتن یک فرهنگ لغت بزرگ آلمانی را آغاز کردند. تکمیل ۳۲ جلد آن تا ۱۹۶۱ طول کشید: ۱۲۳ سال! خیالتان راحت، کلمه‌های شما خیلی زودتر تمام می‌شوند.',
+    en: 'The Brothers Grimm, famous for their fairy tales, began a huge German dictionary in 1838. Its 32 volumes were finished only in 1961: 123 years! Don’t worry, your word list will be done much sooner.'
+  },
+  {
+    icon: 'brain',
+    fa: 'در پژوهشی در سال ۲۰۰۶، دانشجویانی که از خودشان آزمون گرفتند یک هفته بعد خیلی بیشتر از کسانی به یاد داشتند که فقط متن را دوباره خوانده بودند. هر کارتی که از حافظه جواب می‌دهید همین آزمون است.',
+    en: 'In a 2006 study, students who tested themselves remembered much more a week later than students who only reread the text. Every card you answer from memory is that kind of test.'
+  },
+  {
+    icon: 'bell',
+    fa: 'سرود «⁦Stille Nacht, heilige Nacht⁩» نخستین بار در سال ۱۸۱۸ در اوبرندورف، نزدیک سالزبورگ، خوانده شد. امروز به صدها زبان خوانده می‌شود و از سال ۲۰۱۱ در فهرست میراث فرهنگی ناملموس اتریش است.',
+    en: '“Stille Nacht, heilige Nacht” (Silent Night) was first sung in 1818 in Oberndorf near Salzburg. Today it is sung in hundreds of languages, and since 2011 it has been on Austria’s list of intangible cultural heritage.'
+  },
+  {
+    icon: 'edelweiss',
+    fa: '⁦Edelweiss⁩ («سفیدِ نجیب») گلِ نمادِ کوه‌های آلپ است. به سکه‌ی ۲ سنتیِ اتریش نگاه کنید: همان‌جاست!',
+    en: 'The Edelweiss (“noble white”) is a symbol of the Alps. Look at an Austrian 2-cent coin: there it is!'
+  },
+  {
+    icon: 'ferris-wheel',
+    fa: 'چرخ‌وفلکِ بزرگ وین، ⁦Riesenrad⁩ («چرخ غول‌پیکر»)، از سال ۱۸۹۷ در پارک پراتر می‌چرخد. ⁦Riese⁩ یعنی غول و ⁦Rad⁩ یعنی چرخ.',
+    en: 'Vienna’s giant Ferris wheel, the Riesenrad, has been turning in the Prater since 1897. Riese means giant, and Rad means wheel.'
+  },
+  {
+    icon: 'violin',
+    fa: 'سرود اروپا ملودیِ سمفونی نهم بتهوون است؛ قطعه‌ای که روی شعر آلمانیِ فریدریش شیلر، «⁦An die Freude⁩» (سرود شادی)، ساخته شده است.',
+    en: 'The anthem of Europe is a melody from Beethoven’s Ninth Symphony, which sets Friedrich Schiller’s German poem “An die Freude” (Ode to Joy).'
+  },
+  {
+    icon: 'typewriter',
+    fa: 'فرانتس کافکا در پراگ زندگی می‌کرد، اما همه‌ی آثار مشهورش، مثل «⁦Die Verwandlung⁩» (مسخ)، را به آلمانی نوشت.',
+    en: 'Franz Kafka lived in Prague, but he wrote all his famous works, like “Die Verwandlung” (The Metamorphosis), in German.'
+  },
+  {
+    icon: 'trophy',
+    fa: 'برتا بنتس در سال ۱۸۸۸ همراه دو پسرش خودروی همسرش را حدود ۱۰۰ کیلومتر از مانهایم تا پفورتسهایم راند: نخستین سفرِ طولانی با خودرو در تاریخ.',
+    en: 'In 1888 Bertha Benz drove her husband’s motor car about 100 km from Mannheim to Pforzheim with her two sons: the first long-distance car journey in history.'
+  },
+  {
+    icon: 'atom',
+    fa: 'ویلهلم کنراد رونتگن در سال ۱۸۹۵ پرتو ایکس را کشف کرد. برای همین در آلمانی به عکس پرتو ایکس ⁦Röntgenbild⁩ و به این پرتوها ⁦Röntgenstrahlen⁩ می‌گویند.',
+    en: 'Wilhelm Conrad Röntgen discovered X-rays in 1895. That’s why in German an X-ray image is ein Röntgenbild and the rays are Röntgenstrahlen.'
+  },
+  {
+    icon: 'party-popper',
+    fa: '«⁦Ende gut, alles gut⁩»: پایانِ خوش، همه‌چیز خوش. هر ۶۰ کارت نقره‌ای را جمع کردید؛ یعنی ۶۰ روز مرورِ جدی. ⁦Herzlichen Glückwunsch!⁩ 🎉',
+    en: '“Ende gut, alles gut”: all’s well that ends well. You collected all 60 silver cards: that’s 60 days of serious review. Herzlichen Glückwunsch! 🎉'
   }
 ];
 

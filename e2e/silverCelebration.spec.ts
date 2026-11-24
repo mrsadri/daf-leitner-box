@@ -39,7 +39,7 @@ test('the 16th correct answer of the day opens the silver card, once', async ({ 
   const dialog = page.getByTestId('silver-earned');
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole('dialog')).toContainText('You earned a silver card!');
-  await expect(dialog).toContainText('Silver card 3 of 30');
+  await expect(dialog).toContainText('Silver card 3 of 60');
   await expect(dialog).toContainText('One language, six countries!');   // the fact of card 3
   await expect(dialog.getByTestId('silver-sprinkles')).toHaveAttribute('aria-hidden', 'true');
 
@@ -74,4 +74,15 @@ test('the first launch after the update does not celebrate cards earned before i
   await page.waitForTimeout(300);
   await expect(page.getByTestId('silver-earned')).toHaveCount(0);
   expect(await page.evaluate(() => localStorage.getItem('daf_silver_seen_demo-user'))).toBe('5');
+});
+
+test('the collection shows the newest card first', async ({ page }) => {
+  await openApp(page, 'en');
+  await seedSilver(page, 0, 3, 3);
+  await page.getByRole('button', { name: /My collection/ }).click();
+  const cards = page.getByTestId('silver-earned-list').locator(':scope > div');
+  await expect(cards).toHaveCount(3);
+  await expect(cards.nth(0)).toContainText('Silver card 3 of 60');
+  await expect(cards.nth(2)).toContainText('Silver card 1 of 60');
+  await expect(page.getByTestId('silver-locked-list').locator('li')).toHaveCount(57);
 });

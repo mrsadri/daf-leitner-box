@@ -49,10 +49,12 @@ test('the server knows about other devices and earlier sessions', () => {
   assert.equal(rollDay({ day: '2026-11-01', correctToday: 12, earnedToday: false, total: 2 }, DAY).correctToday, 0);
 });
 
-test('30 facts in both languages', () => {
-  assert.equal(SILVER_MAX, 30);
-  assert.equal(new Set(SILVER_FACTS.map(f => f.fa)).size, 30);
-  assert.equal(new Set(SILVER_FACTS.map(f => f.en)).size, 30);
+test('60 facts in both languages; only the last one says the collection is complete', () => {
+  assert.equal(SILVER_MAX, 60);
+  assert.equal(new Set(SILVER_FACTS.map(f => f.fa)).size, 60);
+  assert.equal(new Set(SILVER_FACTS.map(f => f.en)).size, 60);
+  SILVER_FACTS.slice(0, -1).forEach((f, i) => assert.doesNotMatch(f.en, /collected all/, `card ${i + 1}`));
+  assert.match(SILVER_FACTS[59].en, /collected all 60/);
   for (const f of SILVER_FACTS) {
     assert.ok(f.fa.length > 30 && f.en.length > 30 && f.icon);
     assert.ok(existsSync(new URL(`../public/icons3d/${f.icon}.webp`, import.meta.url)), `icon file for ${f.icon}`);
