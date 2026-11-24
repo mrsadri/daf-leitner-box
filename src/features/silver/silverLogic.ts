@@ -57,3 +57,20 @@ export function collectionSlots(total: number, max: number): { earned: number[];
   const all = Array.from({ length: max }, (_, i) => i + 1);
   return { earned: all.slice(0, n), locked: all.slice(n) };
 }
+
+/**
+ * The card to celebrate on this device, if any: today's card, confirmed (`total` went past `seen`, the highest card
+ * already shown here). Cards of other days that were never shown here are not celebrated (see settleSeen).
+ */
+export function pendingCelebration(state: SilverState, seen: number, today: string, max: number): number | null {
+  if (state.day !== today || !state.earnedToday) return null;
+  const total = Math.min(max, state.total);
+  return total > seen && total >= 1 ? total : null;
+}
+
+/** The seen mark after a state change: old cards (not today's) are marked seen quietly, so they never pop up later. */
+export function settleSeen(state: SilverState, seen: number, today: string, max: number): number {
+  const total = Math.min(max, Math.max(0, state.total));
+  if (total <= seen) return seen;
+  return pendingCelebration(state, seen, today, max) === null ? total : seen;
+}

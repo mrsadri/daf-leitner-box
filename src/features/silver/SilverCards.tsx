@@ -2,14 +2,16 @@
  * Silver cards: one collectible fact card per day once the day's correct answers pass SILVER_THRESHOLD (silverLogic.ts). The dashboard widget, the
  * "earned" dialog and the collection. Counting lives in silver.ts / silverLogic.ts.
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useSyncExternalStore } from 'react';
 import { Lock } from 'lucide-react';
 import { Dialog, Button } from '../../shared/ui';
 import { SILVER_FACTS, SILVER_MAX } from './silverFacts';
 import { SILVER_THRESHOLD, collectionSlots } from './silverLogic';
-import { getSilver, onSilverChange } from './silver';
+import { getSilver, onSilverChange, getPendingSilver, acknowledgeSilver } from './silver';
 import { useI18n } from '../../i18n/I18nProvider';
 import { Icon3D } from '../../shared/ui/Icon3D';
+import { soundService } from '../../shared/lib/soundService';
+import { vibrate } from '../../shared/lib/haptics';
 
 const SILVER_FACE = 'bg-gradient-to-br from-slate-100 via-white to-slate-300 dark:from-slate-700 dark:via-slate-800 dark:to-slate-600 border border-slate-300 dark:border-slate-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]';
 
@@ -32,26 +34,94 @@ export const SilverCardFace: React.FC<{ index: number; large?: boolean }> = ({ i
   );
 };
 
-/** Shown the moment a silver card is earned. */
+/** Today's confirmed silver card that this device hasn't celebrated yet (null when there is none). */
+export function usePendingSilver(): number | null {
+  return useSyncExternalStore(onSilverChange, getPendingSilver);
+}
+
+/** Shows today's card the moment the server (or, in demo, the device) confirms it; closing it marks it seen. */
+export const SilverCelebration: React.FC = () => {
+  const pending = usePendingSilver();
+  if (pending === null) return null;
+  return <SilverCardEarned key={pending} index={pending} onClose={() => acknowledgeSilver(pending)} />;
+};
+
+const SPRINKLE_COLORS = ['#cbd5e1', '#94a3b8', '#7dd3fc', '#fda4af', '#fcd34d', '#6ee7b7', '#c4b5fd', '#f8fafc'];
+/**
+ * A fixed burst (no randomness, so screenshots and tests are stable): two soft waves of bars and dots that fly out
+ * from behind the card, drift down and fade. Offsets in px from the card's centre (a card is about 360 × 200).
+ */
+const SPRINKLES = Array.from({ length: 32 }, (_, i) => {
+  const wave = i % 2;
+  const angle = (i * 137.5 + wave * 20) * (Math.PI / 180);          // golden angle: evenly spread, no clumps
+  const reach = 0.6 + ((i * 37) % 40) / 100 + wave * 0.12;           // × the card's half size
+  return {
+    x: Math.round(Math.cos(angle) * reach * 175),
+    y: Math.round(Math.sin(angle) * reach * 120 - 12),
+    fall: 30 + ((i * 53) % 40),
+    rot: ((i * 97) % 540) - 270,
+    delay: wave * 0.35 + ((i * 29) % 10) / 50,
+    dur: 2 + ((i * 41) % 7) / 10,
+    color: SPRINKLE_COLORS[i % SPRINKLE_COLORS.length],
+    dot: i % 3 === 0
+  };
+});
+
+const Sprinkles: React.FC = () => (
+  <div className="silver-sprinkles pointer-events-none absolute inset-0 z-10" aria-hidden="true" data-testid="silver-sprinkles">
+    {SPRINKLES.map((p, i) => (
+      <span
+        key={i}
+        className={`silver-sprinkle ${p.dot ? 'w-2 h-2 rounded-full' : 'w-1.5 h-3.5 rounded-full'}`}
+        style={{
+          background: p.color,
+          ['--sx' as string]: `${p.x}px`,
+          ['--sy' as string]: `${p.y}px`,
+          ['--sf' as string]: `${p.fall}px`,
+          ['--sr' as string]: `${p.rot}deg`,
+          animationDelay: `${p.delay}s`,
+          animationDuration: `${p.dur}s`
+        } as React.CSSProperties}
+      />
+    ))}
+  </div>
+);
+
+/** The celebration: the card rises gently into place, a shimmer passes over it and sprinkles burst around it. */
 export const SilverCardEarned: React.FC<{ index: number; onClose: () => void }> = ({ index, onClose }) => {
   const { t } = useI18n();
+  useEffect(() => {
+    soundService.playMastered();
+    vibrate();
+  }, []);
   return (
     <Dialog
       onClose={onClose}
       size="md"
+      placement="center"
       testId="silver-earned"
-      title={<><Icon3D name="silver-medal" size={40} className="-my-1" />{t.silver.earnedTitle}</>}
+      title={<><Icon3D name="silver-medal" size={40} className="-my-1 silver-medal-in" />{t.silver.earnedTitle}</>}
       description={t.silver.earnedBody}
       footer={<Button block data-autofocus onClick={onClose}>{t.silver.continue}</Button>}
     >
-      <SilverCardFace index={index} large />
+      <div className="silver-stage relative py-5">
+        <Sprinkles />
+        <div className="silver-reveal relative">
+          <div className="silver-float">
+            <div className="silver-shine relative rounded-2xl">
+              <SilverCardFace index={index} large />
+            </div>
+          </div>
+        </div>
+      </div>
       {index >= SILVER_MAX && <p className="text-sm font-bold text-center text-emerald-700 dark:text-emerald-300">{t.silver.complete}</p>}
     </Dialog>
   );
 };
 
 /**
- * All 30 slots: earned cards in full, then the locked ones as small numbered tiles.
+ * Every slot: earned cards in full, newest first (the card won most recently on top), then the locked ones as small
+ * numbered tiles in order.
  * The scroll lives on a plain block wrapper, never on the grid itself: a height-limited grid shrinks rows
  * whose items clip their overflow (the card face does) down to almost nothing.
  */
@@ -69,7 +139,7 @@ export const SilverCollection: React.FC<{ total: number; onClose: () => void }> 
       <div className="space-y-5" data-testid="silver-collection">
         {earned.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3" data-testid="silver-earned-list">
-            {earned.map(i => <SilverCardFace key={i} index={i} />)}
+            {[...earned].reverse().map(i => <SilverCardFace key={i} index={i} />)}
           </div>
         )}
         {earned.length >= SILVER_MAX && (

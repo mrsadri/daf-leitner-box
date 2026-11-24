@@ -820,7 +820,7 @@ export const en: Messages = {
       { title: '3. No daily limit', body: 'You can add as many new words to Box 0 as you like.' },
       { title: '4. Decision & motivation cards', body: 'No quiz; they come back at Leitner intervals and move on when you tap “Read”.' },
       { title: '5. Overdue cards', body: 'A card not reviewed within 3 days of its due date goes back to the start of the previous box; for example from Box 3 to Box 2, due again 4 days later. Box 0 cards don\'t go lower.' },
-      { title: '6. Silver cards', body: 'Every day you answer more than 15 cards correctly in review, you get a silver card with a fun fact about German (30 in all). The leaderboard shows how many you have.' }
+      { title: '6. Silver cards', body: 'Every day you answer more than 15 cards correctly in review, you get a silver card with a fun fact about German (60 in all). The leaderboard shows how many you have.' }
     ],
     modalTitleBox: (name: string) => `Cards in ${name}`,
     modalSubtitleBox: (days: number) => `Review interval: ${plural(days, 'day', 'days')}`,
