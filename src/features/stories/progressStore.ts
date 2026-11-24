@@ -143,6 +143,22 @@ export class StoriesProgressStore {
     this.schedule(FLUSH_DELAY_MS);
   }
 
+  /**
+   * Bring in progress made elsewhere (a guest's reading before sign-in): merged by the usual rule, so progress never
+   * goes backwards, then queued for the server like any other change. Returns how many stories changed.
+   */
+  importFrom(entries: Map_): number {
+    let changed = 0;
+    for (const [id, incoming] of Object.entries(entries)) {
+      if (!/^S(0[1-9]|10)-Q[1-6]$/.test(id) || !incoming || incoming.storyId !== id) continue;
+      const merged = mergeAll(this.map[id] ? { [id]: this.map[id] } : {}, { [id]: incoming })[id];
+      if (!merged || JSON.stringify(merged) === JSON.stringify(this.map[id])) continue;
+      this.save(merged, '');
+      changed++;
+    }
+    return changed;
+  }
+
   flush(): Promise<void> {
     if (this.disposed) return Promise.resolve();
     if (this.flushing) return this.flushing;

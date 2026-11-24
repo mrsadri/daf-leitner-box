@@ -13,7 +13,7 @@ const CONFIRM_LEAVE = { fa: /خروج و رها کردن/, en: /leave and abando
 
 for (const lang of ['fa', 'en'] as const) {
   test(`play the adjective drill to the end and see it on the records board (${lang})`, async ({ page }) => {
-    const { errors, external } = await openApp(page, lang);
+    const { errors, external } = await openApp(page, lang, '/?go=dashboard');
     await page.clock.install();
 
     await page.getByTestId('dashboard-adjective').click();
@@ -47,7 +47,7 @@ for (const lang of ['fa', 'en'] as const) {
   });
 
   test(`leaving mid-run via the navbar asks to confirm (${lang})`, async ({ page }) => {
-    const { errors, external } = await openApp(page, lang);
+    const { errors, external } = await openApp(page, lang, '/?go=dashboard');
 
     await page.getByTestId('dashboard-adjective').click();
     await page.getByTestId('adjective-start-button').click();
@@ -59,10 +59,10 @@ for (const lang of ['fa', 'en'] as const) {
     await page.getByRole('dialog').getByRole('button', { name: CANCEL_LEAVE[lang] }).click();
     await expect(page.getByTestId('adjective-running')).toBeVisible();
 
-    // Confirm: the run is abandoned, back on the dashboard
+    // Confirm: the run is abandoned, back on the home screen (Stories)
     await page.getByTestId('nav-brand').click();
     await page.getByRole('dialog').getByRole('button', { name: CONFIRM_LEAVE[lang] }).click();
-    await expect(page.getByTestId('dashboard-adjective')).toBeVisible();
+    await expect(page.getByTestId('stories-shelf')).toBeVisible();
     await expect(page.getByTestId('adjective-running')).toHaveCount(0);
 
     expect(errors).toEqual([]);

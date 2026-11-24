@@ -19,13 +19,19 @@
 .story-library-shell { background: #faf8f2; }
 @media (prefers-color-scheme: dark) { .story-library-shell { background: #1f231f; } }
 .story-reader { min-height: 100dvh; background: var(--ds-paper); color: var(--ds-ink); padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(2rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left)); }
-.reader-toolbar { max-width: 70rem; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; }
-.reader-toolbar, .reader-reveal { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--ds-paper); }
-.reader-page { max-width: 58rem; margin: 2rem auto; padding: 1rem clamp(0rem, 3vw, 2rem); }
-.reader-page.reading-text { max-width: 65ch; font-size: var(--reader-font-size, 22px); margin: 2rem auto; }
+/* Reader: a header pinned to the top (toolbar + the chapter's picture); the whole chapter scrolls beneath it. */
+.reader-head { position: sticky; top: 0; z-index: 20; background: var(--ds-paper); padding: env(safe-area-inset-top, 0px) 0 .75rem; }
+.reader-toolbar { max-width: 58rem; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: .75rem; min-height: 2.75rem; }
+.reader-picture { max-width: 58rem; margin: .25rem auto 0; }
+.reader-picture img, .reader-picture > div { display: block; width: 100%; height: clamp(120px, 32vh, 360px); aspect-ratio: auto; object-fit: cover; border-radius: var(--radius-card); }
+.reader-page { max-width: 58rem; margin: 1.5rem auto 2rem; padding: 0 clamp(0rem, 3vw, 2rem); }
+.reader-page.reading-text { max-width: 65ch; font-size: var(--reader-font-size, 22px); }
 .reader-page.reading-text .font-story { font-size: inherit; hyphens: auto; overflow-wrap: anywhere; }
-.reader-bottom { max-width: 58rem; margin: 2rem auto 0; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
-.reader-reveal { display: flex; justify-content: flex-end; max-width: 70rem; margin: 0 auto; }
+.reader-page.reading-text .reader-scene { font-size: 1rem; }
+.reader-block { scroll-margin-top: calc(var(--reader-head-h, 0px) + 1rem); }
+.reader-end { display: flex; justify-content: center; margin-top: 2.5rem; }
+/* Phones held sideways: too little height to pin a picture */
+@media (max-height: 500px) { .reader-head { position: static; } }
 .reader-silent-status { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 @media (max-width: 767px) {
   .editorial-feature { grid-template-columns: minmax(0, 1fr); }
@@ -34,4 +40,13 @@
   .editorial-scene { gap: .75rem; align-items: flex-start; flex-wrap: wrap; }
   .editorial-scene img, .editorial-scene-art { width: 5.5rem; }
 }
-@media (max-width: 359px) { .editorial-grid { grid-template-columns: minmax(0, 1fr); } }
+/* Narrow phones: one book per row, picture beside the text, so the library stays short and readable */
+@media (max-width: 479px) {
+  .editorial-grid { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
+  .editorial-book { display: grid; grid-template-columns: 7.5rem minmax(0, 1fr); gap: 1rem; align-items: start; }
+  .editorial-book .editorial-book-text { padding-top: 0; }
+  .editorial-book .editorial-title { font-size: 1.125rem; }
+}
+/* Persian interface: German titles and excerpts in the library line up with the Persian column (right), while still
+   reading left to right. The reader's German text keeps its own left alignment. */
+[dir='rtl'] .editorial-library [lang='de'] { text-align: right; }

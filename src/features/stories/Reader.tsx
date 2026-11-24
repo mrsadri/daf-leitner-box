@@ -1,12 +1,13 @@
 /**
- * Reading one story like a picture book: a cover (picture + the scene in the interface language), the German pages
- * (swipe, buttons or arrow keys; always left to right, even in the Persian interface), then the quiz and the result.
- * Progress is reported through onPage / onQuizDone; the parent saves it.
+ * Reading one story (chapter): its picture stays pinned at the top while the whole chapter scrolls beneath it: the
+ * title, the scene in the interface language, then all of the German text (always left to right), then the quiz and
+ * the result. Progress is reported through onPage (the highest text block scrolled into view) and onQuizDone; the
+ * parent saves it. "Continue reading" (startPage) scrolls back to that block.
  */
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight, BookOpen, Menu, Type, EyeOff } from 'lucide-react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { ChevronLeft, ChevronRight, BookOpen, Type } from 'lucide-react';
 import { useI18n } from '../../i18n/I18nProvider';
-import { Button, IconButton, Dialog, isDialogOpen } from '../../shared/ui';
+import { Button, IconButton, Dialog } from '../../shared/ui';
 import { Switch } from '../../shared/ui/Switch';
 import { De } from '../../shared/ui/Text';
 import { DEFAULT_READER_SETTINGS, parseReaderSettings, READER_SETTINGS_KEY } from './readerSettings';
@@ -15,11 +16,11 @@ import { StoryText } from './StoryText';
 import { Quiz } from './Quiz';
 import type { Scene, WordSegment } from './types';
 
-type Step = { kind: 'cover' } | { kind: 'page'; i: number } | { kind: 'quiz' } | { kind: 'result'; score: number };
+type Step = { kind: 'read' } | { kind: 'quiz' } | { kind: 'result'; score: number };
 
 interface Props {
   story: Scene;
-  /** Page to open at (continue reading); undefined starts at the cover */
+  /** Text block to scroll to (continue reading); undefined starts at the top */
   startPage?: number;
   hasNext: boolean;
   onPage: (page: number) => void;
@@ -56,9 +57,7 @@ export const Reader: React.FC<Props> = ({ story, startPage, hasNext, onPage, onQ
   const { t, lang } = useI18n();
   const s = t.stories;
   const total = story.pages.length;
-  const [step, setStep] = useState<Step>(startPage !== undefined ? { kind: 'page', i: Math.min(startPage, total - 1) } : { kind: 'cover' });
-  const [dir, setDir] = useState<1 | -1>(1);
-  const [controls, setControls] = useState(false);
+  const [step, setStep] = useState<Step>({ kind: 'read' });
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settings, setSettings] = useState(() => {
     try { return parseReaderSettings(localStorage.getItem(READER_SETTINGS_KEY)); }
@@ -67,114 +66,103 @@ export const Reader: React.FC<Props> = ({ story, startPage, hasNext, onPage, onQ
   useEffect(() => {
     try { localStorage.setItem(READER_SETTINGS_KEY, JSON.stringify(settings)); } catch { /* Reading works when storage is unavailable. */ }
   }, [settings]);
-  const pageRef = useRef<HTMLDivElement>(null);
-  const touch = useRef<{ x: number; y: number } | null>(null);
-  const swiped = useRef(false);
-  const controlsToggle = useRef<HTMLButtonElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const headRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const blocks = useRef<(HTMLDivElement | null)[]>([]);
+  const seen = useRef(startPage ?? -1);
+  const latestOnPage = useRef(onPage);
+  useEffect(() => { latestOnPage.current = onPage; });
 
-  const go = useCallback((next: Step, direction: 1 | -1) => {
-    setDir(direction);
-    setStep(next);
-    if (next.kind === 'page') onPage(next.i);
-    window.scrollTo({ top: 0 });
-  }, [onPage]);
+  // The pinned header's height, so a block scrolled to (continue reading) is not hidden under the picture
+  useLayoutEffect(() => {
+    const head = headRef.current, root = rootRef.current;
+    if (!head || !root) return;
+    const apply = () => root.style.setProperty('--reader-head-h', `${head.offsetHeight}px`);
+    apply();
+    const observer = new ResizeObserver(apply);
+    observer.observe(head);
+    return () => observer.disconnect();
+  }, [step.kind]);
 
-  const forward = useCallback(() => {
-    if (step.kind === 'cover') go({ kind: 'page', i: 0 }, 1);
-    else if (step.kind === 'page') go(step.i + 1 < total ? { kind: 'page', i: step.i + 1 } : { kind: 'quiz' }, 1);
-  }, [step, total, go]);
-  const back = useCallback(() => {
-    if (step.kind === 'page') go(step.i > 0 ? { kind: 'page', i: step.i - 1 } : { kind: 'cover' }, -1);
-  }, [step, go]);
-
-  // Arrow keys turn pages (German reads left to right, so → is forward in both interface languages)
+  // Continue reading: back to the block reached last time
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape' && (e.target as HTMLElement)?.closest('[data-word-navigation]')) return;
-      if (isDialogOpen() || (e.target as HTMLElement)?.closest('input, textarea, select')) return;
-      if (e.key === 'ArrowRight') { e.preventDefault(); setControls(true); forward(); }
-      if (e.key === 'ArrowLeft') { e.preventDefault(); setControls(true); back(); }
-      if (e.key === 'Escape') { e.preventDefault(); setControls(true); controlsToggle.current?.focus(); }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [forward, back]);
+    if (step.kind !== 'read' || !startPage) return;
+    blocks.current[Math.min(startPage, total - 1)]?.scrollIntoView({ block: 'start' });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // A new page gets the focus, so screen readers start reading it
-  // eslint-disable-next-line react/exhaustive-effect-dependencies -- The page transition intentionally triggers focus on the new rendered page.
-  useEffect(() => { pageRef.current?.focus({ preventScroll: true }); }, [step]);
+  // Progress: the highest text block that came into view (blocks are the story's pages, so saved progress keeps its meaning)
+  useEffect(() => {
+    if (step.kind !== 'read' || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const i = Number((entry.target as HTMLElement).dataset.page);
+        if (i > seen.current) { seen.current = i; latestOnPage.current(i); }
+      }
+    }, { rootMargin: '0px 0px -35% 0px' });
+    blocks.current.forEach(el => el && observer.observe(el));
+    return () => observer.disconnect();
+  }, [step.kind, total]);
 
-  const onTouchStart = (e: React.TouchEvent) => {
-    swiped.current = false;
-    touch.current = e.touches.length === 1 ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : null;
+  const goTo = (next: Step) => {
+    setStep(next);
+    window.scrollTo({ top: 0 });
   };
-  const onTouchEnd = (e: React.TouchEvent) => {
-    if (!touch.current) return;
-    const dx = e.changedTouches[0].clientX - touch.current.x;
-    const dy = e.changedTouches[0].clientY - touch.current.y;
-    touch.current = null;
-    if (Math.abs(dx) > 10 || Math.abs(dy) > 10) swiped.current = true;
-    if (isDialogOpen() || window.getSelection()?.toString() || Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
-    if (dx < 0) forward(); else back();    // swipe left = next page, like turning a page of a German book
-  };
+  // A new step gets the focus, so screen readers start there
+  // eslint-disable-next-line react/exhaustive-effect-dependencies -- The step change intentionally moves focus to the new content.
+  useEffect(() => { bodyRef.current?.focus({ preventScroll: true }); }, [step.kind]);
 
-  const anim = dir === 1 ? 'story-turn-next' : 'story-turn-prev';
+  const toQuiz = () => {
+    if (seen.current < total - 1) { seen.current = total - 1; onPage(total - 1); }
+    goTo({ kind: 'quiz' });
+  };
 
   return (
-    <div className="story-reader" data-testid="story-reader" style={{ '--reader-font-size': `${settings.fontSize}px` } as React.CSSProperties}>
-      <div className={step.kind !== 'page' || controls ? 'reader-toolbar' : 'reader-reveal'}>
-        {(step.kind !== 'page' || controls) && <Button variant="ghost" size="sm" data-testid="reader-exit" icon={<ChevronLeft className="w-4 h-4 rtl:rotate-180" />} onClick={onBack}>{s.exitReader}</Button>}
-        {step.kind === 'page' && <div className="flex items-center gap-2">
-          {controls && <IconButton label={s.readerSettings} onClick={() => setSettingsOpen(true)} data-testid="reader-settings"><Type className="w-5 h-5" /></IconButton>}
-          <IconButton ref={controlsToggle} label={controls ? s.hideControls : s.showControls} aria-expanded={controls}
-            data-testid="reader-controls-toggle" onClick={() => setControls(value => !value)}>
-            {controls ? <EyeOff className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </IconButton>
-        </div>}
+    <div ref={rootRef} className="story-reader" data-testid="story-reader" style={{ '--reader-font-size': `${settings.fontSize}px` } as React.CSSProperties}>
+      <div ref={headRef} className={step.kind === 'read' ? 'reader-head' : 'reader-head reader-head-plain'} data-testid="reader-head">
+        <div className="reader-toolbar">
+          <Button variant="ghost" size="sm" data-testid="reader-exit" icon={<ChevronLeft className="w-4 h-4 rtl:rotate-180" />} onClick={onBack}>{s.exitReader}</Button>
+          {step.kind === 'read' && <IconButton label={s.readerSettings} onClick={() => setSettingsOpen(true)} data-testid="reader-settings"><Type className="w-5 h-5" /></IconButton>}
+        </div>
+        {step.kind === 'read' && story.image && (
+          <div className="reader-picture" data-testid="reader-picture"><StoryPicture story={story} /></div>
+        )}
       </div>
 
-      <div
-        ref={pageRef}
-        tabIndex={-1}
-        key={step.kind === 'page' ? `p${step.i}` : step.kind}
-        className={`reader-page ${step.kind === 'page' ? 'reading-text' : ''} focus:outline-none ${anim}`}
-        onClick={event => {
-          if (step.kind !== 'page' || swiped.current || isDialogOpen() || window.getSelection()?.toString()) return;
-          if ((event.target as HTMLElement).closest('button, [role="button"], a, input')) return;
-          setControls(value => !value);
-        }}
-        onTouchStart={step.kind === 'page' || step.kind === 'cover' ? onTouchStart : undefined}
-        onTouchEnd={step.kind === 'page' || step.kind === 'cover' ? onTouchEnd : undefined}
-        aria-label={step.kind === 'page' ? s.page(step.i + 1, total) : undefined}
-        role={step.kind === 'page' ? 'region' : undefined}
-      >
-        {step.kind === 'cover' && (
-          <div className="editorial-feature" data-testid="story-cover" dir="ltr">
-            <StoryPicture story={story} />
-            <div className="space-y-5" dir={lang === 'fa' ? 'rtl' : 'ltr'}>
-            <h1 className="editorial-title text-3xl text-ink"><De className="block text-start">{story.title}</De></h1>
-            <div className="space-y-1">
-              <h2 className="text-xs font-bold uppercase tracking-wide text-ink-soft">{s.situation}</h2>
-              <p dir="auto" className="text-ink leading-relaxed">{story.situation[lang]}</p>
+      <div ref={bodyRef} tabIndex={-1} className="reader-body focus:outline-none">
+        {step.kind === 'read' && (
+          <article className="reader-page reading-text" data-testid="story-text">
+            <div className="space-y-4 mb-8" data-testid="story-intro">
+              <h1 className="editorial-title text-3xl text-ink"><De className="block text-start">{story.title}</De></h1>
+              <div className="space-y-1 reader-scene" dir={lang === 'fa' ? 'rtl' : 'ltr'}>
+                <h2 className="text-xs font-bold uppercase tracking-wide text-ink-soft">{s.situation}</h2>
+                <p dir="auto" className="text-ink leading-relaxed">{story.situation[lang]}</p>
+                <p className="text-sm text-ink-soft pt-1">{s.tapHint}</p>
+              </div>
             </div>
-            <p className="text-sm text-ink-soft">{s.tapHint}</p>
-            <Button block onClick={forward} data-testid="story-start">{s.start}</Button>
+            <div role="region" aria-label={story.title} className="space-y-6">
+              {story.pages.map((page, i) => (
+                <div key={i} data-page={i} ref={el => { blocks.current[i] = el; }} className="reader-block">
+                  <StoryText page={page} onWord={onWord} underlines={settings.underlines} />
+                </div>
+              ))}
             </div>
-          </div>
-        )}
-
-        {step.kind === 'page' && (
-          <div className="space-y-6">
-            <StoryText page={story.pages[step.i]} onWord={onWord} underlines={settings.underlines} />
-          </div>
+            <div className="reader-end">
+              <Button onClick={toQuiz} data-testid="story-to-quiz" icon={<ChevronRight className="w-4 h-4 rtl:rotate-180" aria-hidden />}>{s.toQuiz}</Button>
+            </div>
+          </article>
         )}
 
         {step.kind === 'quiz' && (
-          <Quiz story={story} onShowPageWord={onWord} onDone={(score) => { onQuizDone(score); go({ kind: 'result', score }, 1); }} />
+          <div className="reader-page">
+            <Quiz story={story} onShowPageWord={onWord} onDone={(score) => { onQuizDone(score); goTo({ kind: 'result', score }); }} />
+          </div>
         )}
 
         {step.kind === 'result' && (
-          <div className="text-center space-y-4 py-4" data-testid="story-result">
+          <div className="reader-page text-center space-y-4 py-4" data-testid="story-result">
             <h2 className="font-story-title text-3xl text-ink">{s.resultTitle}</h2>
             <p className="text-lg text-ink">{s.score(step.score, story.quiz.length)}</p>
             <p className="text-ink-soft">{hasNext ? s.nextOpened : s.bookDone}</p>
@@ -186,19 +174,6 @@ export const Reader: React.FC<Props> = ({ story, startPage, hasNext, onPage, onQ
         )}
       </div>
 
-      {step.kind === 'page' && controls && (
-        <div className="reader-bottom" dir="ltr">
-          <Button variant="secondary" onClick={back} icon={<ChevronLeft className="w-4 h-4" />} aria-label={s.prev}>
-            <span className="hidden sm:inline">{s.prev}</span>
-          </Button>
-          <span className="text-caption text-ink-soft" aria-label={s.page(step.i + 1, total)}>{step.i + 1} / {total}</span>
-          <Button onClick={forward} data-testid="story-next">
-            {step.i + 1 < total ? <span className="hidden sm:inline">{s.next}</span> : s.toQuiz}
-            <ChevronRight className="w-4 h-4" aria-hidden />
-            {step.i + 1 < total && <span className="sr-only sm:hidden">{s.next}</span>}
-          </Button>
-        </div>
-      )}
       {settingsOpen && <Dialog title={s.readerSettings} onClose={() => setSettingsOpen(false)} size="sm" testId="reading-settings">
         <label className="block space-y-3">
           <span className="flex justify-between gap-3"><span>{s.fontSize}</span><output>{settings.fontSize}</output></span>

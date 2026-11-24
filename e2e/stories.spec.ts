@@ -21,8 +21,7 @@ for (const lang of ['fa', 'en'] as const) {
     await expect(items.nth(1)).toBeDisabled();
 
     await items.nth(0).click();
-    await expect(page.getByTestId('story-cover')).toBeVisible();
-    await page.getByTestId('story-start').click();
+    await expect(page.getByTestId('story-intro')).toBeVisible();
 
     // German text is LTR in both interfaces, with gender underlines
     const text = page.locator('[lang="de"].font-story').first();
@@ -39,11 +38,9 @@ for (const lang of ['fa', 'en'] as const) {
     await page.keyboard.press('Escape');
     await expect(sheet).toHaveCount(0);
 
-    // Turn pages with the arrow key and the button until the quiz
-    await page.getByTestId('reader-controls-toggle').click();
-    await page.getByTestId('reader-controls-toggle').focus();
-    await page.keyboard.press('ArrowRight');
-    for (let i = 0; i < 10 && await page.getByTestId('story-next').count(); i++) await page.getByTestId('story-next').click();
+    // The whole chapter is one scrolling text; the quiz follows it
+    await page.getByTestId('story-to-quiz').scrollIntoViewIfNeeded();
+    await page.getByTestId('story-to-quiz').click();
     await expect(page.getByTestId('story-quiz')).toBeVisible();
 
     // Question 1: pick a wrong option, open the page, then go on
@@ -93,7 +90,7 @@ test('story URLs support browser history and reject locked or invalid links', as
   await page.goBack();
   await expect(page.getByTestId('stories-book')).toBeVisible();
   await page.goForward();
-  await expect(page.getByTestId('story-cover')).toBeVisible();
+  await expect(page.getByTestId('story-intro')).toBeVisible();
   await page.goto('/?go=stories&book=1&story=S01-Q6');
   await expect(page.getByTestId('stories-book')).toBeVisible();
   await page.goto('/?go=stories&book=999');

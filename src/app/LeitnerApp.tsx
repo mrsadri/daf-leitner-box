@@ -53,7 +53,8 @@ export function LeitnerApp({ user }: { user: User }) {
     if (!supabase) return;
     void supabase.rpc('set_activity_timezone', { p_zone: Intl.DateTimeFormat().resolvedOptions().timeZone });
   }, [user.id]);
-  const [activeTab, updateActiveTab] = useState<ActiveTab>('dashboard');
+  // Stories is the app's main feature: it opens first (a ?go= link or the kill switch can change that)
+  const [activeTab, updateActiveTab] = useState<ActiveTab>(() => !initialGo || initialGo === 'stories' || initialGo === 'dictation' ? 'stories' : 'dashboard');
   useEffect(() => () => speechService.cancel(), [activeTab, user.id]);
   const setActiveTab = useCallback((tab: ActiveTab) => {
     const url = new URL(window.location.href);
@@ -98,7 +99,8 @@ export function LeitnerApp({ user }: { user: User }) {
   // If the flag turns out to be off, a deep link (or an already-open tab) falls back to the home page.
   useEffect(() => {
     if (activeTab === 'adjective' && !showAdjective) setActiveTab('dashboard');
-  }, [activeTab, showAdjective, setActiveTab]);
+    if (activeTab === 'stories' && !showStories) setActiveTab('dashboard');
+  }, [activeTab, showAdjective, showStories, setActiveTab]);
 
   // Cards the nightly overdue rule moved back: explain them once (fresh server data is loaded by now)
   useEffect(() => {
@@ -175,7 +177,7 @@ export function LeitnerApp({ user }: { user: User }) {
 
   useEffect(() => {
     const onBack = () => {
-      const tab = new URLSearchParams(window.location.search).get('go') || 'dashboard';
+      const tab = new URLSearchParams(window.location.search).get('go') || 'stories';
       if (['dashboard','review','catalog','stories','adjective','leaderboard','settings','admin'].includes(tab)) requestTabChange(tab as ActiveTab);
     };
     window.addEventListener('popstate', onBack);

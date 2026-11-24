@@ -147,6 +147,18 @@ export const en: Messages = {
     ]
   },
 
+  guest: {
+    signIn: 'Sign in',
+    reading: 'You are reading as a guest; your progress stays on this device. Sign in to keep it and open the next stories.',
+    promptTitle: 'Sign in to continue',
+    reasonNext: 'Well done, you finished the first story! Sign in with Google to open the next stories and keep your progress.',
+    reasonWord: 'Sign in to save words to your Leitner box and review them on the following days.',
+    reasonGeneral: 'Signing in keeps your story progress and opens the Leitner box, daily review, silver cards and the rankings.',
+    keepsProgress: 'What you have read so far moves into your account.',
+    notNow: 'Not now',
+    saveWord: 'Sign in to save this word'
+  },
+
   login: {
     google: 'Sign in with Google',
     failed: (msg: string) => `Sign-in failed: ${msg}`,

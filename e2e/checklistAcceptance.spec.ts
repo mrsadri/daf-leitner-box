@@ -13,7 +13,6 @@ for(const lang of ['fa','en'] as const){
  });
  test(`a feminine alternate retains its gender in the story and word sheet (${lang})`,async({page},info)=>{
   const {errors}=await openApp(page,lang,'/?go=stories&book=1&story=S01-Q1');
-  await page.getByTestId('story-start').click();
   const word=page.locator('[data-gender="f"]').filter({hasText:/^Praktikantin$/}).first();
   await expect(word).toBeVisible();await word.click();
   const sheet=page.getByTestId('word-sheet').getByRole('dialog');

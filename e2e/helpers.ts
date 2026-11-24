@@ -18,7 +18,7 @@ export async function openApp(page: Page, lang: Lang = 'fa', path = '/') {
     localStorage.setItem('daf_demo_overdue_seen', '1');
   }, lang);
   await page.goto(path);
-  await expect(page.getByRole('banner').or(page.getByTestId('story-cover')).or(page.getByTestId('reader-controls-toggle'))).toBeVisible();
+  await expect(page.getByRole('banner').or(page.getByTestId('story-reader'))).toBeVisible();
   await closeDialogs(page);
   return { errors, external };
 }

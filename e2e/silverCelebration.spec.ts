@@ -30,7 +30,7 @@ async function answerOneCorrect(page: Page) {
 }
 
 test('the 16th correct answer of the day opens the silver card, once', async ({ page }) => {
-  const { errors } = await openApp(page, 'en');
+  const { errors } = await openApp(page, 'en', '/?go=dashboard');
   await seedSilver(page, 15, 2, 2);
 
   await page.getByRole('button', { name: /Start today's review/ }).click();
@@ -62,7 +62,7 @@ test('the 16th correct answer of the day opens the silver card, once', async ({ 
 });
 
 test('the first launch after the update does not celebrate cards earned before it', async ({ page }) => {
-  await openApp(page, 'en');
+  await openApp(page, 'en', '/?go=dashboard');
   await page.evaluate(day => {
     localStorage.setItem('daf_silver_demo-user', JSON.stringify({ day, correctToday: 20, earnedToday: true, total: 5, protocol: 'verified' }));
     localStorage.removeItem('daf_silver_seen_demo-user');
@@ -77,7 +77,7 @@ test('the first launch after the update does not celebrate cards earned before i
 });
 
 test('the collection shows the newest card first', async ({ page }) => {
-  await openApp(page, 'en');
+  await openApp(page, 'en', '/?go=dashboard');
   await seedSilver(page, 0, 3, 3);
   await page.getByRole('button', { name: /My collection/ }).click();
   const cards = page.getByTestId('silver-earned-list').locator(':scope > div');

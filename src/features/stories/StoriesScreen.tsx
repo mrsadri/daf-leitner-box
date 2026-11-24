@@ -10,7 +10,8 @@ import { useI18n } from '../../i18n/I18nProvider';
 import { Button, Card, Badge, Dialog } from '../../shared/ui';
 import { NewCardModal } from '../vocab/NewCardModal';
 import { loadBook, loadIndex, imageUrl } from './content';
-import { StoriesProgressStore } from './storiesSync';
+import { StoriesProgressStore, importGuestProgress } from './storiesSync';
+import type { SignInReason } from '../auth/SignInPrompt';
 import type { StorySaveStatus } from './progressStore';
 import { storyStates, nextStory, withPage, withQuizDone } from './progress';
 import { resolveTap, type WordTarget } from './wordTap';
@@ -26,6 +27,8 @@ import './stories.css';
 
 interface Props {
   onReadingChange?: (reading: boolean) => void;
+  /** Signed out: the first story of every book can be read; anything more asks to sign in */
+  guest?: { onRequireSignIn: (reason: SignInReason) => void };
   userId: string;
   cards: LeitnerCard[];
   onCardsChanged: () => void;
@@ -34,8 +37,8 @@ interface Props {
 
 
 
-export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard, onReadingChange }: Props) {
-  const { t, dir } = useI18n();
+export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard, onReadingChange, guest }: Props) {
+  const { t } = useI18n();
   const s = t.stories;
   const [reward, setReward] = useState<number | null>(null);
   const [index, setIndex] = useState<StoriesIndex | null>(null);
@@ -59,8 +62,11 @@ export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard
   useEffect(() => {
     const offStatus = store.onStatus(setSaveStatus);
     const off = store.subscribe(setProgress);
+    // Signed in after reading as a guest on this device: that reading moves into the account
+    if (!guest) importGuestProgress(store);
     void store.start();
     return () => { offStatus(); off(); store.dispose(); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [store]);
 
   // eslint-disable-next-line react/set-state-in-effect -- This shared retry/mount callback starts an external content load.
@@ -70,7 +76,7 @@ export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard
   const requestedBook = requestedView.kind === 'shelf' ? undefined : index?.books.find(b => b.n === requestedView.n);
   const requestedStory = requestedView.kind === 'read' ? requestedBook?.stories.findIndex(st => st.id === requestedView.storyId) ?? -1 : -1;
   const view: StoryView = !index ? requestedView : !requestedBook ? { kind: 'shelf' }
-    : requestedView.kind === 'read' && (requestedStory < 0 || storyStates(requestedBook.stories.map(st => st.id), progress)[requestedStory] === 'locked')
+    : requestedView.kind === 'read' && (requestedStory < 0 || (guest && requestedStory > 0) || storyStates(requestedBook.stories.map(st => st.id), progress)[requestedStory] === 'locked')
       ? { kind: 'book', n: requestedBook.n } : requestedView;
 
   useEffect(() => {
@@ -97,6 +103,12 @@ export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard
   };
 
   const now = () => new Date().toISOString();
+  /** Open a story; a guest gets the first story of a book, and is asked to sign in for the others. */
+  const openStory = (n: number, storyId: string, continueAt?: number) => {
+    const summaryOf = index?.books.find(b => b.n === n);
+    if (guest && summaryOf && summaryOf.stories.findIndex(st => st.id === storyId) > 0) { guest.onRequireSignIn('next'); return; }
+    setView({ kind: 'read', n, storyId, continueAt });
+  };
 
   if (error) {
     return (
@@ -127,9 +139,10 @@ export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard
           onClose={() => setTarget(null)}
           onCardsChanged={onCardsChanged}
           onAddNew={(word) => { setTarget(null); setNewWord(word); }}
+          onRequireSignIn={guest ? () => { setTarget(null); guest.onRequireSignIn('word'); } : undefined}
         />
       )}
-      <NewCardModal isOpen={newWord !== null} initialWord={newWord ?? undefined} onClose={() => setNewWord(null)} onAddCard={onAddCard} />
+      {!guest && <NewCardModal isOpen={newWord !== null} initialWord={newWord ?? undefined} onClose={() => setNewWord(null)} onAddCard={onAddCard} />}
     </>
   );
 
@@ -138,7 +151,7 @@ export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard
     return <>
       <EditorialLibrary index={index} progress={progress}
         onBook={n => setView({ kind: 'book', n })}
-        onResume={(n, storyId, page) => setView({ kind: 'read', n, storyId, continueAt: page })} />
+        onResume={(n, storyId, page) => openStory(n, storyId, page)} />
       {overlays}
     </>;
   }
@@ -153,21 +166,21 @@ export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard
     return (
       <div className="editorial-library space-y-8 pb-12" data-testid="stories-book">
         <Button data-testid="back-to-library" variant="ghost" size="sm" icon={<ChevronLeft className="w-4 h-4 rtl:rotate-180" />} onClick={() => setView({ kind: 'shelf' })}>{s.backToShelf}</Button>
-        <section className="editorial-feature" dir="ltr">
+        <section className="editorial-feature">
           <BookArt book={summary} eager />
-          <div className="space-y-5" dir={dir}>
+          <div className="space-y-5 min-w-0">
             <p className="text-sm text-ink-soft">{s.book(summary.n)} · {s.lessons(...summary.lessons)}</p>
             <h1 className="editorial-title text-3xl sm:text-4xl"><De className="block text-start">{bookTitle(summary)}</De></h1>
             <p className="text-base leading-8 text-ink-soft">{s.bookTeasers[summary.n - 1]}</p>
             <BookProgress book={summary} progress={progress} />
             <Button onClick={() => {
               const storyId = cont ?? ids[0];
-              setView({ kind: 'read', n: summary.n, storyId, continueAt: cont ? progress[storyId]?.page : undefined });
+              openStory(summary.n, storyId, cont ? progress[storyId]?.page : undefined);
             }}>{cont ? progress[cont] ? s.continueReading : s.start : s.readAgain}</Button>
           </div>
         </section>
         <h2 className="text-xl font-semibold border-t border-paper-edge pt-8">{s.scenePreview}</h2>
-        <ol className="editorial-scenes" dir="ltr">
+        <ol className="editorial-scenes">
           {summary.stories.map((st, i) => {
             const state = states[i];
             const p = progress[st.id];
@@ -179,7 +192,7 @@ export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard
                 <button
                   type="button"
                   disabled={state === 'locked'}
-                  onClick={() => setView({ kind: 'read', n: summary.n, storyId: st.id, continueAt: state === 'open' && p ? p.page : undefined })}
+                  onClick={() => openStory(summary.n, st.id, state === 'open' && p ? p.page : undefined)}
                   data-testid="story-item"
                   data-state={state}
                   aria-describedby={state === 'locked' ? 'story-locked-note' : undefined}
@@ -191,8 +204,8 @@ export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard
                   <span className="flex-1 min-w-0 space-y-2">
                     <span className="block text-caption text-ink-soft font-mono-num">{st.n}</span>
                     <span dir="ltr" lang="de" className="block editorial-title text-lg text-ink text-start">{st.title}</span>
-                    {excerpt && <De className="block text-sm leading-7 text-ink-soft line-clamp-2">{excerpt}</De>}
-                    {isCurrent && <span dir={dir} className="block text-caption text-indigo-700 dark:text-indigo-300">{p ? s.continueReading : s.start}</span>}
+                    {excerpt && <De className="text-sm leading-7 text-ink-soft line-clamp-2 text-start">{excerpt}</De>}
+                    {isCurrent && <span className="block text-caption text-indigo-700 dark:text-indigo-300">{p ? s.continueReading : s.start}</span>}
                   </span>
                   {state === 'done' && <Badge tone="success" icon={<Check className="w-3.5 h-3.5" />}>{s.done}</Badge>}
                   {state === 'locked' && <Lock className="w-5 h-5 text-slate-400 shrink-0" aria-label={s.locked} />}
@@ -225,11 +238,11 @@ export default function StoriesScreen({ userId, cards, onCardsChanged, onAddCard
           store.save(withPage(progress[story.id], story.id, page, story.pages.length, now()), book.contentVersion);
         }}
         onQuizDone={(score) => {
-          if (!progress[story.id]?.completedAt) setReward(story.sentenceCount);
+          if (!guest && !progress[story.id]?.completedAt) setReward(story.sentenceCount);   // guests earn points once signed in
           store.save(withQuizDone(progress[story.id], story.id, story.pages.length, score, now()), book.contentVersion);
         }}
         onWord={onWord}
-        onNextStory={() => nextSt && setView({ kind: 'read', n: book.n, storyId: nextSt.id })}
+        onNextStory={() => nextSt && openStory(book.n, nextSt.id)}
         onBack={() => setView({ kind: 'book', n: book.n })}
       />
       {overlays}

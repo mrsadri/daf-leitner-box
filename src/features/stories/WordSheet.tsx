@@ -23,13 +23,15 @@ interface Props {
   onCardsChanged: () => void;
   /** "Add as a new card" for a word that is not in the list */
   onAddNew: (word: string) => void;
+  /** Signed out: the meaning is shown, saving asks to sign in instead */
+  onRequireSignIn?: () => void;
 }
 
 interface Toast { text: string; undo: () => void }
 
 const ARTICLE_TONE = { der: 'text-gender-m', die: 'text-gender-f', das: 'text-gender-n' } as const;
 
-export const WordSheet: React.FC<Props> = ({ target, onClose, onCardsChanged, onAddNew }) => {
+export const WordSheet: React.FC<Props> = ({ target, onClose, onCardsChanged, onAddNew, onRequireSignIn }) => {
   const { t, lang } = useI18n();
   const w = t.stories.word;
   const [, force] = useState(0);
@@ -97,7 +99,9 @@ export const WordSheet: React.FC<Props> = ({ target, onClose, onCardsChanged, on
       size="sm"
       testId="word-sheet"
       title={w.title}
-      footer={target.kind === 'card' ? (
+      footer={onRequireSignIn ? (
+        <Button block variant="secondary" onClick={onRequireSignIn} data-testid="word-sign-in">{t.guest.saveWord}</Button>
+      ) : target.kind === 'card' ? (
         owned
           ? <Button block variant="secondary" onClick={moveBack}>{owned.box === 0 ? w.reviewToday : w.moveBack}</Button>
           : <Button block onClick={add} disabled={!catalogWord}>{w.add}</Button>
@@ -118,7 +122,7 @@ export const WordSheet: React.FC<Props> = ({ target, onClose, onCardsChanged, on
         <p dir="auto" className="text-sm text-slate-600 dark:text-slate-300">{w.formOf(target.word, lemma)}</p>
       )}
       {meaning && <p dir="auto" className="text-base text-slate-800 dark:text-slate-100">{meaning}</p>}
-      {target.kind === 'card'
+      {onRequireSignIn ? null : target.kind === 'card'
         ? <Badge tone={owned ? 'primary' : 'neutral'}>{state}</Badge>
         : <p className="text-sm text-slate-600 dark:text-slate-300">{w.notInList}</p>}
       <p className="text-caption text-slate-500 dark:text-slate-400">{w.note}</p>
