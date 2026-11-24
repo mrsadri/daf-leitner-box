@@ -214,5 +214,59 @@
    "en": "Watercolour illustration: in Hermine's living room, Nili and Hermine drink tea; an old photo lies on the coffee table and a tree blossoms outside the window.",
    "fa": "تصویر آبرنگی: در اتاق نشیمن هرمینه، نیلوفر و هرمینه چای می‌نوشند؛ عکسی قدیمی روی میز است و بیرون پنجره درختی شکوفه داده است."
   }
+ },
+ "S05-Q1": {
+  "hash": "056ae2d0b5",
+  "w": 1600,
+  "h": 1200,
+  "alt": {
+   "fa": "تصویر آبرنگی: در اتاق انتظار مطب دکتر، نیلوفر با برگه‌ای روی زانو کنار هرمینه نشسته و دستش را گرفته؛ هرمینه با دستمال جلوی دهانش سرفه می‌کند.",
+   "en": "Watercolour illustration: in the doctor's waiting room, Nili sits beside Hermine with a form on her knee and holds her hand; Hermine coughs into a handkerchief."
+  }
+ },
+ "S06-Q1": {
+  "hash": "39ab0a6651",
+  "w": 1600,
+  "h": 1200,
+  "alt": {
+   "fa": "تصویر آبرنگی: در دفتر مورکلانگ، نیلوفر غمگین با فنجانی در دست پشت میز نشسته و خانم لشنر روبه‌رویش آرام با او حرف می‌زند؛ خانم واگنر از پشت میزش نگاه می‌کند.",
+   "en": "Watercolour illustration: in the Murklang office, Nili sits sadly at the table with a cup while Frau Lechner talks to her calmly; Frau Wagner watches from her desk."
+  }
+ },
+ "S07-Q1": {
+  "hash": "e7d44c5ab7",
+  "w": 1600,
+  "h": 1200,
+  "alt": {
+   "fa": "تصویر آبرنگی: در آژانس مسافرتی، کارمند آژانس مسیر سفر را روی نقشه نشان می‌دهد؛ نیلوفر در دفترچه‌ی سبزش یادداشت برمی‌دارد و لوسیا از پشت سرش نگاه می‌کند.",
+   "en": "Watercolour illustration: in a travel agency, the agent traces the route on a map; Nili takes notes in her green notebook while Lucía looks over her shoulder."
+  }
+ },
+ "S08-Q1": {
+  "hash": "6de0eae6c0",
+  "w": 1600,
+  "h": 1200,
+  "alt": {
+   "fa": "تصویر آبرنگی: در آشپزخانه‌ی هرمینه، هرمینه نامه‌ای قدیمی را بلند می‌خواند و نیلوفر کنارش اشک می‌ریزد؛ پاکت زرد و پاکت هوایی روی میز است و بیرون برف می‌بارد.",
+   "en": "Watercolour illustration: in Hermine's kitchen, Hermine reads an old letter aloud while Nili wipes away tears; a yellow envelope and an airmail envelope lie on the table, snow falls outside."
+  }
+ },
+ "S09-Q1": {
+  "hash": "b4bbd84115",
+  "w": 1600,
+  "h": 1200,
+  "alt": {
+   "fa": "تصویر آبرنگی: در اتاق جلسه‌ای در لیختن‌اشتاین، نیلوفر خم شده تا گونه‌ی مدیر جدیدش را ببوسد، اما مدیر دستش را برای دست دادن جلو آورده و با تعجب عقب می‌کشد.",
+   "en": "Watercolour illustration: in a meeting room in Liechtenstein, Nili leans in to kiss her new manager on the cheek, but the manager holds out her hand for a handshake and pulls back in surprise."
+  }
+ },
+ "S10-Q1": {
+  "hash": "54ede19200",
+  "w": 1600,
+  "h": 1200,
+  "alt": {
+   "fa": "تصویر آبرنگی: در اتاق جلسه‌ای در درسدن، نیلوفر به یک نمودار میله‌ای روی صفحه اشاره می‌کند؛ رونی دستش را برای سؤال بالا برده و مدیر بخش با دقت گوش می‌دهد.",
+   "en": "Watercolour illustration: in a meeting room in Dresden, Nili points at a bar chart on the screen; Ronny raises his hand to ask a question and the head of department listens closely."
+  }
  }
 }
