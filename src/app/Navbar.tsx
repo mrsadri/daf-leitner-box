@@ -29,11 +29,12 @@ const SYNC_DOT: Record<SyncStatus, string> = {
   offline: 'bg-slate-400'
 };
 
+// Stories first: it is the app's main feature
 const TABS: { id: ActiveTab; icon: LucideIcon }[] = [
+  { id: 'stories', icon: BookHeart },
   { id: 'dashboard', icon: Layers },
   { id: 'review', icon: PlayCircle },
   { id: 'catalog', icon: BookOpen },
-  { id: 'stories', icon: BookHeart },
   { id: 'adjective', icon: SpellCheck2 },
   { id: 'leaderboard', icon: Trophy },
   { id: 'settings', icon: Settings2 },
@@ -64,7 +65,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Brand */}
         <button
-          onClick={() => onTabChange('dashboard')}
+          onClick={() => onTabChange(showStories ? 'stories' : 'dashboard')}
           data-testid="nav-brand"
           className="flex items-center gap-2 min-w-0 xl:shrink-0 text-start group focus:outline-none"
         >

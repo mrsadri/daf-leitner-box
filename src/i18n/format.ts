@@ -4,7 +4,20 @@
 export type Lang = 'fa' | 'en';
 
 export const LANGS: Lang[] = ['fa', 'en'];
-export const DEFAULT_LANG: Lang = 'fa';
+/** New visitors get English (2026-11-24); learners who used the app before keep Persian (see initialLang). */
+export const DEFAULT_LANG: Lang = 'en';
+
+/** Key prefix of the signed-in card cache: its presence marks a device that used the app before English became the default. */
+export const EXISTING_USER_KEY_PREFIX = 'daf_cards_cache_';
+
+/**
+ * The language to start with: the saved choice; otherwise Persian on a device that already holds a learner's data
+ * (they used the app when Persian was the default), otherwise English. Kept in step with public/interface-language.js.
+ */
+export function initialLang(stored: string | null, storageKeys: string[]): Lang {
+  if (stored && (LANGS as string[]).includes(stored)) return stored as Lang;
+  return storageKeys.some(k => k.startsWith(EXISTING_USER_KEY_PREFIX)) ? 'fa' : DEFAULT_LANG;
+}
 
 export const LOCALE: Record<Lang, string> = { fa: 'fa-IR', en: 'en-US' };
 

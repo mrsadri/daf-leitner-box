@@ -5,21 +5,23 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { fa, Messages } from './fa';
 import { en } from './en';
-import { Lang, LANGS, DEFAULT_LANG, LOCALE, dirOf, formatNumber, localizeDigits } from './format';
+import { Lang, DEFAULT_LANG, LOCALE, dirOf, formatNumber, localizeDigits, initialLang } from './format';
 
 export type { Lang, Messages };
 
 const MESSAGES: Record<Lang, Messages> = { fa, en };
 const STORAGE_KEY = 'daf_lang';
 
+/** The saved language, or the starting one (initialLang), saved once so it never flips on a later visit. */
 function readStoredLang(): Lang {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored && (LANGS as string[]).includes(stored)) return stored as Lang;
+    const lang = initialLang(stored, Object.keys(localStorage));
+    if (stored !== lang) localStorage.setItem(STORAGE_KEY, lang);
+    return lang;
   } catch {
-    // storage unavailable
+    return DEFAULT_LANG;   // storage unavailable
   }
-  return DEFAULT_LANG;
 }
 
 // Module-level mirror of the active language, for code outside React (services, error messages).

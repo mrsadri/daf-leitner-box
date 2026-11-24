@@ -53,7 +53,6 @@ for (const lang of ['fa','en'] as const) {
 
 test('reader words use arrow navigation and one Tab exits the text',async({page})=>{
  await openApp(page,'en','/?go=stories&book=1&story=S01-Q1');
- await page.getByTestId('story-start').click();
  const text=page.locator('[data-word-navigation]').first();
  await text.locator('[role=button]').first().focus();
  expect(await text.evaluate(e=>e.contains(document.activeElement))).toBe(true);
@@ -84,7 +83,7 @@ for(const lang of ['en','fa'] as const){
   await expect(page.getByRole('banner')).toBeVisible();
  });
  test(`lazy story chunk failure recovers after reload (${lang})`,async({page})=>{
-  await openApp(page,lang);
+  await openApp(page,lang,'/?go=dashboard');
   let fail=true;
   await page.context().route('**/assets/StoriesScreen-*.js',route=>fail?route.abort():route.continue());
   const {tabBar}=await import('./helpers');
@@ -113,7 +112,6 @@ for(const lang of ['en','fa'] as const){
 for(const lang of ['en','fa'] as const){
  test(`reader lookup has a named group and correctly localized instructions (${lang})`,async({page})=>{
   await openApp(page,lang,'/?go=stories&book=1&story=S01-Q1');
-  await page.getByTestId('story-start').click();
   const text=page.getByRole('toolbar',{name:lang==='en'?'Word lookup':'معنی واژه‌ها'}).first();
   await expect(text).toHaveAttribute('lang','de');
   const descriptionLanguage=await text.evaluate(element=>document.getElementById(element.getAttribute('aria-describedby')!)?.getAttribute('lang'));

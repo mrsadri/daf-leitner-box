@@ -35,7 +35,7 @@ export function EditorialLibrary({ index, progress, onBook, onResume }: {
   index: StoriesIndex; progress: Record<string, StoryProgress>;
   onBook: (n: number) => void; onResume: (n: number, storyId: string, page: number) => void;
 }) {
-  const { t, dir } = useI18n();
+  const { t } = useI18n();
   const s = t.stories;
   const resume = lastReading(index.books, progress);
   const featured = resume?.book ?? index.books[0];
@@ -46,11 +46,11 @@ export function EditorialLibrary({ index, progress, onBook, onResume }: {
       <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight">{s.libraryHeading}</h1>
       <p className="text-sm sm:text-base text-ink-soft max-w-2xl leading-relaxed">{s.libraryIntro}</p>
     </div>
-    <section className="editorial-feature" dir="ltr" aria-label={bookTitle(featured)}>
+    <section className="editorial-feature" aria-label={bookTitle(featured)}>
       <button type="button" className="editorial-art-button" onClick={() => onBook(featured.n)} aria-label={`${s.discoverBook}: ${bookTitle(featured)}`}>
         <BookArt book={featured} eager />
       </button>
-      <div className="space-y-5 min-w-0" dir={dir}>
+      <div className="space-y-5 min-w-0">
         <p className="text-sm text-ink-soft">{resume ? s.continueReading : s.startHere} · {s.lessons(...featured.lessons)}</p>
         <h2 className="editorial-title text-3xl sm:text-4xl"><De className="block text-start">{bookTitle(featured)}</De></h2>
         <p className="text-base leading-8 text-ink-soft">{s.bookTeasers[featured.n - 1]}</p>
@@ -64,14 +64,14 @@ export function EditorialLibrary({ index, progress, onBook, onResume }: {
     </section>
     <section className="space-y-6 border-t border-paper-edge pt-8" aria-labelledby="library-discover">
       <h2 id="library-discover" className="text-xl font-semibold">{s.discoverBooks}</h2>
-      <ul className="editorial-grid" dir="ltr">
+      <ul className="editorial-grid">
         {index.books.map(book => <li key={book.id}>
           <button type="button" data-testid="book-cover" className="editorial-book" onClick={() => onBook(book.n)}>
             <BookArt book={book} />
-            <div className="space-y-3 pt-4" dir={dir}>
+            <div className="editorial-book-text space-y-3 pt-4">
               <p className="text-caption text-ink-soft">{s.book(book.n)} · {s.lessons(...book.lessons)}</p>
               <De as="h3" className="editorial-title text-xl text-start">{bookTitle(book)}</De>
-              <p className="text-sm text-ink-soft leading-7">{s.bookTeasers[book.n - 1]}</p>
+              <p className="text-sm text-ink-soft leading-7 line-clamp-3">{s.bookTeasers[book.n - 1]}</p>
               <BookProgress book={book} progress={progress} />
               <span className="inline-flex items-center gap-2 text-sm text-indigo-700 dark:text-indigo-300">{s.discoverBook}<ArrowRight className="w-4 h-4 rtl:rotate-180" aria-hidden /></span>
             </div>
