@@ -22,7 +22,7 @@
     "e2e:webkit": "PW_WEBKIT=1 playwright test --project=webkit-phone --project=webkit-desktop"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.119.0",
+    "@supabase/supabase-js": "^2.119.2",
     "lucide-react": "^1.73.0",
     "react": "^19.0.1",
     "react-dom": "^19.0.1"
